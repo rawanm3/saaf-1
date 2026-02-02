@@ -1,0 +1,106 @@
+<div class="container ">
+  <div class="card shadow-lg rounded-4 border-0 mb-4">
+    <div class="card-body p-3 p-md-4">
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 border-bottom pb-4">
+        <div class="d-flex flex-column flex-md-row align-items-center">
+          <div class="position-relative me-md-4 mb-3 mb-md-0">
+            <img
+              [src]="customer?.profileImage || 'assets/images/default-avatar.png'"
+              alt="Customer Profile"
+              class="rounded-circle border border-3 border-primary shadow-sm"
+              style="width: 120px; height: 120px; object-fit: cover;"
+            />
+            <span
+              *ngIf="customer?.status === 'active'"
+              class="position-absolute bottom-0 end-0 p-2 bg-success border border-light rounded-circle"
+              title="Online"
+            ></span>
+          </div>
+          <div class="text-center text-md-start">
+            <h2 class="fw-bold mb-1 text-primary">{{ customer?.name?.en || customer?.name?.ar || customer?.name || 'N/A' }}</h2>
+            <span class="text-muted mb-0 fs-5 customer-role">{{ customer?.role || 'N/A' }}</span>
+            <a href="mailto:{{ customer?.email }}" class="link-secondary fw-medium text-decoration-none d-flex align-items-center justify-content-center justify-content-md-start">
+              <i class="ri-mail-line me-2"></i> {{ customer?.email }}
+            </a>
+          </div>
+        </div>
+        <div class="mt-4 mt-md-0">
+          <button
+            (click)="emitEdit()"
+            class="btn btn-outline-primary d-flex align-items-center px-4 py-2 rounded-pill shadow-sm"
+          >
+            <i class="ri-edit-line me-2"></i> {{ 'COMMON.EDIT' | translate }}
+          </button>
+        </div>
+      </div>
+
+      <div class="row g-4">
+        <div class="col-lg-12">
+          <div class="card h-100 shadow-sm border-0 rounded-3">
+            <div class="card-body">
+              <h5 class="card-title fw-bold mb-3 text-dark d-flex align-items-center">
+                <i class="ri-information-line me-2 text-primary"></i> {{ 'CUSTOMER_DETAILS.GENERAL_INFO' | translate }}
+              </h5>
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                  <span class="text-muted fw-medium">{{ 'CUSTOMER_DETAILS.PHONE_NUMBER' | translate }}:</span>
+                  <span class="text-dark">{{ customer?.phone || 'N/A' }}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                  <span class="text-muted fw-medium">{{ 'CUSTOMER_DETAILS.LOCATION' | translate }}:</span>
+                  <span class="text-dark">{{ customer?.country || 'N/A' }}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                  <span class="text-muted fw-medium">{{ 'CUSTOMER_DETAILS.STATUS' | translate }}:</span>
+                  <span
+                    class="badge fs-12 px-3 py-2 rounded-pill"
+                    [ngClass]="{
+                      'bg-warning text-dark': customer?.status?.toLowerCase() === 'pending',
+                      'bg-danger text-white': customer?.status?.toLowerCase() === 'rejected',
+                      'bg-success text-white': customer?.status?.toLowerCase() === 'confirmed' || customer?.status?.toLowerCase() === 'active'
+                    }"
+                  >
+                    {{ (customer?.status || 'active') | uppercase }}
+                  </span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-12">
+          <div class="card h-100 shadow-sm border-0 rounded-3">
+            <div class="card-body">
+              <h5 class="card-title fw-bold mb-3 text-dark d-flex align-items-center">
+                <i class="ri-id-card-line me-2 text-primary"></i> {{ 'CUSTOMER_DETAILS.NATIONAL_ID' | translate }}
+              </h5>
+              <div class="text-center p-3 border rounded-3 bg-light"
+              style=" min-height: 200px;">
+                <img
+                  [src]="customer?.nationalIdImageUrl || 'assets/images/default-national-id.png'"
+                  alt="National ID"
+                  class="img-fluid rounded shadow-sm"
+                  style="width: auto; height: auto; object-fit: cover; "
+                />
+                <p *ngIf="!customer?.nationalIdImageUrl" class="text-muted mt-2 mb-0">{{ 'CUSTOMER_DETAILS.NO_NATIONAL_ID_IMAGE' | translate }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<style>
+  /* الاتجاه الافتراضي (إنجليزي - LTR) */
+.customer-header .customer-role {
+  text-align: left;
+  display: block;
+}
+
+/* لما اللغة تبقى عربية (RTL) */
+html[dir="rtl"]  .customer-header .customer-role {
+  text-align: right;
+}
+
+</style>

@@ -1,0 +1,72 @@
+<div class="modal-header overflow-hidden bg-primary p-2">
+  <h5 class="modal-title text-white" id="compose-modalLabel">New Message</h5>
+  <button
+    type="button"
+    class="btn-close btn-close-white"
+    (click)="activeModal.close()"
+  ></button>
+</div>
+<div class="modal-body p-4">
+  <div class="overflow-hidden">
+    <div class="mb-2">
+      <input
+        type="email"
+        class="form-control"
+        id="toEmail"
+        placeholder="To: "
+      />
+    </div>
+    <div class="mb-2">
+      <input
+        type="text"
+        class="form-control"
+        id="subject"
+        placeholder="Subject "
+      />
+    </div>
+
+    <div class="my-2">
+      <div id="snow-editor2" style="height: 200px">
+        <quill-editor
+          #quillEditor
+          [(ngModel)]="content"
+          theme="snow"
+          [modules]="editorConfig"
+          style="height: 200px"
+        ></quill-editor>
+      </div>
+    </div>
+
+    <div class="d-flex float-end">
+      <div ngbDropdown class="me-1">
+        <a
+          ngbDropdownToggle
+          href="javascript:void(0);"
+          class="arrow-none btn btn-light"
+        >
+          <i class="ri-more-2-fill fs-18"></i>
+        </a>
+        <div ngbDropdownMenu class="dropdown-menu-up">
+          <a href="javascript:void(0);" class="dropdown-item"
+            >Default to full screen</a
+          >
+          <div class="dropdown-divider"></div>
+          <a href="javascript:void(0);" class="dropdown-item">Label</a>
+          <a href="javascript:void(0);" class="dropdown-item"
+            >Palin text mode</a
+          >
+          <div class="dropdown-divider"></div>
+          <a href="javascript:void(0);" class="dropdown-item"
+            >Smart Compose Feedback</a
+          >
+        </div>
+      </div>
+      <a href="javascript: void(0);" class="btn btn-light compose-close"
+        ><i class="ri-delete-bin-line fs-18"></i
+      ></a>
+    </div>
+    <div>
+      <a href="javascript: void(0);" class="btn btn-primary">Send</a>
+    </div>
+  </div>
+</div>

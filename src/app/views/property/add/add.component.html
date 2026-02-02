@@ -1,0 +1,31 @@
+<app-page-title title="{{ 'PROPERTY.TITLE' | translate }}" subTitle="{{ 'PROPERTY.Add_PROPERTY' | translate }}" />
+<div class="row justify-content-center">
+  <div class="col-xl-3 col-lg-4" *ngIf="createdProperty">
+    <div class="card">
+      <img [src]="'http://localhost:9000/' + (createdProperty.images?.[0] || '')" class="card-img-top"
+        *ngIf="createdProperty.images?.length; else noImage" />
+      <ng-template #noImage>
+        <img src="assets/images/properties/default.jpg" class="card-img-top" />
+      </ng-template>
+
+      <div class="card-body">
+        <h5 class="card-title">
+          {{ createdProperty.name }}
+          <span class="badge bg-success">For Rent</span>
+        </h5>
+        <p class="card-text">{{ createdProperty.location }}</p>
+        <p>
+          <strong>Price:</strong> {{ createdProperty.totalValue | currency }}
+        </p>
+        <p>
+          <strong>Total Shares:</strong> {{ createdProperty.totalShares }}
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-xl-9 col-lg-8">
+    <add-information (infoChange)="onInfoChange($event)"></add-information>
+
+
+  </div>

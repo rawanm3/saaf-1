@@ -1,0 +1,75 @@
+<div class="row justify-content-center">
+  <div class="col-xl-5">
+    <div class="card auth-card">
+      <div class="card-body px-3 py-5">
+        <app-logo-box class="mx-auto mb-4 text-center auth-logo"></app-logo-box><br>
+
+        <h2 class="fw-bold text-uppercase text-center fs-18">
+          {{ 'AUTH.SIGNIN.EMPLOYEE_TITLE' | translate }}
+        </h2>
+        <p class="text-muted text-center mt-1 mb-4">
+          {{ 'AUTH.SIGNIN.EMPLOYEE_SUBTITLE' | translate }}
+        </p>
+
+        @if (errorMessage()) {
+          <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle me-2"></i>
+            {{ errorMessage() }}
+            <button type="button" class="btn-close" (click)="errorMessage.set('')"></button>
+          </div>
+        }
+
+        <div class="px-4">
+          <form [formGroup]="signinForm" (ngSubmit)="onLogin()" class="authentication-form">
+            <div class="mb-3">
+              <label class="form-label" for="employee-email">
+                {{ 'AUTH.SIGNIN.EMAIL_LABEL' | translate }}
+              </label>
+              <input type="email" id="employee-email" formControlName="email"
+                [ngClass]="{ 'is-invalid': isFieldInvalid('email') }"
+                class="form-control bg-light bg-opacity-50 border-light py-2"
+                [placeholder]="'AUTH.SIGNIN.EMAIL_PLACEHOLDER' | translate" />
+
+              @if (isFieldInvalid('email')) {
+                <div class="invalid-feedback d-block field-error">
+                  {{ getFieldError('email') }}
+                </div>
+              }
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label" for="employee-password">
+                {{ 'AUTH.SIGNIN.PASSWORD_LABEL' | translate }}
+              </label>
+              <input type="password" id="employee-password" formControlName="password"
+                [ngClass]="{ 'is-invalid': isFieldInvalid('password') }"
+                class="form-control bg-light bg-opacity-50 border-light py-2"
+                [placeholder]="'AUTH.SIGNIN.PASSWORD_PLACEHOLDER' | translate" />
+
+              @if (isFieldInvalid('password')) {
+                <div class="invalid-feedback d-block field-error">
+                  {{ getFieldError('password') }}
+                </div>
+              }
+            </div>
+
+            <div class="mb-3 text-center d-grid">
+              <button class="btn btn-primary py-2 fw-medium" type="submit" [disabled]="loading()">
+                @if (loading()) {
+                  <span class="spinner-border spinner-border-sm me-2"></span>
+                }
+                {{ 'AUTH.SIGNIN.EMPLOYEE_BUTTON' | translate }}
+              </button>
+            </div>
+
+            <div class="mb-1 text-center d-grid">
+              <button class="btn btn-outline-primary py-2 fw-medium" type="button" (click)="goToSignin()">
+                {{ 'AUTH.REGULAR.SIGNIN_BUTTON' | translate }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

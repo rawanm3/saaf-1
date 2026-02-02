@@ -1,0 +1,18 @@
+<app-page-title title="Real Estate" subTitle="Messages" />
+
+<div class="row g-1">
+  <div class="col-xxl-3">
+    <div
+      class="offcanvas-xxl offcanvas-start h-100"
+      tabindex="-1"
+      id="Contactoffcanvas"
+      aria-labelledby="ContactoffcanvasLabel"
+    >
+      <chat-left-sidebar (profileDetail)="receiveDataFromChild($event)" />
+    </div>
+  </div>
+
+  <div class="col-xxl-9">
+    <chat-area [profileDetail]="profileDetail" />
+  </div>
+</div>

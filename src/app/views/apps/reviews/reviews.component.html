@@ -1,0 +1,173 @@
+<app-page-title title="Real Estate" subTitle="Reviews" />
+
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card">
+      <div
+        class="card-header d-flex justify-content-between align-items-center border-bottom"
+      >
+        <div>
+          <h4 class="card-title">All Reviews</h4>
+        </div>
+        <div ngbDropdown>
+          <a
+            ngbDropdownToggle
+            class="btn btn-sm btn-outline-light rounded"
+            role="button"
+          >
+            This Month
+          </a>
+          <div ngbDropdownMenu class="dropdown-menu-end">
+            <a href="javascript:void(0);" class="dropdown-item">Download</a>
+            <a href="javascript:void(0);" class="dropdown-item">Export</a>
+            <a href="javascript:void(0);" class="dropdown-item">Import</a>
+          </div>
+        </div>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table
+            class="table align-middle text-nowrap table-hover table-centered border-bottom mb-0"
+          >
+            <thead class="bg-light-subtle">
+              <tr>
+                <th style="width: 20px">
+                  <div class="form-check">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      id="customCheck1"
+                    />
+                    <label class="form-check-label" for="customCheck1"></label>
+                  </div>
+                </th>
+                <th>Properties Photo &amp; Name</th>
+                <th>Date</th>
+                <th>Customer Name</th>
+                <th>Property Address</th>
+                <th>Rating</th>
+                <th class="w-25">Review</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of reviews; track $index) {
+                <tr>
+                  <td>
+                    <div class="form-check">
+                      <input
+                        type="checkbox"
+                        class="form-check-input"
+                        id="customCheck2"
+                      />
+                      <label class="form-check-label" for="customCheck2"
+                        >&nbsp;</label
+                      >
+                    </div>
+                  </td>
+                  <td>
+                    <div class="d-flex align-items-center gap-2">
+                      <div>
+                        <img
+                          [src]="item.image"
+                          alt=""
+                          class="avatar-md rounded border border-light border-3"
+                        />
+                      </div>
+                      <div>
+                        <a
+                          href="javascript:void(0);"
+                          class="text-dark fw-medium fs-15"
+                          >{{ item.property_name }}</a
+                        >
+                      </div>
+                    </div>
+                  </td>
+                  <td>{{ item.date }}</td>
+                  <td>{{ item.agent }}</td>
+                  <td>{{ item.address }}</td>
+                  <td>{{ item.rating }}/5</td>
+                  <td>
+                    <ul class="d-flex m-0 list-unstyled">
+                      <ng-template #t let-fill="fill" let-index="index">
+                        <i class="ri-star-line text-warning fs-5">
+                          @if (fill > 0) {
+                            <i
+                              class="ri-star-fill text-warning filled fs-5"
+                              [style.width.%]="fill"
+                            ></i>
+                          }
+                        </i>
+                      </ng-template>
+
+                      <ngb-rating
+                        [rate]="item.rating"
+                        [starTemplate]="t"
+                        [readonly]="true"
+                        [max]="5"
+                      />
+                    </ul>
+                    <p class="my-1 text-dark fw-semibold">
+                      {{ item.review_title }}
+                    </p>
+                    <p class="text-wrap mb-0">"{{ item.review }}"</p>
+                  </td>
+                  <td>
+                    <span
+                      class="badge py-1 px-2 fs-12"
+                      [ngClass]="
+                        item.status == 'Published'
+                          ? 'bg-success-subtle text-success'
+                          : 'bg-warning-subtle text-warning'
+                      "
+                      >{{ item.status }}</span
+                    >
+                  </td>
+                  <td>
+                    <div class="d-flex gap-2">
+                      <a href="javascript:void(0);" class="btn btn-light btn-sm"
+                        ><iconify-icon
+                          icon="solar:eye-broken"
+                          class="align-middle fs-18"
+                        ></iconify-icon
+                      ></a>
+                      <a
+                        href="javascript:void(0);"
+                        class="btn btn-soft-primary btn-sm"
+                        ><iconify-icon
+                          icon="solar:pen-2-broken"
+                          class="align-middle fs-18"
+                        ></iconify-icon
+                      ></a>
+                      <a
+                        href="javascript:void(0);"
+                        class="btn btn-soft-danger btn-sm"
+                        ><iconify-icon
+                          icon="solar:trash-bin-minimalistic-2-broken"
+                          class="align-middle fs-18"
+                        ></iconify-icon
+                      ></a>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card-footer">
+        <nav aria-label="Page navigation example">
+          <ngb-pagination
+            [collectionSize]="30"
+            [page]="1"
+            class="pagination justify-content-end mb-0"
+          >
+            <ng-template ngbPaginationPrevious>Previous</ng-template>
+            <ng-template ngbPaginationNext>Next</ng-template>
+          </ngb-pagination>
+        </nav>
+      </div>
+    </div>
+  </div>
+</div>

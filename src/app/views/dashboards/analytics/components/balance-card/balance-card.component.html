@@ -1,0 +1,82 @@
+<div class="card bg-main bg-gradient">
+  <div class="card-body">
+    <div class="bodyy row align-items-center justify-content-between">
+      <div class="col-xl-7 col-lg-6 col-md-6">
+        <h3 class="text-white fw-bold">  {{ walletSummary?.balance | number }} {{ 'CURRENCY.' + currency | translate }}</h3>
+        <p class="text-white-50">{{ 'ANALYTICS.MY_BALANCE' | translate }}</p>
+        <div class="row aligning">
+          <div class="col-lg-6 col-lg-6 col-md-6 col-6">
+            <div class="d-flex gap-2">
+              <div class="avatar-sm flex-shrink-0">
+                <span
+                  class="avatar-title bg-success bg-opacity-50 text-white rounded"
+                >
+                  <i class="ri-arrow-up-line fs-4"></i>
+                </span>
+              </div>
+              <div class="d-block">
+                <h5 class="text-white fw-medium mb-0 text-nowrap">
+                  {{ walletSummary?.income | number }} {{ 'CURRENCY.' + currency | translate }}
+                </h5>
+                <p class="mb-0 text-white-50">{{ 'ANALYTICS.INCOME' | translate }}</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6 col-lg-6 col-md-6 col-6">
+            <div class="d-flex gap-2">
+              <div class="avatar-sm flex-shrink-0">
+                <span
+                  class="avatar-title bg-danger bg-opacity-50 text-white rounded"
+                >
+                  <i class="ri-arrow-down-line fs-4"></i>
+                </span>
+              </div>
+              <div class="d-block">
+                <h5 class="text-white fw-medium mb-0 text-nowrap">
+                   {{ walletSummary?.expense | number }} {{ 'CURRENCY.' + currency | translate }}
+                </h5>
+                <p class="mb-0 text-white-50">{{ 'ANALYTICS.EXPENSES' | translate }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-xl-5 col-lg-4 col-md-4">
+        <img src="assets/images/money.png" alt="" class="img-fluid" />
+      </div>
+    </div>
+  </div>
+</div>
+<style>
+  @media (min-width: 1200px) {
+    .col-xl-7 {
+        flex: 0 0 auto;
+        width: 58.33333333%;
+    }
+    .avatar-title {
+    width: 50%;
+}
+}
+@media (min-width: 992px) {
+    .col-lg-6 {
+        flex: 0 0 auto;
+        width: 59%;
+        padding-top:5px ;
+    }
+    
+}
+
+@media (max-width: 576px) {
+    .aligning{
+      display: flex !important;
+      flex-direction: column !important;
+    }
+}
+@media (min-width: 1200px) {
+    .col-xl-5 {
+        flex: 0 0 auto;
+        width: 40.666667%;
+    }
+
+}
+</style>

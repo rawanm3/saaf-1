@@ -1,0 +1,54 @@
+<div class="card">
+  <div class="card-header">
+    <h4 class="card-title">Location</h4>
+  </div>
+  <div class="card-body">
+    <div id="agent-location" class="my-4" style="height: 228px">
+      <app-world-vector-map
+        mapId="world-map-markers"
+        type="world"
+        [options]="worldMapConfig"
+      ></app-world-vector-map>
+    </div>
+    <div
+      class="d-flex align-items-center bg-light justify-content-between p-3 rounded"
+    >
+      <div>
+        <h5 class="fw-medium mb-1 text-dark">Walker Art Center</h5>
+        <p class="mb-2">Lincoln Drive Harrisburg, PA 17101 U.S.A</p>
+        <div class="d-flex gap-2 align-items-center">
+          <ul class="d-flex m-0 list-unstyled">
+            <ng-template #t let-fill="fill" let-index="index">
+              <i class="ri-star-line text-warning fs-18">
+                @if (fill > 0) {
+                  <i
+                    class="ri-star-fill text-warning filled fs-18"
+                    [style.width.%]="fill"
+                  ></i>
+                }
+              </i>
+            </ng-template>
+
+            <ngb-rating
+              [rate]="4.5"
+              [starTemplate]="t"
+              [readonly]="true"
+              [max]="5"
+            />
+          </ul>
+          <p class="mb-0 fw-medium fs-15 text-dark">
+            4.5 <span class="text-muted fs-13">(5809 Review)</span>
+          </p>
+        </div>
+      </div>
+      <div>
+        <div class="avatar bg-dark rounded">
+          <iconify-icon
+            icon="solar:point-on-map-perspective-bold"
+            class="fs-30 text-light avatar-title"
+          ></iconify-icon>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

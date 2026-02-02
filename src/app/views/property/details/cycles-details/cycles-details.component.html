@@ -1,0 +1,240 @@
+<div class="container py-2">
+    <h3 class="mb-2 text-primary">{{ 'PROPERTY.CYCLES' | translate }}</h3>
+    <div class="card shadow-sm mb-4">
+        <div class="card-body p-0">
+            <ul class="list-group list-group-flush">
+                <li *ngFor="let cycle of cycles; trackBy: trackByCycleId" class="list-group-item px-4 py-3">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap">
+                        <div class="mb-2 mb-md-0">
+                            <h6 class="fw-bold mb-1 text-secondary">
+                                {{ 'PROPERTY.PERIOD' | translate }}:
+                            </h6>
+                            <p class="mb-0 text-muted">
+                                {{ cycle.periodStart | date: 'mediumDate' }} -
+                                {{ cycle.periodEnd | date: 'mediumDate' }}
+                            </p>
+                        </div>
+                        <div class="d-flex gap-2 flex-wrap justify-content-end">
+                            <button type="button" class="btn btn-outline-info btn-sm d-flex align-items-center"
+                                (click)="toggleDetails(cycle)">
+                                <i class="ri-eye-line me-1"></i>
+                                {{
+                                cycle.showDetails
+                                ? ('COMMON.HIDE' | translate)
+                                : ('COMMON.VIEW_DETAILS' | translate)
+                                }}
+                            </button>
+                            <button type="button" class="btn btn-outline-primary btn-sm d-flex align-items-center"
+                                (click)="onEdit(cycle)">
+                                <i class="ri-edit-line me-1"></i>
+                                {{ 'COMMON.EDIT' | translate }}
+                            </button>
+                            <button type="button" class="btn btn-success btn-sm d-flex align-items-center"
+                                (click)="approveCycle(cycle._id)">
+                                <i class="ri-check-line me-1"></i>
+                                {{ 'PROPERTY.APPROVE' | translate }}
+                            </button>
+                            <button type="button" class="btn btn-danger btn-sm d-flex align-items-center"
+                                (click)="rejectCycle(cycle._id)">
+                                <i class="ri-close-line me-1"></i>
+                                {{ 'PROPERTY.REJECT' | translate }}
+                            </button>
+                        </div>
+                    </div>
+                    <div *ngIf="cycle.showDetails"
+                        class="card mt-3 p-3 bg-light border-0 shadow-sm animate__animated animate__fadeIn">
+                        <div class="row g-2">
+                            <div class="col-md-6" *ngFor="let expense of expenseFields">
+                                <strong class="text-dark">{{ expense.label | translate }}:</strong>
+                                <span class="ms-1 text-muted">
+                                    {{ currency }} {{ cycle[expense.control] | number: '1.2-2' }}
+                                </span>
+                            </div>
+                            <div class="col-md-6">
+                                <strong class="text-dark">{{ 'PROPERTY.TOTAL_EXPENSES' | translate }}:</strong>
+                                <span class="ms-1 text-danger fw-bold">
+                                    {{ currency }} {{ cycle.totalExpenses | number: '1.2-2' }}
+                                </span>
+                            </div>
+                            <div class="col-md-6">
+                                <strong class="text-dark">{{ 'PROPERTY.NET_REVENUE' | translate }}:</strong>
+                                <span class="ms-1 text-success fw-bold">
+                                    {{ currency }} {{ cycle.netRevenue | number: '1.2-2' }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+
+                <li *ngIf="cycles.length === 0" class="list-group-item text-muted text-center py-4">
+                    {{ 'PROPERTY.NO_CYCLES' | translate }}
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <button *ngIf="!isEmployee()" class="btn btn-primary mt-3 mb-4 d-flex align-items-center" (click)="onCreateNew()">
+        <i class="ri-add-line me-2"></i>
+        {{ 'PROPERTY.CREATE_CYCLE' | translate }}
+    </button>
+
+    <div *ngIf="showCreateCycleForm" class="card p-4 mt-4 shadow animate__animated animate__fadeInUp">
+        <h5 class="mb-4 text-primary">
+            {{
+            editMode
+            ? ('PROPERTY.EDIT_CYCLE' | translate)
+            : ('PROPERTY.CREATE_NEW_CYCLE' | translate)
+            }}
+        </h5>
+
+        <form [formGroup]="cycleForm" (ngSubmit)="createOrUpdateCycle()">
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">{{ 'PROPERTY.PERIOD_START' | translate }}</label>
+                    <input type="date" class="form-control" formControlName="periodStart" />
+                    <div *ngIf="cycleForm.get('periodStart')?.touched && cycleForm.get('periodStart')?.invalid"
+                        class="text-danger small mt-1">
+                        <ng-container *ngIf="cycleForm.get('periodStart')?.errors?.['required']">
+                            {{ 'PROPERTY.ERROR_PERIOD_START' | translate }}
+                        </ng-container>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">{{ 'PROPERTY.PERIOD_END' | translate }}</label>
+                    <input type="date" class="form-control" formControlName="periodEnd" />
+                    <div *ngIf="cycleForm.get('periodEnd')?.touched && cycleForm.get('periodEnd')?.invalid"
+                        class="text-danger small mt-1">
+                        <ng-container *ngIf="cycleForm.get('periodEnd')?.errors?.['required']">
+                            {{ 'PROPERTY.ERROR_PERIOD_END' | translate }}
+                        </ng-container>
+                    </div>
+                </div>
+            </div>
+
+            <div *ngIf="cycleForm.errors?.['invalidPeriod']" class="alert alert-warning py-2 small">
+                <i class="ri-error-warning-line me-1"></i>
+                {{ 'PROPERTY.ERROR_INVALID_PERIOD' | translate }}
+            </div>
+
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">{{ 'PROPERTY.GROSS_COLLECTED' | translate }}</label>
+                    <div class="input-group">
+                        <span class="input-group-text">{{ currency }}</span>
+                        <input type="number" class="form-control" formControlName="grossCollected" min="0" />
+                    </div>
+                    <div *ngIf="cycleForm.get('grossCollected')?.touched && cycleForm.get('grossCollected')?.invalid"
+                        class="text-danger small mt-1">
+                        <ng-container *ngIf="cycleForm.get('grossCollected')?.errors?.['required']">
+                            {{ 'PROPERTY.ERROR_GROSS_COLLECTED' | translate }}
+                        </ng-container>
+                        <ng-container *ngIf="cycleForm.get('grossCollected')?.errors?.['min']">
+                            {{ 'PROPERTY.ERROR_POSITIVE_NUMBER' | translate }}
+                        </ng-container>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">{{ 'PROPERTY.PROPERTY_VALUE' | translate }}</label>
+                    <div class="input-group">
+                        <span class="input-group-text">{{ currency }}</span>
+                        <input type="number" class="form-control" formControlName="propertyValue" min="0" />
+                    </div>
+                    <div *ngIf="cycleForm.get('propertyValue')?.touched && cycleForm.get('propertyValue')?.invalid"
+                        class="text-danger small mt-1">
+                        <ng-container *ngIf="cycleForm.get('propertyValue')?.errors?.['required']">
+                            {{ 'PROPERTY.ERROR_PROPERTY_VALUE' | translate }}
+                        </ng-container>
+                        <ng-container *ngIf="cycleForm.get('propertyValue')?.errors?.['min']">
+                            {{ 'PROPERTY.ERROR_POSITIVE_NUMBER' | translate }}
+                        </ng-container>
+                    </div>
+                </div>
+            </div>
+
+            <fieldset class="border p-3 mb-3 rounded shadow-sm bg-light">
+                <legend class="fw-bold small text-primary px-2 float-none w-auto">
+                    {{ 'PROPERTY.EXPENSES_DETAILS' | translate }}
+                </legend>
+
+                <div class="row g-3">
+                    <div class="col-md-6 col-lg-4" *ngFor="let expense of expenseFields">
+                        <label class="form-label small fw-semibold text-muted">{{ expense.label | translate }}</label>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text">{{ currency }}</span>
+                            <input type="number" class="form-control" [formControlName]="expense.control" min="0" />
+                        </div>
+                        <div *ngIf="cycleForm.get(expense.control)?.touched && cycleForm.get(expense.control)?.invalid"
+                            class="text-danger small mt-1">
+                            <ng-container *ngIf="cycleForm.get(expense.control)?.errors?.['min']">
+                                {{ 'PROPERTY.ERROR_EXPENSE' | translate:{ field: (expense.label | translate) } }}
+                            </ng-container>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="my-3" />
+
+                <div class="row g-3">
+                    <div class="col-md-6 col-lg-4">
+                        <label class="form-label small fw-semibold text-dark">
+                            {{ 'PROPERTY.TOTAL_EXPENSES' | translate }}
+                        </label>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text">{{ currency }}</span>
+                            <input type="number" class="form-control bg-light fw-bold" formControlName="totalExpenses"
+                                readonly />
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+
+            <div *ngIf="cycleForm.errors?.['expensesExceedIncome']" class="alert alert-warning py-2 small">
+                <i class="ri-alert-line me-1"></i>
+                {{ 'PROPERTY.ERROR_EXPENSES_EXCEED' | translate }}
+            </div>
+
+            <div class="row g-3 mb-3">
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">{{ 'PROPERTY.NET_REVENUE' | translate }}</label>
+                    <div class="input-group">
+                        <span class="input-group-text">{{ currency }}</span>
+                        <input type="number" class="form-control bg-light fw-bold text-success"
+                            formControlName="netRevenue" readonly />
+                    </div>
+                    <div *ngIf="cycleForm.errors?.['netRevenueInvalid']" class="text-danger small mt-1">
+                        {{ 'PROPERTY.ERROR_NET_REVENUE' | translate }}
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">{{ 'PROPERTY.MONTHLY_RETURN' | translate }}</label>
+                    <div class="input-group">
+                        <span class="input-group-text">{{ currency }}</span>
+                        <input type="number" class="form-control bg-light" formControlName="monthlyReturn" readonly />
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">{{ 'PROPERTY.ANNUAL_RETURN' | translate }}</label>
+                    <div class="input-group">
+                        <span class="input-group-text">{{ currency }}</span>
+                        <input type="number" class="form-control bg-light" formControlName="annualReturn" readonly />
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex gap-2 mt-4">
+                <button type="submit" class="btn btn-primary d-flex align-items-center" [disabled]="cycleForm.invalid">
+                    <i class="ri-save-line me-2"></i>
+                    {{ 'PROPERTY.SAVE' | translate }}
+                </button>
+                <button type="button" class="btn btn-secondary d-flex align-items-center" (click)="cancelEdit()">
+                    <i class="ri-close-circle-line me-2"></i>
+                    {{ 'COMMON.CANCEL' | translate }}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

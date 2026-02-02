@@ -1,0 +1,19 @@
+.no-image-box {
+    height: 400px;
+    background: #f5f7fa;
+    text-align: center;
+}
+
+.no-image-box .icon-box {
+    width: 70px;
+    height: 70px;
+    background: #e9ecef;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card {
+    box-shadow: none !important;
+}

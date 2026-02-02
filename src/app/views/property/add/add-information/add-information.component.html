@@ -1,0 +1,432 @@
+<div class="card">
+  <div class="card-header">
+    <h4 class="card-title">{{ 'PROPERTYADD.INFO_TITLE' | translate }}</h4>
+  </div>
+  <div class="card-body">
+    <form [formGroup]="infoForm" (ngSubmit)="submitForm()" novalidate>
+      <div class="row">
+        <div class="col-lg-6 mb-3">
+          <label class="form-label">{{ 'PROPERTYADD.NAME' | translate }} *</label>
+          <input type="text" class="form-control" formControlName="name" [class.is-invalid]="isFieldInvalid('name')"
+            [class.is-valid]="isFieldValid('name')" [placeholder]="'PROPERTYADD.PLACEHOLDER.NAME' | translate" />
+          <div class="invalid-feedback" *ngIf="isFieldInvalid('name')">
+            <div *ngIf="infoForm.get('name')?.errors?.['required']">
+              {{ 'PROPERTYADD.ERROR.NAME_REQUIRED' | translate }}
+            </div>
+            <div *ngIf="infoForm.get('name')?.errors?.['minlength']">
+              {{ 'PROPERTYADD.ERROR.NAME_MINLENGTH' | translate:{value: 3} }}
+            </div>
+            <div *ngIf="infoForm.get('name')?.errors?.['maxlength']">
+              {{ 'PROPERTYADD.ERROR.NAME_MAXLENGTH' | translate:{value: 100} }}
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-6 mb-3">
+          <label class="form-label">{{ 'PROPERTYADD.LOCATION' | translate }} *</label>
+          <input type="text" class="form-control" formControlName="location"
+            [class.is-invalid]="isFieldInvalid('location')" [class.is-valid]="isFieldValid('location')"
+            [placeholder]="'PROPERTYADD.PLACEHOLDER.LOCATION' | translate" />
+          <div class="invalid-feedback" *ngIf="isFieldInvalid('location')">
+            <div *ngIf="infoForm.get('location')?.errors?.['required']">
+              {{ 'PROPERTYADD.ERROR.LOCATION_REQUIRED' | translate }}
+            </div>
+            <div *ngIf="infoForm.get('location')?.errors?.['minlength']">
+              {{ 'PROPERTYADD.ERROR.LOCATION_MINLENGTH' | translate:{value: 5} }}
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-6 mb-3">
+          <label class="form-label">{{ 'PROPERTYADD.TYPE' | translate }} *</label>
+          <select class="form-select" formControlName="type" [class.is-invalid]="isFieldInvalid('type')"
+            [class.is-valid]="isFieldValid('type')">
+            <option value="">{{ 'PROPERTYADD.SELECT_TYPE' | translate }}</option>
+
+            <option value="Residential/Commercial Property">
+              {{ 'PROPERTYADD.TYPE_RESIDENTIAL_COMMERCIAL_PROPERTY' | translate }}
+            </option>
+
+            <option value="Administrative Property (Offices)">
+              {{ 'PROPERTYADD.TYPE_ADMINISTRATIVE_PROPERTY' | translate }}
+            </option>
+
+            <option value="Residential Complex">
+              {{ 'PROPERTYADD.TYPE_RESIDENTIAL_COMPLEX' | translate }}
+            </option>
+
+            <option value="Residential/Commercial Complex">
+              {{ 'PROPERTYADD.TYPE_RESIDENTIAL_COMMERCIAL_COMPLEX' | translate }}
+            </option>
+
+            <option value="Commercial/Administrative Complex">
+              {{ 'PROPERTYADD.TYPE_COMMERCIAL_ADMINISTRATIVE_COMPLEX' | translate }}
+            </option>
+          </select>
+
+          <div class="invalid-feedback" *ngIf="isFieldInvalid('type')">
+            {{ 'PROPERTYADD.ERROR.TYPE_REQUIRED' | translate }}
+          </div>
+        </div>
+
+        <div class="col-lg-6 mb-3">
+          <label for="status" class="form-label">
+            {{ 'PROPERTYADD.STATUs' | translate }} <span class="text-danger">*</span>
+          </label>
+
+          <select id="status" class="form-select" formControlName="status" [class.is-invalid]="isFieldInvalid('status')"
+            [class.is-valid]="isFieldValid('status')">
+            <option value="">{{ 'PROPERTYADD.SELECT_STATUS' | translate }}</option>
+            <option value="available">{{ 'PROPERTYADD.STATUS_AVAILABLE' | translate }}</option>
+            <option value="funded">{{ 'PROPERTYADD.STATUS_FUNDED' | translate }}</option>
+            <option value="matured">{{ 'PROPERTYADD.STATUS_MATURED' | translate }}</option>
+            <option value="sold">{{ 'PROPERTYADD.STATUS_SOLD' | translate }}</option>
+            <option value="pending">{{ 'PROPERTYADD.STATUS_PENDING' | translate }}</option>
+          </select>
+
+
+          <div class="invalid-feedback" *ngIf="isFieldInvalid('status')">
+            <ng-container *ngIf="infoForm.get('status')?.errors?.['required']">
+              {{ 'PROPERTYADD.ERROR.STATUS_REQUIRED' | translate }}
+            </ng-container>
+            <ng-container *ngIf="infoForm.get('status')?.errors?.['pattern']">
+              {{ 'PROPERTYADD.ERROR.STATUS_INVALID' | translate }}
+            </ng-container>
+          </div>
+        </div>
+
+
+      <div class="col-lg-6 mb-3">
+        <label for="holdingPeriodMonths" class="form-label">
+          {{ 'PROPERTYADD.HOLDING_PERIOD_MONTHS' | translate }} <span class="text-danger">*</span>
+        </label>
+      
+        <input id="holdingPeriodMonths" type="number" class="form-control" formControlName="holdingPeriodMonths" min="6"
+          max="240" placeholder="{{ 'PROPERTYADD.ENTER_HOLDING_PERIOD_MONTHS' | translate }}"
+          [class.is-invalid]="isFieldInvalid('holdingPeriodMonths')" [class.is-valid]="isFieldValid('holdingPeriodMonths')" />
+      
+        <div class="invalid-feedback" *ngIf="isFieldInvalid('holdingPeriodMonths')">
+          <ng-container *ngIf="infoForm.get('holdingPeriodMonths')?.errors?.['required']">
+            {{ 'PROPERTYADD.ERROR.HOLDING_PERIOD_REQUIRED' | translate }}
+          </ng-container>
+          <ng-container *ngIf="infoForm.get('holdingPeriodMonths')?.errors?.['min']">
+            {{ 'PROPERTYADD.ERROR.HOLDING_PERIOD_TOO_SHORT' | translate }}
+          </ng-container>
+          <ng-container *ngIf="infoForm.get('holdingPeriodMonths')?.errors?.['max']">
+            {{ 'PROPERTYADD.ERROR.HOLDING_PERIOD_TOO_LONG' | translate }}
+          </ng-container>
+          <ng-container *ngIf="infoForm.get('holdingPeriodMonths')?.errors?.['pattern']">
+            {{ 'PROPERTYADD.ERROR.HOLDING_PERIOD_INVALID' | translate }}
+          </ng-container>
+        </div>
+      </div>
+
+
+        <div class="col-lg-6 mb-3">
+          <label class="form-label">{{ 'PROPERTYADD.TOTAL_VALUE' | translate }} *</label>
+          <input type="number" class="form-control" formControlName="totalValue"
+            [class.is-invalid]="isFieldInvalid('totalValue')" [class.is-valid]="isFieldValid('totalValue')" min="0"
+            step="0.01" [placeholder]="'PROPERTYADD.PLACEHOLDER.TOTAL_VALUE' | translate" />
+          <div class="invalid-feedback" *ngIf="isFieldInvalid('totalValue')">
+            <div *ngIf="infoForm.get('totalValue')?.errors?.['required']">
+              {{ 'PROPERTYADD.ERROR.TOTAL_VALUE_REQUIRED' | translate }}
+            </div>
+            <div *ngIf="infoForm.get('totalValue')?.errors?.['min']">
+              {{ 'PROPERTYADD.ERROR.TOTAL_VALUE_MIN' | translate:{value: 0} }}
+            </div>
+            <div *ngIf="infoForm.get('totalValue')?.errors?.['pattern']">
+              {{ 'PROPERTYADD.ERROR.TOTAL_VALUE_PATTERN' | translate }}
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-6 mb-3">
+          <label class="form-label">{{ 'PROPERTYADD.TOTAL_SHARES' | translate }} *</label>
+          <input type="number" class="form-control" formControlName="totalShares"
+            [class.is-invalid]="isFieldInvalid('totalShares')" [class.is-valid]="isFieldValid('totalShares')" min="1"
+            step="1" [placeholder]="'PROPERTYADD.PLACEHOLDER.TOTAL_SHARES' | translate" />
+          <div class="invalid-feedback" *ngIf="isFieldInvalid('totalShares')">
+            <div *ngIf="infoForm.get('totalShares')?.errors?.['required']">
+              {{ 'PROPERTYADD.ERROR.TOTAL_SHARES_REQUIRED' | translate }}
+            </div>
+            <div *ngIf="infoForm.get('totalShares')?.errors?.['min']">
+              {{ 'PROPERTYADD.ERROR.TOTAL_SHARES_MIN' | translate:{value: 1} }}
+            </div>
+            <div *ngIf="infoForm.get('totalShares')?.errors?.['pattern']">
+              {{ 'PROPERTYADD.ERROR.TOTAL_SHARES_PATTERN' | translate }}
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-6 mb-3">
+          <label class="form-label">{{ 'PROPERTYADD.EXPECTED_NET_YIELD' | translate }} *</label>
+          <input type="number" class="form-control" formControlName="expectedNetYield"
+            [class.is-invalid]="isFieldInvalid('expectedNetYield')" [class.is-valid]="isFieldValid('expectedNetYield')"
+            min="0" max="100" step="0.01" [placeholder]="'PROPERTYADD.PLACEHOLDER.EXPECTED_NET_YIELD' | translate" />
+          <div class="invalid-feedback" *ngIf="isFieldInvalid('expectedNetYield')">
+            <div *ngIf="infoForm.get('expectedNetYield')?.errors?.['required']">
+              {{ 'PROPERTYADD.ERROR.EXPECTED_NET_YIELD_REQUIRED' | translate }}
+            </div>
+            <div *ngIf="infoForm.get('expectedNetYield')?.errors?.['min']">
+              {{ 'PROPERTYADD.ERROR.PERCENTAGE_MIN' | translate:{value: 0} }}
+            </div>
+            <div *ngIf="infoForm.get('expectedNetYield')?.errors?.['max']">
+              {{ 'PROPERTYADD.ERROR.PERCENTAGE_MAX' | translate:{value: 100} }}
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-6 mb-3">
+          <label for="square" class="form-label">
+            {{ 'PROPERTYADD.SIZE' | translate }} <span class="text-danger">*</span>
+          </label>
+        
+          <input id="square" type="number" class="form-control" formControlName="square" min="0" step="0.01"
+            [placeholder]="'PROPERTYADD.PLACEHOLDER.SIZE' | translate" [class.is-invalid]="isFieldInvalid('square')"
+            [class.is-valid]="isFieldValid('square')" />
+        
+          <div class="invalid-feedback" *ngIf="isFieldInvalid('square')">
+            <ng-container *ngIf="infoForm.get('square')?.errors?.['required']">
+              {{ 'PROPERTYADD.ERROR.SIZE_REQUIRED' | translate }}
+            </ng-container>
+            <ng-container *ngIf="infoForm.get('square')?.errors?.['min']">
+              {{ 'PROPERTYADD.ERROR.VALUE_MIN' | translate:{value: 0} }}
+            </ng-container>
+            <ng-container *ngIf="infoForm.get('square')?.errors?.['pattern']">
+              {{ 'PROPERTYADD.ERROR.INVALID_NUMBER' | translate }}
+            </ng-container>
+          </div>
+        </div>
+
+        <div class="col-lg-6 mb-3">
+          <label for="numberOfRooms" class="form-label">
+            {{ 'PROPERTYADD.BEDROOMS' | translate }} <span class="text-danger">*</span>
+          </label>
+        
+          <input id="numberOfRooms" type="number" class="form-control" formControlName="numberOfRooms" min="0" step="1"
+            [placeholder]="'PROPERTYADD.PLACEHOLDER.BEDROOMS' | translate" [class.is-invalid]="isFieldInvalid('numberOfRooms')"
+            [class.is-valid]="isFieldValid('numberOfRooms')" />
+        
+          <div class="invalid-feedback" *ngIf="isFieldInvalid('numberOfRooms')">
+            <ng-container *ngIf="infoForm.get('numberOfRooms')?.errors?.['required']">
+              {{ 'PROPERTYADD.ERROR.BEDROOMS_REQUIRED' | translate }}
+            </ng-container>
+            <ng-container *ngIf="infoForm.get('numberOfRooms')?.errors?.['min']">
+              {{ 'PROPERTYADD.ERROR.VALUE_MIN' | translate:{value: 0} }}
+            </ng-container>
+            <ng-container *ngIf="infoForm.get('numberOfRooms')?.errors?.['pattern']">
+              {{ 'PROPERTYADD.ERROR.INVALID_INTEGER' | translate }}
+            </ng-container>
+          </div>
+        </div>
+        
+        <div class="col-lg-6 mb-3">
+          <label for="numberOfBathrooms" class="form-label">
+            {{ 'PROPERTYADD.BATHROOMS' | translate }} <span class="text-danger">*</span>
+          </label>
+        
+          <input id="numberOfBathrooms" type="number" class="form-control" formControlName="numberOfBathrooms" min="0" step="1"
+            [placeholder]="'PROPERTYADD.PLACEHOLDER.BATHROOMS' | translate"
+            [class.is-invalid]="isFieldInvalid('numberOfBathrooms')" [class.is-valid]="isFieldValid('numberOfBathrooms')" />
+        
+          <div class="invalid-feedback" *ngIf="isFieldInvalid('numberOfBathrooms')">
+            <ng-container *ngIf="infoForm.get('numberOfBathrooms')?.errors?.['required']">
+              {{ 'PROPERTYADD.ERROR.BATHROOMS_REQUIRED' | translate }}
+            </ng-container>
+            <ng-container *ngIf="infoForm.get('numberOfBathrooms')?.errors?.['min']">
+              {{ 'PROPERTYADD.ERROR.VALUE_MIN' | translate:{value: 0} }}
+            </ng-container>
+            <ng-container *ngIf="infoForm.get('numberOfBathrooms')?.errors?.['pattern']">
+              {{ 'PROPERTYADD.ERROR.INVALID_INTEGER' | translate }}
+            </ng-container>
+          </div>
+        </div>
+
+        <div class="col-lg-6 mb-3">
+          <label class="form-label">{{ 'PROPERTYADD.EXPECTED_ANNUAL_RETURN' | translate }} *</label>
+          <input type="number" class="form-control" formControlName="expectedAnnualReturn"
+            [class.is-invalid]="isFieldInvalid('expectedAnnualReturn')"
+            [class.is-valid]="isFieldValid('expectedAnnualReturn')" min="0" max="100" step="0.01"
+            [placeholder]="'PROPERTYADD.PLACEHOLDER.EXPECTED_ANNUAL_RETURN' | translate" />
+          <div class="invalid-feedback" *ngIf="isFieldInvalid('expectedAnnualReturn')">
+            <div *ngIf="infoForm.get('expectedAnnualReturn')?.errors?.['required']">
+              {{ 'PROPERTYADD.ERROR.EXPECTED_ANNUAL_RETURN_REQUIRED' | translate }}
+            </div>
+            <div *ngIf="infoForm.get('expectedAnnualReturn')?.errors?.['min']">
+              {{ 'PROPERTYADD.ERROR.PERCENTAGE_MIN' | translate:{value: 0} }}
+            </div>
+            <div *ngIf="infoForm.get('expectedAnnualReturn')?.errors?.['max']">
+              {{ 'PROPERTYADD.ERROR.PERCENTAGE_MAX' | translate:{value: 100} }}
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-6 mb-3">
+          <label class="form-label">
+            {{ 'PROPERTYADD.PREVIOUS_VALUE' | translate }} <span class="text-danger">*</span>
+          </label>
+          <input type="number" class="form-control" formControlName="previousValue"
+            [class.is-invalid]="isFieldInvalid('previousValue')" [class.is-valid]="isFieldValid('previousValue')"
+            min="0" step="0.01" [placeholder]="'PROPERTYADD.PLACEHOLDER.PREVIOUS_VALUE' | translate" />
+          <div class="invalid-feedback" *ngIf="isFieldInvalid('previousValue')">
+            <div *ngIf="infoForm.get('previousValue')?.errors?.['required']">
+              {{ 'PROPERTYADD.ERROR.PREVIOUS_VALUE_REQUIRED' | translate }}
+            </div>
+            <div *ngIf="infoForm.get('previousValue')?.errors?.['min']">
+              {{ 'PROPERTYADD.ERROR.VALUE_MIN' | translate:{value: 0} }}
+            </div>
+            <div *ngIf="infoForm.get('previousValue')?.errors?.['pattern']">
+              {{ 'PROPERTYADD.ERROR.INVALID_NUMBER' | translate }}
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-6 mb-3">
+          <label class="form-label">
+            {{ 'PROPERTYADD.NEW_VALUE' | translate }} <span class="text-danger">*</span>
+          </label>
+          <input type="number" class="form-control" formControlName="newValue"
+            [class.is-invalid]="isFieldInvalid('newValue')" [class.is-valid]="isFieldValid('newValue')" min="0"
+            step="0.01" [placeholder]="'PROPERTYADD.PLACEHOLDER.NEW_VALUE' | translate" />
+          <div class="invalid-feedback" *ngIf="isFieldInvalid('newValue')">
+            <div *ngIf="infoForm.get('newValue')?.errors?.['required']">
+              {{ 'PROPERTYADD.ERROR.NEW_VALUE_REQUIRED' | translate }}
+            </div>
+            <div *ngIf="infoForm.get('newValue')?.errors?.['min']">
+              {{ 'PROPERTYADD.ERROR.VALUE_MIN' | translate:{value: 0} }}
+            </div>
+            <div *ngIf="infoForm.get('newValue')?.errors?.['newValueMustBeGreater']">
+              {{ 'PROPERTYADD.ERROR.NEW_VALUE_MUST_BE_GREATER' | translate }}
+            </div>
+            <div *ngIf="infoForm.get('newValue')?.errors?.['pattern']">
+              {{ 'PROPERTYADD.ERROR.INVALID_NUMBER' | translate }}
+            </div>
+          </div>
+        </div>
+
+      <div class="col-lg-12 mb-3">
+        <label class="form-label">
+          {{ 'PROPERTYADD.DESCRIPTION' | translate }}
+          <span class="text-danger" *ngIf="hasRequiredValidator('description')">*</span>
+        </label>
+      
+        <textarea class="form-control" formControlName="description" rows="4"
+          [class.is-invalid]="isFieldInvalid('description')" [class.is-valid]="isFieldValid('description')"
+          [placeholder]="'PROPERTYADD.PLACEHOLDER.DESCRIPTION' | translate"></textarea>
+      
+        <div class="invalid-feedback" *ngIf="isFieldInvalid('description')">
+          <div *ngIf="infoForm.get('description')?.errors?.['required']">
+            {{ 'PROPERTYADD.ERROR.DESCRIPTION_REQUIRED' | translate }}
+          </div>
+          <div *ngIf="infoForm.get('description')?.errors?.['maxlength']">
+            {{ 'PROPERTYADD.ERROR.DESCRIPTION_MAXLENGTH' | translate:{value: 1000} }}
+          </div>
+        </div>
+      
+        <small class="form-text text-muted">
+          {{ descriptionLength }}/1000 {{ 'PROPERTYADD.CHARACTERS' | translate }}
+        </small>
+      </div>
+
+
+        <div class="col-lg-12 mb-3">
+          <label class="form-label">{{ 'PROPERTYADD.FEATURES' | translate }}</label>
+          <div formArrayName="features">
+            <div *ngFor="let f of features.controls; let i = index" class="mb-2">
+              <div class="input-group">
+                <input type="text" class="form-control" [formControlName]="i" [class.is-invalid]="isFeatureInvalid(i)"
+                  [placeholder]="'PROPERTYADD.PLACEHOLDER.FEATURE' | translate" />
+                <button type="button" class="btn btn-outline-danger" (click)="removeFeature(i)">
+                  {{ 'PROPERTYADD.REMOVE' | translate }}
+                </button>
+              </div>
+              <div class="invalid-feedback" *ngIf="isFeatureInvalid(i)">
+                <div *ngIf="f.errors?.['maxlength']">
+                  {{ 'PROPERTYADD.ERROR.FEATURE_MAXLENGTH' | translate:{value: 50} }}
+                </div>
+              </div>
+            </div>
+            <button type="button" class="btn btn-sm btn-outline-primary mt-2" (click)="addFeature()">
+              + {{ 'PROPERTYADD.ADD_FEATURE' | translate }}
+            </button>
+          </div>
+        </div>
+
+        <div class="col-lg-12 mb-3" formGroupName="metaTags">
+          <label class="form-label">{{ 'PROPERTYADD.META_TITLE' | translate }}</label>
+          <input type="text" class="form-control" formControlName="title"
+            [class.is-invalid]="isMetaFieldInvalid('title')"
+            [placeholder]="'PROPERTYADD.PLACEHOLDER.META_TITLE' | translate" />
+          <div class="invalid-feedback" *ngIf="isMetaFieldInvalid('title')">
+            <div *ngIf="metaTagsGroup.get('title')?.errors?.['maxlength']">
+              {{ 'PROPERTYADD.ERROR.META_TITLE_MAXLENGTH' | translate:{value: 60} }}
+            </div>
+          </div>
+
+          <label class="form-label mt-2">{{ 'PROPERTYADD.META_DESCRIPTION' | translate }}</label>
+          <textarea class="form-control" formControlName="description" rows="3"
+            [class.is-invalid]="isMetaFieldInvalid('description')"
+            [placeholder]="'PROPERTYADD.PLACEHOLDER.META_DESCRIPTION' | translate"></textarea>
+          <div class="invalid-feedback" *ngIf="isMetaFieldInvalid('description')">
+            <div *ngIf="metaTagsGroup.get('description')?.errors?.['maxlength']">
+              {{ 'PROPERTYADD.ERROR.META_DESCRIPTION_MAXLENGTH' | translate:{value: 160} }}
+            </div>
+          </div>
+
+          <label class="form-label mt-2">{{ 'PROPERTYADD.KEYWORDS' | translate }}</label>
+          <div formArrayName="keywords">
+            <div *ngFor="let k of keywords.controls; let i = index" class="mb-2">
+              <div class="input-group">
+                <input type="text" class="form-control" [formControlName]="i" [class.is-invalid]="isKeywordInvalid(i)"
+                  [placeholder]="'PROPERTYADD.PLACEHOLDER.KEYWORD' | translate" />
+                <button type="button" class="btn btn-outline-danger" (click)="removeKeyword(i)">
+                  {{ 'PROPERTYADD.REMOVE' | translate }}
+                </button>
+              </div>
+              <div class="invalid-feedback" *ngIf="isKeywordInvalid(i)">
+                <div *ngIf="k.errors?.['maxlength']">
+                  {{ 'PROPERTYADD.ERROR.KEYWORD_MAXLENGTH' | translate:{value: 30} }}
+                </div>
+              </div>
+            </div>
+            <button type="button" class="btn btn-sm btn-outline-primary mt-2" (click)="addKeyword()">
+              + {{ 'PROPERTYADD.ADD_KEYWORD' | translate }}
+            </button>
+          </div>
+        </div>
+
+        <div class="col-lg-12 mb-3">
+          <label class="form-label">{{ 'PROPERTYADD.IMAGES' | translate }}</label>
+          <input type="file" multiple class="form-control" [class.is-invalid]="isImagesInvalid()" accept="image/*"
+            (change)="onImageSelected($event)" />
+          <div class="invalid-feedback" *ngIf="isImagesInvalid()">
+            {{ 'PROPERTYADD.ERROR.IMAGES_REQUIRED' | translate }}
+          </div>
+
+          <div class="mt-3">
+            <div *ngFor="let img of images.controls; let i = index"
+              class="d-flex align-items-center mb-2 p-2 border rounded">
+              <span class="flex-grow-1">{{ getImageName(img.value) }}</span>
+              <button type="button" class="btn btn-sm btn-danger ms-2" (click)="removeImage(i)">
+                {{ 'PROPERTYADD.REMOVE' | translate }}
+              </button>
+            </div>
+          </div>
+
+          <small class="form-text text-muted">
+            {{ 'PROPERTYADD.HELP.IMAGES' | translate }}
+          </small>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary mt-3" [disabled]="isSubmitting || infoForm.invalid">
+        <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2"></span>
+        {{ isSubmitting ? ('PROPERTYADD.SUBMITTING' | translate) : ('PROPERTYADD.ADD_PROPERTY' | translate) }}
+      </button>
+
+      <button type="button" class="btn btn-secondary mt-3 ms-2" (click)="resetForm()">
+        {{ 'PROPERTYADD.RESET' | translate }}
+      </button>
+    </form>
+  </div>
+</div>

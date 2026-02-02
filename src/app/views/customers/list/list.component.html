@@ -1,0 +1,297 @@
+<app-page-title [title]="'CUSTOMERS.TITLE' | translate" [subTitle]="'CUSTOMERS.SUBTITLE' | translate" />
+
+<div class="row">
+  <div class="col-xl-4 col-md-6" *ngFor="let stat of stateList">
+    <div class="card border-0 shadow-sm">
+      <div class="card-body p-3">
+        <div class="d-flex align-items-center gap-3">
+          <div class="avatar-sm flex-shrink-0">
+            <div
+              class="avatar-title bg-{{ stat.variant }}-subtle text-{{ stat.variant }} rounded-3 d-flex align-items-center justify-content-center">
+              <iconify-icon [icon]="stat.icon" class="fs-22"></iconify-icon>
+            </div>
+          </div>
+          <div class="flex-grow-1">
+            <p class="text-muted mb-1 fs-13">{{ stat.title | translate }}</p>
+            <h5 class="mb-1">{{ stat.amount }}</h5>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="card">
+  <div class="card-header d-flex flex-row align-items-center searchbar border-bottom flex-wrap"
+    style=" gap:10px;">
+    <div style=" text-align:center;">
+      <h4 class="card-title mb-0" style="font-size:1.1rem;">{{ 'CUSTOMERS.ALL_CUSTOMERS_LIST' | translate }}</h4>
+    </div>
+    <div class="d-flex align-items-center"
+      style=" display:flex; justify-content:center;">
+      <div class="position-relative" >
+        <input type="text" [placeholder]="'CUSTOMERS.SEARCH_PLACEHOLDER' | translate" [(ngModel)]="searchText"
+          (input)="filterCustomers()"
+          class="form-control pe-5 rounded-pill border shadow-sm dark:bg-gray-800 dark:text-white dark:border-gray-700" />
+        <button type="button" (click)="filterCustomers()"
+          class="btn btn-primary position-absolute top-50 end-0 translate-middle-y me-1 rounded-circle d-flex align-items-center justify-content-center"
+          style="width:36px; height:36px;">
+          <i class="ri-search-line"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="table-responsive d-none d-md-block">
+    <table class="table align-middle text-nowrap table-hover table-centered mb-0">
+      <thead class="bg-light-subtle">
+        <tr>
+          <th class="ps-3">{{ 'CUSTOMERS.PHOTO_NAME' | translate }}</th>
+          <th>{{ 'CUSTOMERS.EMAIL' | translate }}</th>
+          <th>{{ 'CUSTOMERS.PHONE' | translate }}</th>
+          <th>{{ 'CUSTOMERS.STATUS' | translate }}</th>
+          <th>{{ 'CUSTOMERS.COUNTRY' | translate }}</th>
+          <th>{{ 'CUSTOMERS.ACTION' | translate }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let customer of filteredCustomers | slice:(page - 1) * pageSize : page * pageSize">
+          <td class="ps-3 fw-medium" [routerLink]="['/customers/details', (customer._id || customer.id)]">{{ customer.name }}</td>
+          <td>{{ customer.email }}</td>
+          <td>{{ customer.phone }}</td>
+          <td>
+            <span class="badge py-1 px-2 fs-13"
+              [ngClass]="{
+                'bg-warning-subtle text-warning': customer.status.toLowerCase() === 'pending',
+                'bg-success-subtle text-success': customer.status.toLowerCase() === 'confirmed',
+                'bg-danger-subtle text-danger': customer.status.toLowerCase() === 'rejected',
+                'bg-secondary-subtle text-secondary': !customer.status
+              }">
+              {{ ('CUSTOMERS.STATUS_VALUES.' + (customer.status || 'N/A').toUpperCase()) | translate }}
+            </span>
+          </td>
+          <td>{{ customer.country }}</td>
+          <td>
+            <div class="d-flex gap-2">
+              <a href="javascript:void(0);" class="btn btn-light btn-sm"
+                (click)="openCustomerModal(viewCustomerModal, customer)">
+                <iconify-icon icon="solar:eye-broken" class="align-middle fs-18"></iconify-icon>
+              </a>
+              <a href="javascript:void(0);" class="btn btn-primary btn-sm"
+                (click)="openCustomerModal(editCustomerModal, customer)">
+                <iconify-icon icon="solar:pen-2-bold-duotone" class="align-middle fs-18"></iconify-icon>
+              </a>
+              <a href="javascript:void(0);" class="btn btn-danger btn-sm" (click)="deleteCustomer(customer.id)">
+                <iconify-icon icon="solar:trash-bin-minimalistic-2-bold-duotone" class="align-middle fs-18"></iconify-icon>
+              </a>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+
+  <div class="d-block d-md-none">
+    <div class="row g-3 p-3">
+      <div class="col-12" *ngFor="let customer of filteredCustomers | slice:(page - 1) * pageSize : page * pageSize">
+        <div class="card shadow-sm border-0 rounded-4">
+          <div class="card-body p-3">
+            <div class="d-flex align-items-center mb-3">
+
+
+<img [src]="customer.image || customer.avatar || 'assets/img/default-user.jpg'"
+     alt="Customer Image"
+     class="rounded-circle me-3 shadow-sm"
+     style="width:60px; height:60px; object-fit:cover;">
+
+
+              <div>
+
+                <span class="badge py-1 px-2 fs-12"
+                  [ngClass]="{
+                    'bg-success-subtle text-success': customer.status === 'confirmed',
+                    'bg-warning-subtle text-warning': customer.status === 'pending',
+                    'bg-danger-subtle text-danger': customer.status === 'rejected'
+                  }">
+                  {{ customer.status | titlecase }}
+                </span>
+              </div>
+            </div>
+
+            <div class="mb-2"><strong>Email:</strong> {{ customer.email }}</div>
+            <div class="mb-2"><strong>Phone:</strong> {{ customer.phone }}</div>
+            <div class="mb-3"><strong>Country:</strong> {{ customer.country }}</div>
+
+            <div class="d-flex justify-content-between">
+              <button class="btn btn-light btn-sm w-100 me-1"
+                (click)="openCustomerModal(viewCustomerModal, customer)">
+                <iconify-icon icon="solar:eye-broken" class="align-middle fs-16 me-1"></iconify-icon>
+
+              </button>
+              <button class="btn btn-primary btn-sm w-100 me-1"
+                (click)="openCustomerModal(editCustomerModal, customer)">
+                <iconify-icon icon="solar:pen-2-bold-duotone" class="align-middle fs-16 me-1"></iconify-icon>
+
+              </button>
+              <button class="btn btn-danger btn-sm w-100" (click)="deleteCustomer(customer.id)">
+                <iconify-icon icon="solar:trash-bin-minimalistic-2-bold-duotone"
+                  class="align-middle fs-16 me-1"></iconify-icon>
+
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="card-footer">
+    <nav aria-label="Page navigation example">
+      <ngb-pagination [collectionSize]="filteredCustomers.length" [(page)]="page" [pageSize]="pageSize"
+        (pageChange)="page = $event" class="pagination justify-content-end mb-0">
+        <ng-template ngbPaginationPrevious>{{ 'COMMON.PREVIOUS' | translate }}</ng-template>
+        <ng-template ngbPaginationNext>{{ 'COMMON.NEXT' | translate }}</ng-template>
+      </ngb-pagination>
+    </nav>
+  </div>
+</div>
+
+<ng-template #viewCustomerModal let-modal>
+  <div class="modal-header border-bottom-0 pb-0">
+    <h4 class="modal-title fw-bold text-dark">
+      <iconify-icon icon="solar:user-bold-duotone" class="align-middle me-2 text-primary"></iconify-icon>
+      {{ 'CUSTOMERS.CUSTOMER_DETAILS' | translate }}
+    </h4>
+  </div>
+
+  <div class="modal-body p-3 p-lg-4" *ngIf="selectedCustomer">
+    <div class="text-center mb-4">
+      <!-- صورة العميل هنا -->
+    </div>
+
+    <div class="row g-3">
+      <div class="col-12 col-lg-6">
+        <div class="card border-0 bg-light-subtle h-100">
+          <div class="card-body p-3">
+            <h6 class="card-title text-primary mb-3">
+              <iconify-icon icon="solar:info-circle-bold-duotone" class="me-2"></iconify-icon>
+              {{ 'CUSTOMER_DETAILS.GENERAL_INFO' | translate }}
+            </h6>
+
+            <div class="d-flex align-items-center mb-2">
+              <iconify-icon icon="solar:mailbox-bold-duotone" class="text-muted me-2"></iconify-icon>
+              <span class="text-muted small">{{ 'CUSTOMERS.EMAIL' | translate }}:</span>
+              <span class="ms-2 fw-medium">{{ selectedCustomer.email || 'COMMON.NA' | translate }}</span>
+            </div>
+
+            <div class="d-flex align-items-center mb-2">
+              <iconify-icon icon="solar:phone-calling-rounded-bold-duotone" class="text-muted me-2"></iconify-icon>
+              <span class="text-muted small">{{ 'CUSTOMERS.PHONE' | translate }}:</span>
+              <span class="ms-2 fw-medium">{{ selectedCustomer.phone || 'COMMON.NA' | translate }}</span>
+            </div>
+
+            <div class="d-flex align-items-center">
+              <iconify-icon icon="solar:map-point-bold-duotone" class="text-muted me-2"></iconify-icon>
+              <span class="text-muted small">{{ 'CUSTOMERS.COUNTRY' | translate }}:</span>
+              <span class="ms-2 fw-medium">{{ selectedCustomer.country || 'COMMON.NA' | translate }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-lg-6">
+        <div class="card border-0 bg-success-subtle h-100">
+          <div class="card-body p-3">
+            <h6 class="card-title text-success mb-3">
+              <iconify-icon icon="solar:check-circle-bold-duotone" class="me-2"></iconify-icon>
+              {{ 'CUSTOMERS.STATUS' | translate }}
+            </h6>
+            <div class="d-flex align-items-center">
+              <span class="text-muted small">{{ 'CUSTOMERS.STATUS' | translate }}:</span>
+              <span class="ms-2">
+                <span class="badge py-1 px-2 fs-12"
+                  [ngClass]="{
+                    'bg-success-subtle text-success': selectedCustomer.status === 'confirmed',
+                    'bg-warning-subtle text-warning': selectedCustomer.status === 'pending',
+                    'bg-danger-subtle text-danger': selectedCustomer.status === 'rejected'
+                  }">
+                  {{ ('CUSTOMERS.STATUS_VALUES.' + (selectedCustomer.status || 'N/A').toUpperCase()) | translate }}
+                </span>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+
+<ng-template #editCustomerModal let-modal>
+  <div class="modal-header border-bottom-0 pb-0">
+    <h4 class="modal-title fw-bold text-dark">
+      <iconify-icon icon="solar:pen-2-bold-duotone" class="align-middle me-2 text-primary"></iconify-icon>
+      {{ 'CUSTOMERS.EDIT_CUSTOMER' | translate }}
+    </h4>
+    <!-- <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button> -->
+  </div>
+
+  <form #editForm="ngForm" (ngSubmit)="saveCustomerChanges()">
+    <div class="modal-body p-3 p-lg-4" *ngIf="editCustomer">
+      <div class="card border-0 bg-light-subtle mb-3">
+        <div class="card-body p-3">
+          <h6 class="card-title text-primary mb-3">
+            <iconify-icon icon="solar:pen-2-bold-duotone" class="me-2"></iconify-icon>
+            Edit Information
+          </h6>
+
+          <div class="row g-3">
+            <div class="col-12 col-lg-6">
+              <label class="form-label fw-medium">{{ 'CUSTOMERS.NAME' | translate }}</label>
+              <input type="text" class="form-control form-control-lg border-2" name="name"
+                [(ngModel)]="editCustomer.name" required />
+            </div>
+
+            <div class="col-12 col-lg-6">
+              <label class="form-label fw-medium">{{ 'CUSTOMERS.EMAIL' | translate }}</label>
+              <input type="email" class="form-control form-control-lg border-2" name="email"
+                [(ngModel)]="editCustomer.email" required />
+            </div>
+
+            <div class="col-12 col-lg-6">
+              <label class="form-label fw-medium">{{ 'CUSTOMERS.PHONE' | translate }}</label>
+              <input type="text" class="form-control form-control-lg border-2" name="phone"
+                [(ngModel)]="editCustomer.phone" required />
+            </div>
+
+            <div class="col-12 col-lg-6">
+              <label class="form-label fw-medium">{{ 'CUSTOMERS.COUNTRY' | translate }}</label>
+              <input type="text" class="form-control form-control-lg border-2" name="country"
+                [(ngModel)]="editCustomer.country" />
+            </div>
+
+            <div class="col-12">
+              <label class="form-label fw-medium">{{ 'CUSTOMERS.STATUS' | translate }}</label>
+              <select class="form-select form-select-lg border-2 fw-semibold text-capitalize" name="status"
+                [(ngModel)]="editCustomer.status" required>
+                <option value="pending">{{ 'CUSTOMERS.STATUS_VALUES.PENDING' | translate }}</option>
+                <option value="confirmed">{{ 'CUSTOMERS.STATUS_VALUES.CONFIRMED' | translate }}</option>
+                <option value="rejected">{{ 'CUSTOMERS.STATUS_VALUES.REJECTED' | translate }}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer bg-light-subtle border-top-0 pt-3">
+        <button type="submit" class="btn btn-success px-4 shadow-sm w-100 w-lg-auto" [disabled]="editForm.invalid">
+          <iconify-icon icon="solar:check-circle-bold-duotone" class="align-middle me-1"></iconify-icon>
+          {{ 'COMMON.SAVE_CHANGES' | translate }}
+        </button>
+      </div>
+    </div>
+  </form>
+</ng-template>

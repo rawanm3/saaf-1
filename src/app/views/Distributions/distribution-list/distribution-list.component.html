@@ -1,0 +1,99 @@
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="text fw-bold">{{ 'DISTRIBUTIONS.PENDING_DISTRIBUTIONS' | translate }}</h3>
+    
+  </div>
+
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">{{ 'DISTRIBUTIONS.LOADING' | translate }}</span>
+    </div>
+    <p class="mt-3 text-muted">{{ 'DISTRIBUTIONS.LOADING' | translate }}...</p>
+  </div>
+
+  <div *ngIf="!loading && pendingCycles.length === 0" class="card shadow-sm p-4 text-center border-0">
+    <div class="card-body">
+      <i class="ri-emotion-normal-line display-4 text-muted mb-3"></i>
+      <h5 class="card-title text-muted">{{ 'DISTRIBUTIONS.NO_PENDING' | translate }}</h5>
+      <!-- <p class="card-text text-secondary">{{ 'DISTRIBUTIONS.NO_PENDING_DETAIL' | translate }}</p> -->
+    </div>
+  </div>
+
+  <div *ngFor="let cycle of pendingCycles" class="card mb-4 shadow-lg border-0 rounded-3">
+    <div class="card-header bg-primary text-white p-3 rounded-top-3">
+      <h4 class="mb-0 fw-semibold">{{ cycle.property?.name || ('Cycle ' + (cycle._id | slice:-4)) }}</h4>
+      <p class="mb-0 small opacity-75">
+        {{ 'DISTRIBUTIONS.PERIOD' | translate:{
+            start: (cycle.periodStart | date:'mediumDate'),
+            end: (cycle.periodEnd | date:'mediumDate')
+        } }}
+      </p>
+    </div>
+    <div class="card-body p-4">
+      <ng-container *ngFor="let dist of getPendingDistributions(cycle)">
+        <div *ngIf="dist.distributionStatus === 'pending'" class="pending-distribution-item p-3 mb-3 rounded-2 animate__animated animate__fadeInUp">
+          <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+            <div class="mb-2 mb-md-0">
+              <strong class="d-block text-dark mb-1">{{ dist.investor?.name || ('DISTRIBUTIONS.INVESTOR_UNKNOWN' | translate) }}</strong>
+              <span class="text-muted small">
+                {{ 'DISTRIBUTIONS.AMOUNT' | translate }}:
+                <span class="text-success fw-bold">{{ dist.amountDistributed | number:'1.2-2' }} SAR</span>
+              </span>
+            </div>
+            <div class="d-flex gap-2">
+              <button class="btn btn-success btn-sm d-flex align-items-center"
+                      (click)="updateDistribution(cycle._id, dist.investor._id, 'approve')"
+                      title="{{ 'DISTRIBUTIONS.APPROVE' | translate }}">
+                <i class="ri-check-line me-1"></i>
+                <span class="d-none d-md-inline">{{ 'DISTRIBUTIONS.APPROVE' | translate }}</span>
+              </button>
+              <button class="btn btn-danger btn-sm d-flex align-items-center"
+                      (click)="updateDistribution(cycle._id, dist.investor._id, 'reject')"
+                      title="{{ 'DISTRIBUTIONS.REJECT' | translate }}">
+                <i class="ri-close-line me-1"></i>
+                <span class="d-none d-md-inline">{{ 'DISTRIBUTIONS.REJECT' | translate }}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+</div>
+
+<style>
+  .pending-distribution-item {
+    background-color: #f8f9fa; 
+    border: 1px solid #e9ecef; 
+    transition: all 0.2s ease-in-out;
+  }
+
+  .pending-distribution-item:hover {
+    background-color: #e2e6ea;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+  }
+
+  .card-header.bg-primary {
+    background-color:#3a5445 !important; 
+  }
+
+  .spinner-border {
+    width: 3rem;
+    height: 3rem;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .animate__fadeInUp {
+    animation-name: fadeIn;
+    animation-duration: 0.5s;
+    animation-fill-mode: both;
+  }
+
+  .gap-2 {
+    gap: 0.5rem;
+  }
+</style>

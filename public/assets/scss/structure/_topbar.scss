@@ -1,0 +1,221 @@
+// 
+// topbar.scss
+// 
+
+header {
+     position: sticky;
+     top: 0;
+     background: $main-nav-bg;
+     z-index: 1005;
+     padding-top: 10px;
+}
+
+
+.topbar {
+     transition: all 0.3s ease-in-out;
+     height: $topbar-height;
+     background-color: $topbar-bg;
+     margin-left: $main-nav-width;
+     margin-right: 10px;
+     border-bottom: $card-border-width solid $card-border-color;
+     border-top-left-radius: 15px;
+     border-top-right-radius: 15px;
+     box-shadow: $box-shadow-sm;
+
+     .navbar-header {
+          display: flex;
+          margin: 0 auto;
+          align-items: center;
+          justify-content: space-between;
+     }
+
+     .topbar-item {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          height: $topbar-height;
+
+          .topbar-button {
+               border: none;
+               border-radius: 50%;
+               background: transparent;
+               transition: all 0.3s ease-in-out;
+               color: $topbar-item-color;
+               padding: $btn-padding-y $btn-padding-y;
+               position: relative;
+
+               &.show,
+               &.active,
+               &:active,
+               &:hover {
+                    color: $primary;
+               }
+          }
+     }
+
+     .topbar-badge {
+          right: -6px;
+          top: 10px !important;
+     }
+
+     .app-search {
+          .form-control {
+               background: $topbar-search-bg;
+               color: $topbar-item-color;
+          }
+     }
+}
+
+
+// fullscreen exit icon
+[data-toggle="fullscreen"] {
+     .fullscreen {
+          display: block;
+     }
+
+     .quit-fullscreen {
+          display: none;
+     }
+}
+
+.fullscreen-enable {
+     .fullscreen {
+          display: none;
+     }
+
+     .quit-fullscreen {
+          display: block;
+     }
+}
+
+
+// Dark Mode Icon
+.topbar {
+     #light-dark-mode {
+          .light-mode {
+               display: block;
+          }
+
+          .dark-mode {
+               display: none;
+          }
+     }
+}
+
+[data-bs-theme="dark"] {
+     .topbar {
+          #light-dark-mode {
+               .light-mode {
+                    display: none;
+               }
+
+               .dark-mode {
+                    display: block;
+               }
+          }
+     }
+}
+
+
+html[data-menu-size="hidden"] {
+     .topbar {
+          padding: 0 $spacer;
+          margin-left: 10px;
+     }
+}
+
+
+// @include media-breakpoint-down(md) {
+@media (max-width: 375px) {
+     .topbar {
+          padding: 0 0.5 * $spacer !important;
+     }
+}
+
+@media (max-width: 600px) {
+     .topbar {
+          .dropdown {
+               position: static;
+
+               .dropdown-menu {
+                    width: 100%;
+               }
+          }
+     }
+
+     header {
+          padding-top: 0;
+     }
+
+     .topbar {
+          padding: 0 $spacer;
+          margin-left: 0;
+          border-radius: 0;
+     }
+}
+html[dir="rtl"] .topbar {
+  margin-right: 260px !important;
+  margin-left: 10px !important;
+}
+html[dir="rtl"][data-menu-size=condensed] .topbar {
+margin-right: 85px !important;
+}
+// html[dir="rtl"] .topbar .topbar-item .topbar-button {
+//   rotate: 180deg;
+// }
+/* RTL Toggle Switch */
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+
+  .toggle-switch {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+
+    input {
+      display: none;
+    }
+
+    .slider {
+      position: relative;
+      width: 50px;
+      height: 24px;
+      background-color: #ccc;
+      border-radius: 34px;
+      transition: 0.3s;
+      margin-right: 8px;
+
+      &::before {
+        content: "";
+        position: absolute;
+        height: 18px;
+        width: 18px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        border-radius: 50%;
+        transition: 0.3s;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      }
+    }
+
+    input:checked + .slider {
+      background-color: $primary; // لون البراند الأساسي
+    }
+
+    input:checked + .slider::before {
+      transform: translateX(26px);
+    }
+
+    .label-text {
+      font-size: 14px;
+      font-weight: 500;
+      color: $topbar-item-color;
+    }
+  }
+}

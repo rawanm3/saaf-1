@@ -1,0 +1,41 @@
+<div class="row">
+  <div class="col-md-6 col-xl-3" *ngFor="let item of statisticData">
+    <div class="card">
+      <div class="card-body">
+        <div class="row align-items-center justify-content-between">
+          <div class="col-6">
+            <div class="avatar-md bg-light bg-opacity-50 rounded">
+              <iconify-icon
+                [icon]="item.icon"
+                class="fs-32 text-primary avatar-title"
+              ></iconify-icon>
+            </div>
+            <p class="text-muted mb-2 mt-3">{{ item.title | translate }}</p>
+            <h3
+              class="text-dark fw-bold d-flex align-items-center gap-2 mb-0"
+            >
+              {{ item.amount | number }}
+            </h3>
+          </div>
+          <div class="col-6">
+            <div id="total_customers" class="apex-charts">
+              <apx-chart
+                [chart]="totalCustomersChart.chart!"
+                [plotOptions]="totalCustomersChart.plotOptions!"
+                [grid]="totalCustomersChart.grid!"
+                [colors]="totalCustomersChart.colors!"
+                [dataLabels]="totalCustomersChart.dataLabels!"
+                [series]="totalCustomersChart.series!"
+                [legend]="totalCustomersChart.legend!"
+                [xaxis]="totalCustomersChart.xaxis!"
+                [yaxis]="totalCustomersChart.yaxis!"
+                [tooltip]="totalCustomersChart.tooltip!"
+                [responsive]="totalCustomersChart.responsive!"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

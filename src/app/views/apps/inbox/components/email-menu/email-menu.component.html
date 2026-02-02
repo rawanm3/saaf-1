@@ -1,0 +1,199 @@
+<div class="card">
+  <div>
+    <div
+      class="bg-body-secondary card-body d-flex justify-content-between gap-1"
+    >
+      <button
+        type="button"
+        class="btn btn-danger w-100 d-flex align-items-center justify-content-center"
+        (click)="openModal()"
+      >
+        <span class="fw-semibold"
+          ><iconify-icon
+            icon="solar:pen-new-square-broken"
+            class="align-middle me-1 fs-16"
+          ></iconify-icon
+          >Compose</span
+        >
+      </button>
+      <button
+        type="button"
+        class="btn btn-icon btn-soft-danger d-xl-none"
+        (click)="activeOffcanvas.close()"
+        aria-label="Close"
+      >
+        <i class="ri-close-line fs-22"></i>
+      </button>
+    </div>
+  </div>
+
+  <ngx-simplebar style="height: calc(100vh - 280px)">
+    <div class="card-body pt-0">
+      <div class="email-menu-list d-flex flex-column gap-2">
+        <a href="javascript: void(0);" class="active">
+          <iconify-icon
+            icon="solar:inbox-broken"
+            class="me-2 fs-18 text-muted"
+          ></iconify-icon>
+          <span>Your Inbox</span>
+          <span class="fs-12 text-primary ms-auto">5</span>
+        </a>
+        <a href="javascript: void(0);">
+          <iconify-icon
+            icon="solar:bookmark-broken"
+            class="me-2 fs-18 text-muted"
+          ></iconify-icon>
+          <span>Important</span>
+        </a>
+        <a href="javascript: void(0);">
+          <iconify-icon
+            icon="solar:stopwatch-play-broken"
+            class="me-2 fs-18 text-muted"
+          ></iconify-icon>
+          <span>Snoozed</span>
+        </a>
+        <a href="javascript: void(0);">
+          <iconify-icon
+            icon="solar:pen-2-broken"
+            class="me-2 fs-18 text-muted"
+          ></iconify-icon>
+          <span>Draft</span>
+          <span class="fs-12 text-muted ms-auto">8</span>
+        </a>
+        <a href="javascript: void(0);">
+          <iconify-icon
+            icon="solar:file-send-broken"
+            class="me-2 fs-18 text-muted"
+          ></iconify-icon>
+          <span>Sent</span>
+        </a>
+        <a href="javascript: void(0);">
+          <iconify-icon
+            icon="solar:bag-3-broken"
+            class="me-2 fs-18 text-muted"
+          ></iconify-icon>
+          <span>Promotions</span>
+          <span class="fs-12 text-muted ms-auto">3</span>
+        </a>
+        <a href="javascript: void(0);">
+          <iconify-icon
+            icon="solar:bell-bing-broken"
+            class="me-2 fs-18 text-muted"
+          ></iconify-icon>
+          <span>Update</span>
+          <span class="fs-12 text-muted ms-auto">14</span>
+        </a>
+        <a href="javascript: void(0);">
+          <span><i class="ri-arrow-down-s-line"></i> More</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="card-body border-top border-light">
+      <a
+        role="button"
+        class="btn-link d-flex align-items-center text-dark fw-semibold mb-0"
+        data-bs-toggle="collapse"
+        (click)="labels.toggle()"
+        [attr.aria-expanded]="!labelsCollapsed"
+        >Labels <i class="ri-arrow-down-s-line ms-auto"></i
+      ></a>
+
+      <div
+        #labels="ngbCollapse"
+        [(ngbCollapse)]="labelsCollapsed"
+        id="labels"
+        class="collapse show"
+      >
+        <div class="email-menu-list d-flex flex-column gap-2 mt-2">
+          <a href="javascript: void(0);">
+            <iconify-icon
+              icon="solar:camera-square-bold"
+              class="me-2 fs-18 text-success"
+            ></iconify-icon>
+            <span>Collaboration</span>
+          </a>
+
+          <a href="javascript: void(0);">
+            <iconify-icon
+              icon="solar:camera-square-bold"
+              class="me-2 fs-18 text-warning"
+            ></iconify-icon>
+            <span>New Client</span>
+          </a>
+          <a href="javascript: void(0);">
+            <iconify-icon
+              icon="solar:camera-square-bold"
+              class="me-2 fs-18 text-info"
+            ></iconify-icon>
+            <span>Wedding</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-body border-top border-light">
+      <a
+        role="button"
+        class="btn-link d-flex align-items-center text-dark fw-semibold mb-0"
+        data-bs-toggle="collapse"
+        (click)="collapse.toggle()"
+        [attr.aria-expanded]="!isCollapsed"
+        >Contacts <i class="ri-arrow-down-s-line ms-auto"></i
+      ></a>
+
+      <div
+        #collapse="ngbCollapse"
+        [(ngbCollapse)]="isCollapsed"
+        id="contacts"
+        class="collapse show"
+      >
+        <div class="email-menu-list d-flex flex-column gap-1 mt-2">
+          <a href="javascript: void(0);">
+            <div class="d-flex align-items-center gap-2">
+              <img
+                src="assets/images/users/avatar-12.jpg"
+                alt=""
+                class="avatar-sm rounded-circle"
+              />
+              <p class="mb-0">Alberto Milano</p>
+            </div>
+          </a>
+
+          <a href="javascript: void(0);">
+            <div class="d-flex align-items-center gap-2">
+              <img
+                src="assets/images/users/avatar-11.jpg"
+                alt=""
+                class="avatar-sm rounded-circle"
+              />
+              <p class="mb-0">Alda Barese</p>
+            </div>
+          </a>
+
+          <a href="javascript: void(0);">
+            <div class="d-flex align-items-center gap-2">
+              <img
+                src="assets/images/users/avatar-10.jpg"
+                alt=""
+                class="avatar-sm rounded-circle"
+              />
+              <p class="mb-0">Giovanna Dellucci</p>
+            </div>
+          </a>
+
+          <a href="javascript: void(0);">
+            <div class="d-flex align-items-center gap-2">
+              <img
+                src="assets/images/users/avatar-8.jpg"
+                alt=""
+                class="avatar-sm rounded-circle"
+              />
+              <p class="mb-0">Fidenzio Lo Duca</p>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </ngx-simplebar>
+</div>

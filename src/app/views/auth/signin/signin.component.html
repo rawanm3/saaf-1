@@ -1,0 +1,55 @@
+<div class="row justify-content-center">
+  <div class="col-xl-5">
+    <div class="card auth-card">
+      <div class="card-body px-3 py-5">
+        <app-logo-box class="mx-auto mb-4 text-center auth-logo"></app-logo-box><br>
+
+        <h2 class="fw-bold text-uppercase text-center fs-18">
+          {{ 'AUTH.SIGNIN.TITLE' | translate }}
+        </h2>
+        <p class="text-muted text-center mt-1 mb-4">
+          {{ 'AUTH.SIGNIN.SUBTITLE' | translate }}
+        </p>
+
+        <div class="px-4">
+          <form [formGroup]="signinForm" (ngSubmit)="onLogin()" class="authentication-form">
+            <div class="mb-1">
+              <label class="form-label" for="example-email">
+                {{ 'AUTH.SIGNIN.EMAIL_LABEL' | translate }}
+              </label>
+              <input type="email" id="example-email" formControlName="email"
+                [ngClass]="{ 'is-invalid': submitted && form['email'].errors }"
+                class="form-control bg-light bg-opacity-50 border-light py-2"
+                placeholder="{{ 'AUTH.SIGNIN.EMAIL_PLACEHOLDER' | translate }}" />
+                <div class="d-flex justify-content-end " >
+                   <a class="text-muted text-center mt-1 mb-1" routerLink="/auth/reset-password">{{ 'AUTH.SIGNIN.FORGOT_PASSWORD' | translate }}</a>
+                </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label" for="example-password">
+                {{ 'AUTH.SIGNIN.PASSWORD_LABEL' | translate }}
+              </label>
+              <input type="password" id="example-password" formControlName="password"
+                [ngClass]="{ 'is-invalid': submitted && form['password'].errors }"
+                class="form-control bg-light bg-opacity-50 border-light py-2"
+                placeholder="{{ 'AUTH.SIGNIN.PASSWORD_PLACEHOLDER' | translate }}" />
+            </div>
+
+            <div class="mb-3 text-center d-grid">
+              <button class="btn btn-primary py-2 fw-medium" type="submit">
+                {{ 'AUTH.SIGNIN.BUTTON' | translate }}
+              </button>
+            </div>
+
+            <div class="mb-1 text-center d-grid">
+              <button class="btn btn-outline-primary py-2 fw-medium" type="button" (click)="goToEmployeeSignin()">
+                {{ 'AUTH.SIGNIN.EMPLOYEE_BUTTON' | translate }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

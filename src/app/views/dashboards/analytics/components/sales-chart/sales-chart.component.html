@@ -1,0 +1,71 @@
+<div class="card overflow-hidden">
+  <div class="card-header d-flex justify-content-between align-items-center pb-1">
+    <div>
+      <h4 class="card-title">{{ 'ANALYTICS.SALES_ANALYTIC' | translate }}</h4>
+    </div>
+    <div ngbDropdown>
+      <a ngbDropdownToggle role="button" class="btn btn-sm btn-outline-light rounded">
+        {{ selectedPeriodLabel | translate }}
+      </a>
+
+      <div ngbDropdownMenu class="dropdown-menu-end p-0" style="width: max-content; min-width: auto; text-align: left;">
+        <a href="javascript:void(0);" class="dropdown-item px-3 py-2" (click)="loadAnalytics('week')">
+          {{ 'ANALYTICS.WEEK' | translate }}
+        </a>
+        <a href="javascript:void(0);" class="dropdown-item px-3 py-2" (click)="loadAnalytics('month')">
+          {{ 'ANALYTICS.MONTHS' | translate }}
+        </a>
+      </div>
+    </div>
+
+  </div>
+  <div class="card-body">
+    <div class="text-end">
+      <p class="mb-0 fs-18 fw-medium text-dark">
+        <i class="ri-wallet-3-fill"></i> {{ 'ANALYTICS.EARNINGS' | translate }} :
+        <span class="text-primary fw-bold">{{ investmentsAnalytics?.balance | number }} {{ 'CURRENCY.' + currency |
+          translate }}</span>
+      </p>
+    </div>
+    <div class="row align-items-top text-center">
+      <div class="col-lg-12">
+        <div class="apex-charts mt-2" id="sales_analytic">
+          <div *ngIf="salesAnalyticChart.series?.length">
+  <apx-chart
+    [series]="salesAnalyticChart.series"
+    [chart]="salesAnalyticChart.chart"
+    [xaxis]="salesAnalyticChart.xaxis"
+    [colors]="salesAnalyticChart.colors"
+    [stroke]="salesAnalyticChart.stroke"
+    [tooltip]="salesAnalyticChart.tooltip"
+  ></apx-chart>
+</div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card-footer p-2 bg-light-subtle text-center">
+    <div class="row g-3">
+      <div class="col-md-4 border-end">
+        <p class="text-muted mb-1">{{ 'ANALYTICS.INCOME' | translate }}</p>
+        <p class="text-dark fs-18 fw-medium d-flex align-items-center justify-content-center gap-2 mb-0">
+          {{ investmentsAnalytics?.income | number }} {{ 'CURRENCY.' + currency | translate }}
+
+        </p>
+      </div>
+      <div class="col-md-4 border-end">
+        <p class="text-muted mb-1">{{ 'ANALYTICS.EXPENSES' | translate }}</p>
+        <p class="text-dark fs-18 fw-medium d-flex align-items-center justify-content-center gap-2 mb-0">
+          {{ investmentsAnalytics?.expense | number }} {{ 'CURRENCY.' + currency | translate }}
+        </p>
+      </div>
+      <div class="col-md-4">
+        <p class="text-muted mb-1">{{ 'ANALYTICS.BALANCE' | translate }}</p>
+        <p class="text-dark fs-18 fw-medium d-flex align-items-center justify-content-center gap-2 mb-0">
+          {{ investmentsAnalytics?.balance | number }} {{ 'CURRENCY.' + currency | translate }}
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

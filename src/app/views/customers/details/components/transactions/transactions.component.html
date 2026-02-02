@@ -1,0 +1,45 @@
+   <div class="card">
+      <div class="card-body">
+        <div class="mb-3" *ngIf="ibanImageUrl">
+          <h6 class="mb-2">{{ 'CUSTOMER_DETAILS.IBAN_DOCUMENT' | translate }}</h6>
+          <img [src]="ibanImageUrl" alt="IBAN Document" class="img-fluid rounded border" (error)="onImageError()" />
+      </div>
+
+        <!-- <div class="mb-2">
+          <strong>{{ 'CUSTOMER_DETAILS.WALLET_ID' | translate }}:</strong>
+          <span class="ms-1">{{ walletId || '—' }}</span>
+      </div> -->
+
+        <div class="mb-2" *ngIf="ibanNumber">
+          <strong>{{ 'CUSTOMER_DETAILS.IBAN' | translate }}:</strong>
+          <span class="ms-1">{{ ibanNumber }}</span>
+      </div>
+
+        <h5 class="mb-3">{{ 'CUSTOMER_DETAILS.TRANSACTIONS' | translate }}</h5>
+
+        <div *ngIf="isLoading">{{ 'CUSTOMER_DETAILS.LOADING_TRANSACTIONS' | translate }}...</div>
+        <div *ngIf="!isLoading && errorMessage" class="alert alert-danger py-2">{{ errorMessage }}</div>
+
+        <ng-container *ngIf="!isLoading && !errorMessage">
+          <div *ngIf="displayedTransactions.length; else noTransactions">
+            <div class="transaction-item p-2 border rounded mb-2" *ngFor="let txn of displayedTransactions; trackBy: trackByFn">
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="fw-semibold text-capitalize">{{ txn.type || 'unknown' }}</div>
+                <div [class.text-success]="isCredit(txn.type)" [class.text-danger]="!isCredit(txn.type)">
+                  {{ isCredit(txn.type) ? '+' : '-' }}{{ txn.amount | currency:(txn.currency || 'SAR') }}
+            </div>
+            </div>
+              <div class="text-muted small">{{ txn.createdAt | date:'medium' }}</div>
+              <div class="small" *ngIf="txn.status">{{ 'CUSTOMER_DETAILS.STATUS' | translate }}: {{ txn.status }}</div>
+            </div>
+
+            <div *ngIf="transactions.length > maxDisplay" class="mt-2 text-center">
+              <a class="btn btn-sm btn-link" (click)="toggleViewMore()">{{ showAll ? ('CUSTOMER_DETAILS.VIEW_LESS' | translate) : ('CUSTOMER_DETAILS.VIEW_MORE' | translate) }}</a>
+            </div>
+          </div>
+          <ng-template #noTransactions>
+            <div class="text-muted">{{ 'CUSTOMER_DETAILS.NO_TRANSACTIONS_FOUND' | translate }}</div>
+          </ng-template>
+        </ng-container>
+      </div>
+    </div>

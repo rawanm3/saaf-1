@@ -1,0 +1,173 @@
+<app-page-title [title]="'WALLET.TITLE' | translate" [subTitle]="'WALLET.SUBTITLE' | translate" />
+
+<div class="row">
+    <div class="col-xl-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center border-bottom">
+                <ul class="nav nav-tabs card-header-tabs">
+                    <li class="nav-item">
+                        <a class="nav-link" [class.active]="activeTab === 'deposit'" (click)="setActiveTab('deposit')">
+                            {{ 'WALLET.DEPOSIT_REQUESTS' | translate }}
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" [class.active]="activeTab === 'withdraw'"
+                            (click)="setActiveTab('withdraw')">
+                            {{ 'WALLET.WITHDRAW_REQUESTS' | translate }}
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="card-body p-0">
+                <div *ngIf="loading" class="text-center py-4">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">{{ 'WALLET.LOADING' | translate }}</span>
+                    </div>
+                </div>
+
+                <div *ngIf="!loading && activeTab === 'deposit'" class="table-responsive">
+                    <table class="table align-middle text-nowrap table-hover table-centered mb-0">
+                        <thead class="bg-light-subtle">
+                            <tr>
+                                <th>{{ 'WALLET.USER_NAME' | translate }}</th>
+                                <th>{{ 'WALLET.REFERENCE' | translate }}</th>
+                                <th>{{ 'WALLET.IBAN' | translate }}</th>
+                                <th>{{ 'WALLET.AMOUNT' | translate }}</th>
+                                <th>{{ 'WALLET.CURRENCY' | translate }}</th>
+                                <th>{{ 'WALLET.DATE' | translate }}</th>
+                                <th>{{ 'WALLET.STATUS' | translate }}</th>
+                                <th class="text-center">{{ 'WALLET.ACTIONS' | translate }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let deposit of deposits">
+                                <td>{{ deposit.user.name }}</td>
+                                <td>{{ deposit.referenceNumber }}</td>
+                                <td>{{ deposit.user.iban }}</td>
+                                <td>{{ deposit.amount }}</td>
+                                <td>{{ 'CURRENCY.' + deposit.currency | translate }}</td>
+                                <td>{{ deposit.createdAt | date: 'short' }}</td>
+                                <td>
+                                    <span class="badge py-1 px-2 fs-12" [ngClass]="{
+                                        'bg-warning-subtle text-warning': deposit.status.toLowerCase() === 'pending',
+                                        'bg-success-subtle text-success': deposit.status.toLowerCase() === 'succeeded',
+                                        'bg-danger-subtle text-danger': deposit.status.toLowerCase() === 'rejected'
+                                        }">
+                                        {{ ('WALLET.STATUS_VALUES.' + deposit.status.toUpperCase()) | translate }}
+                                    </span>
+                                </td>
+                                <td class="text-end">
+                                    <button class="btn btn-success btn-sm me-1" (click)="approve(deposit.paymentId)">
+                                        {{ 'WALLET.APPROVE' | translate }}
+                                    </button>
+                                    <button class="btn btn-danger btn-sm me-1" (click)="reject(deposit.paymentId)">
+                                        {{ 'WALLET.REJECT' | translate }}
+                                    </button>
+                                    <button class="btn btn-info btn-sm" (click)="edit(deposit)">
+                                        {{ 'WALLET.EDIT' | translate }}
+                                    </button>
+                                </td>
+                            </tr>
+
+                            <tr *ngIf="deposits.length === 0">
+                                <td colspan="8" class="text-center py-4">
+                                    {{ 'WALLET.NO_PENDING_REQUESTS' | translate }}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div *ngIf="!loading && activeTab === 'withdraw'" class="table-responsive">
+                    <table class="table align-middle text-nowrap table-hover table-centered mb-0">
+                        <thead class="bg-light-subtle">
+                            <tr>
+                                <th>{{ 'WALLET.USER_NAME' | translate }}</th>
+                                <th>{{ 'WALLET.REFERENCE' | translate }}</th>
+                                <th>{{ 'WALLET.IBAN' | translate }}</th>
+                                <th>{{ 'WALLET.AMOUNT' | translate }}</th>
+                                <th>{{ 'WALLET.CURRENCY' | translate }}</th>
+                                <th>{{ 'WALLET.DATE' | translate }}</th>
+                                <th>{{ 'WALLET.STATUS' | translate }}</th>
+                                <th class="text-center">{{ 'WALLET.ACTIONS' | translate }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let withdrawal of withdrawals">
+                                <td>{{ withdrawal.user.name }}</td>
+                                <td>{{ withdrawal.referenceNumber }}</td>
+                                <td>{{ withdrawal.user.iban }}</td>
+                                <td>{{ withdrawal.amount }}</td>
+                                <td>{{ withdrawal.currency }}</td>
+                                <td>{{ withdrawal.createdAt | date: 'short' }}</td>
+                                <td>
+                                    <span class="badge py-1 px-2 fs-12" [ngClass]="{
+                                        'bg-warning-subtle text-warning': withdrawal.status.toLowerCase() === 'pending',
+                                        'bg-success-subtle text-success': withdrawal.status.toLowerCase() === 'succeeded',
+                                        'bg-danger-subtle text-danger': withdrawal.status.toLowerCase() === 'rejected'
+                                        }">
+                                        {{ ('WALLET.STATUS_VALUES.' + withdrawal.status.toUpperCase()) | translate }}
+                                    </span>
+                                </td>
+                                <td class="text-end">
+                                    <button class="btn btn-success btn-sm me-1" (click)="approve(withdrawal.paymentId)">
+                                        {{ 'WALLET.APPROVE' | translate }}
+                                    </button>
+                                    <button class="btn btn-danger btn-sm me-1" (click)="reject(withdrawal.paymentId)">
+                                        {{ 'WALLET.REJECT' | translate }}
+                                    </button>
+                                    <button class="btn btn-info btn-sm" (click)="edit(withdrawal)">
+                                        {{ 'WALLET.EDIT' | translate }}
+                                    </button>
+                                </td>
+                            </tr>
+
+                            <tr *ngIf="withdrawals.length === 0">
+                                <td colspan="8" class="text-center py-4">
+                                    {{ 'WALLET.NO_PENDING_REQUESTS' | translate }}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card-footer" *ngIf="collectionSize > pageSize">
+                <nav aria-label="Page navigation">
+                    <ngb-pagination [(page)]="page" [pageSize]="pageSize" [collectionSize]="collectionSize"
+                        (pageChange)="refreshList()" class="pagination justify-content-end mb-0">
+                        <ng-template ngbPaginationPrevious>{{ 'WALLET.PREVIOUS' | translate }}</ng-template>
+                        <ng-template ngbPaginationNext>{{ 'WALLET.NEXT' | translate }}</ng-template>
+                    </ngb-pagination>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade show" tabindex="-1" [ngStyle]="{ display: showEditModal ? 'block' : 'none' }" role="dialog"
+    aria-modal="true" *ngIf="showEditModal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content p-3">
+            <div class="modal-header">
+                <h5 class="modal-title">{{ 'WALLET.EDIT_AMOUNT' | translate }}</h5>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">{{ 'WALLET.AMOUNT' | translate }}</label>
+                    <input type="number" class="form-control" [(ngModel)]="updatedAmount" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline-dark" (click)="closeModal()">
+                    {{ 'WALLET.CANCEL' | translate }}
+                </button>
+                <button class="btn btn-primary" (click)="saveAmount()">
+                    {{ 'WALLET.SAVE' | translate }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal-backdrop fade show" *ngIf="showEditModal" (click)="closeModal()"></div>

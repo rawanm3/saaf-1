@@ -1,0 +1,485 @@
+<div class="card">
+  <div
+    class="card-header d-flex flex-column flex-lg-row justify-content-between align-items-start align-items-lg-center border-bottom gap-3 flex-wrap">
+    <h4 class="card-title mb-0 text-center text-lg-start w-100 w-lg-auto">
+      {{ 'PROPERTY.ALL_PROPERTIES_LIST' | translate }}
+    </h4>
+
+    <div class="d-flex align-items-center w-100 w-lg-auto justify-content-center justify-content-lg-end">
+      <div class="position-relative w-100" style="max-width: 320px;">
+        <input type="text"
+          class="form-control pe-5 rounded-pill border shadow-sm dark:bg-gray-800 dark:text-white dark:border-gray-700"
+          [placeholder]="'PROPERTY.SEARCH_PLACEHOLDER' | translate" [(ngModel)]="searchText"
+          (ngModelChange)="onSearchChange($event)" />
+        <button type="button" (click)="onSearchChange(searchText)"
+          class="btn btn-primary position-absolute top-50 end-0 translate-middle-y me-1 rounded-circle d-flex align-items-center justify-content-center"
+          style="width: 36px; height: 36px;" [disabled]="isSearching">
+          <div *ngIf="isSearching" class="spinner-border spinner-border-sm text-light" role="status"></div>
+          <i *ngIf="!isSearching" class="ri-search-line"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="table-responsive d-none d-md-block">
+    <table class="table align-middle text-nowrap table-hover table-centered mb-0">
+      <thead class="bg-light-subtle">
+        <tr>
+          <th class="ps-3">{{ 'PROPERTY.PROPERTIES_PHOTO_NAME' | translate }}</th>
+          <th>{{ 'PROPERTY.SIZE' | translate }}</th>
+          <th>{{ 'PROPERTY.STATUS.LABEL' | translate }}</th>
+          <th>{{ 'PROPERTY.BEDROOMS' | translate }}</th>
+          <th>{{ 'PROPERTY.BATHROOMS' | translate }}</th>
+          <th>{{ 'PROPERTY.PRICE' | translate }}</th>
+          <th>{{ 'PROPERTY.ACTION' | translate }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of paginatedProperties">
+          <td class="ps-3">
+            <div class="d-flex align-items-center gap-2">
+              <img [src]="item.images?.[0] || 'assets/img/default-property.jpg'" alt="{{ item.name }}"
+                class="avatar-md rounded border border-light border-3" />
+              <a [routerLink]="['/properties', item._id]" class="text-dark fw-medium fs-15 link-primary">
+                {{ item.name }}
+              </a>
+            </div>
+          </td>
+          <td>{{ item.square ? (item.square + ' ' + ('PROPERTY.SQ_FT' | translate)) : '-' }}</td>
+          <td>
+            <span class="badge py-1 px-2 fs-13 text-capitalize" [ngStyle]="getStatusBadgeStyle(item.status)">
+              {{ ('PROPERTY.STATUS.' + item.status.toUpperCase()) | translate }}
+            </span>
+          </td>
+          <td>{{ item.numberOfRooms ?? '-' }}</td>
+          <td>{{ item.numberOfBathrooms ?? '-' }}</td>
+          <td>{{ item.totalValue | number }} {{ 'CURRENCY.' + currency | translate }}</td>
+          <td>
+            <div class="d-flex gap-1 justify-content-end">
+              <button class="btn btn-light btn-sm" (click)="openPropertyModal(propertyModal, item)">
+                <iconify-icon icon="solar:eye-broken" class="align-middle fs-18"></iconify-icon>
+              </button>
+              <button *ngIf="!isUserAccountant && currentRole !== 'accountant'" class="btn btn-primary btn-sm"
+                (click)="openPropertyModal(propertyModal, item); enterEditMode()">
+                <iconify-icon icon="solar:pen-2-bold-duotone" class="align-middle fs-18"></iconify-icon>
+              </button>
+              <button *ngIf="!isUserAccountant && currentRole !== 'accountant'" class="btn btn-danger btn-sm"
+                (click)="selectedProperty = item; openConfirmDeleteModal(confirmDeleteModal)">
+                <iconify-icon icon="solar:trash-bin-minimalistic-2-bold-duotone"
+                  class="align-middle fs-18"></iconify-icon>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="d-md-none">
+    <div *ngFor="let item of paginatedProperties" class="p-3 bg-light rounded shadow-sm mb-3">
+      <div class="d-flex align-items-center gap-3 mb-3">
+        <img [src]="item.images?.[0] || 'assets/img/default-property.jpg'" alt="{{ item.name }}"
+          class="rounded border border-light border-3" style="width: 90px; height: 90px; object-fit: cover;" />
+        <div class="flex-grow-1">
+          <a [routerLink]="['/properties', item._id]"
+            class="text-dark fw-semibold fs-16 link-primary d-block text-truncate">
+            {{ item.name }}
+          </a>
+          <div class="text-success fw-bold mt-1 fs-15">
+            {{ item.totalValue | number }} {{ 'CURRENCY.' + currency | translate }}
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-2 text-center">
+        <div class="col-4">
+          <div class="bg-white rounded p-2 shadow-sm small">
+            <div class="fw-medium text-primary small">{{ 'PROPERTY.SIZE' | translate }}</div>
+            <div class="fw-bold">
+              {{ item.square ? (item.square + ' ' + ('PROPERTY.SQ_FT' | translate)) : '-' }}
+            </div>
+          </div>
+        </div>
+        <div class="col-4">
+          <div class="bg-white rounded p-2 shadow-sm small">
+            <div class="fw-medium text-primary small">{{ 'PROPERTY.BEDROOMS' | translate }}</div>
+            <div class="fw-bold">{{ item.numberOfRooms ?? '-' }}</div>
+          </div>
+        </div>
+        <div class="col-4">
+          <div class="bg-white rounded p-2 shadow-sm small">
+            <div class="fw-medium text-primary small">{{ 'PROPERTY.BATHROOMS' | translate }}</div>
+            <div class="fw-bold">{{ item.numberOfBathrooms ?? '-' }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-between align-items-center mt-3 flex-wrap gap-2">
+        <span class="badge py-2 px-3 fs-14 text-capitalize" [ngStyle]="getStatusBadgeStyle(item.status)">
+          {{ ('PROPERTY.STATUS.' + item.status.toUpperCase()) | translate }}
+        </span>
+
+        <div class="d-flex gap-2 flex-wrap justify-content-end">
+          <button class="btn btn-light btn-sm" (click)="openPropertyModal(propertyModal, item)">
+            <iconify-icon icon="solar:eye-broken" class="align-middle fs-18"></iconify-icon>
+          </button>
+          <button *ngIf="!isUserAccountant && currentRole !== 'accountant'" class="btn btn-primary btn-sm"
+            (click)="openPropertyModal(propertyModal, item); enterEditMode()">
+            <iconify-icon icon="solar:pen-2-bold-duotone" class="align-middle fs-18"></iconify-icon>
+          </button>
+          <button *ngIf="!isUserAccountant && currentRole !== 'accountant'" class="btn btn-danger btn-sm"
+            (click)="selectedProperty = item; openConfirmDeleteModal(confirmDeleteModal)">
+            <iconify-icon icon="solar:trash-bin-minimalistic-2-bold-duotone" class="align-middle fs-18"></iconify-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card-footer">
+    <nav aria-label="Page navigation example">
+      <ngb-pagination [collectionSize]="collectionSize" [(page)]="page" [pageSize]="pageSize"
+        (pageChange)="refreshProperties()"
+        class="pagination justify-content-center justify-content-lg-end mb-0 flex-wrap">
+        <ng-template ngbPaginationPrevious>{{ 'COMMON.PREVIOUS' | translate }}</ng-template>
+        <ng-template ngbPaginationNext>{{ 'COMMON.NEXT' | translate }}</ng-template>
+      </ngb-pagination>
+    </nav>
+  </div>
+</div>
+
+<ng-template #confirmDeleteModal let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title">
+      {{ 'PROPERTY.ACTIONS.DELETE_CONFIRM_TITLE' | translate:{ name: selectedProperty?.name } }}
+    </h5>
+    <!-- <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button> -->
+  </div>
+
+  <div class="modal-body">
+    {{ 'PROPERTY.ACTIONS.DELETE_CONFIRM_TEXT' | translate }}
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="modal.dismiss()">
+      {{ 'COMMON.CANCEL' | translate }}
+    </button>
+    <button type="button" class="btn btn-danger" (click)="confirmDelete(modal)">
+      {{ 'PROPERTY.ACTIONS.DELETE_CONFIRM_BTN' | translate }}
+    </button>
+  </div>
+</ng-template>
+
+
+<ng-template #propertyModal let-modal>
+  <div class="modal-header border-bottom-0 pb-0">
+    <h4 class="modal-title fw-bold text-dark">
+      <iconify-icon [icon]="isEditMode ? 'solar:pen-2-bold-duotone' : 'solar:home-bold-duotone'"
+        class="align-middle me-2 text-primary">
+      </iconify-icon>
+      {{ isEditMode ? 'Edit Property' : selectedProperty?.name }}
+    </h4>
+    <!-- <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button> -->
+  </div>
+
+  <div class="modal-body p-3 p-lg-4">
+    <div *ngIf="!isEditMode">
+      <div class="text-center mb-4">
+        <img [src]="selectedProperty?.images?.[0] || 'assets/img/default-property.jpg'"
+          alt="{{ selectedProperty?.name }}" class="img-fluid rounded-3 shadow-sm"
+          style="max-height: 300px; object-fit: cover; width: 100%;">
+      </div>
+
+      <div class="row g-3">
+        <div class="col-12 col-lg-6">
+          <div class="card border-0 bg-light-subtle h-100">
+            <div class="card-body p-3">
+              <h6 class="card-title text-primary mb-3">
+                <iconify-icon icon="solar:info-circle-bold-duotone" class="me-2"></iconify-icon>
+                {{ 'PROPERTYDETAILS.BASIC_INFO' | translate }}
+              </h6>
+
+              <div class="d-flex align-items-center mb-2">
+                <iconify-icon icon="solar:buildings-3-bold-duotone" class="text-muted me-2"></iconify-icon>
+                <span class="text-muted small">{{ 'PROPERTYADD.TYPE' | translate }}:</span>
+                <span class="ms-2 fw-medium">
+                  {{ getTranslatedType(selectedProperty?.type || '') | translate }}
+                </span>
+              </div>
+
+              <div class="d-flex align-items-center mb-2">
+                <iconify-icon icon="solar:tag-bold-duotone" class="text-muted me-2"></iconify-icon>
+                <span class="text-muted small">{{ 'PROPERTY.STATUS_LABEL' | translate }}:</span>
+                <span class="ms-2">
+                  <span class="badge bg-info-subtle text-info py-1 px-2 fs-12">
+                    {{ getTranslatedStatus(selectedProperty) | translate }}
+                  </span>
+                </span>
+              </div>
+
+              <div class="d-flex align-items-center">
+                <iconify-icon icon="solar:map-point-bold-duotone" class="text-muted me-2"></iconify-icon>
+                <span class="text-muted small">{{ 'PROPERTYADD.LOCATION' | translate }}:</span>
+                <span class="ms-2 fw-medium">{{ selectedProperty?.location || ('PROPERTYDETAILS.NOT_AVAILABLE' |
+                  translate)
+                  }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-lg-6">
+          <div class="card border-0 bg-success-subtle h-100">
+            <div class="card-body p-3">
+              <h6 class="card-title text-success mb-3">
+                <iconify-icon icon="solar:dollar-minimalistic-bold-duotone" class="me-2"></iconify-icon>
+                {{ 'PROPERTYDETAILS.PRICE_FEATURES' | translate }}
+              </h6>
+
+              <div class="mb-3">
+                <div class="d-flex align-items-center">
+                  <iconify-icon icon="solar:dollar-bold-duotone" class="text-success me-2"></iconify-icon>
+                  <span class="h5 mb-0 text-success fw-bold">
+                    {{ selectedProperty?.totalValue | number }} {{ 'CURRENCY.' + currency | translate }}
+                  </span>
+                </div>
+              </div>
+
+              <div class="row g-2">
+                <div class="col-6" *ngIf="selectedProperty?.numberOfRooms">
+                  <div class="d-flex align-items-center">
+                    <iconify-icon icon="solar:bed-bold-duotone" class="text-muted me-1 fs-14"></iconify-icon>
+                    <span class="small text-muted">
+                      {{ selectedProperty?.numberOfRooms }} {{ 'PROPERTYDETAILS.BEDROOMS' | translate }}
+                    </span>
+                  </div>
+                </div>
+
+                <div class="col-6" *ngIf="selectedProperty?.numberOfBathrooms">
+                  <div class="d-flex align-items-center">
+                    <iconify-icon icon="solar:bath-bold-duotone" class="text-muted me-1 fs-14"></iconify-icon>
+                    <span class="small text-muted">
+                      {{ selectedProperty?.numberOfBathrooms }} {{ 'PROPERTYDETAILS.BATHROOMS' | translate }}
+                    </span>
+                  </div>
+                </div>
+
+                <div class="col-12" *ngIf="selectedProperty?.square">
+                  <div class="d-flex align-items-center">
+                    <iconify-icon icon="solar:ruler-bold-duotone" class="text-muted me-1 fs-14"></iconify-icon>
+                    <span class="small text-muted">
+                      {{ selectedProperty?.square }} {{ 'PROPERTY.SQ_FT' | translate }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12" *ngIf="selectedProperty?.description">
+          <div class="card border-0 bg-warning-subtle">
+            <div class="card-body p-3">
+              <h6 class="card-title text-warning mb-2">
+                <iconify-icon icon="solar:document-text-bold-duotone" class="me-2"></iconify-icon>
+                {{ 'PROPERTYDETAILS.DESCRIPTION' | translate }}
+              </h6>
+              <p class="mb-0 text-muted small">{{ selectedProperty?.description }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <form *ngIf="isEditMode" #editForm="ngForm" (ngSubmit)="saveProperty(modal)">
+      <div class="card border-0 bg-light-subtle mb-3">
+        <div class="card-body p-3">
+          <h6 class="card-title text-primary mb-3">
+            <iconify-icon icon="solar:info-circle-bold-duotone" class="me-2"></iconify-icon>
+            {{ 'PROPERTYEDIT.TITLE_BASIC_INFO' | translate }}
+          </h6>
+
+          <div class="row g-3">
+            <div class="col-12 col-lg-6">
+              <label for="propertyName" class="form-label fw-medium">
+                {{ 'PROPERTYEDIT.PROPERTY_NAME' | translate }} *
+              </label>
+              <input type="text" class="form-control form-control-lg border-2" id="propertyName"
+                [(ngModel)]="editPropertyData.name" name="name"
+                placeholder="{{ 'PROPERTYEDIT.PLACEHOLDERS.PROPERTY_NAME' | translate }}" required minlength="3"
+                #nameRef="ngModel" [class.is-invalid]="nameRef.invalid && (nameRef.dirty || nameRef.touched)"
+                [class.is-valid]="nameRef.valid" />
+              <div *ngIf="nameRef.invalid && (nameRef.dirty || nameRef.touched)" class="invalid-feedback">
+                {{ 'PROPERTYEDIT.ERRORS.NAME_REQUIRED' | translate }}
+              </div>
+            </div>
+
+            <div class="col-12 col-lg-6">
+              <label for="propertyType" class="form-label fw-medium">
+                {{ 'PROPERTYEDIT.TYPE' | translate }} *
+              </label>
+              <select class="form-select form-select-lg border-2" id="propertyType" [(ngModel)]="editPropertyData.type"
+                name="type" required #typeRef="ngModel"
+                [class.is-invalid]="typeRef.invalid && (typeRef.dirty || typeRef.touched)"
+                [class.is-valid]="typeRef.valid">
+                <option value="">{{ 'PROPERTYEDIT.SELECT_TYPE' | translate }}</option>
+                <option value="Residential/Commercial Property">
+                  {{ 'PROPERTYADD.TYPE_RESIDENTIAL_COMMERCIAL_PROPERTY' | translate }}
+                </option>
+                <option value="Administrative Property (Offices)">
+                  {{ 'PROPERTYADD.TYPE_ADMINISTRATIVE_PROPERTY' | translate }}
+                </option>
+                <option value="Residential Complex">
+                  {{ 'PROPERTYADD.TYPE_RESIDENTIAL_COMPLEX' | translate }}
+                </option>
+                <option value="Residential/Commercial Complex">
+                  {{ 'PROPERTYADD.TYPE_RESIDENTIAL_COMMERCIAL_COMPLEX' | translate }}
+                </option>
+                <option value="Commercial/Administrative Complex">
+                  {{ 'PROPERTYADD.TYPE_COMMERCIAL_ADMINISTRATIVE_COMPLEX' | translate }}
+                </option>
+              </select>
+              <div *ngIf="typeRef.invalid && (typeRef.dirty || typeRef.touched)" class="invalid-feedback">
+                {{ 'PROPERTYEDIT.ERRORS.TYPE_REQUIRED' | translate }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card border-0 bg-info-subtle mb-3">
+        <div class="card-body p-3">
+          <h6 class="card-title text-info mb-3">
+            <iconify-icon icon="solar:map-point-bold-duotone" class="me-2"></iconify-icon>
+            {{ 'PROPERTYEDIT.TITLE_LOCATION_STATUS' | translate }}
+          </h6>
+
+          <div class="row g-3">
+            <div class="col-12 col-lg-8">
+              <label for="location" class="form-label fw-medium">
+                {{ 'PROPERTYEDIT.LOCATION' | translate }} *
+              </label>
+              <input type="text" class="form-control form-control-lg border-2" id="location"
+                [(ngModel)]="editPropertyData.location" name="location"
+                placeholder="{{ 'PROPERTYEDIT.PLACEHOLDERS.LOCATION' | translate }}" required minlength="3"
+                #locationRef="ngModel"
+                [class.is-invalid]="locationRef.invalid && (locationRef.dirty || locationRef.touched)"
+                [class.is-valid]="locationRef.valid" />
+              <div *ngIf="locationRef.invalid && (locationRef.dirty || locationRef.touched)" class="invalid-feedback">
+                {{ 'PROPERTYEDIT.ERRORS.LOCATION_REQUIRED' | translate }}
+              </div>
+            </div>
+
+            <div class="col-12 col-lg-4">
+              <label for="status" class="form-label fw-medium">
+                {{ 'PROPERTYEDIT.STATUS' | translate }} *
+              </label>
+              <select class="form-select form-select-lg border-2 fw-semibold text-capitalize" id="status" name="status"
+                [(ngModel)]="editPropertyData.status" required #statusRef="ngModel"
+                [class.is-invalid]="statusRef.invalid && (statusRef.dirty || statusRef.touched)"
+                [class.is-valid]="statusRef.valid">
+                <option value="">{{ 'PROPERTYEDIT.SELECT_STATUS' | translate }}</option>
+                <option value="available">{{ 'PROPERTY.STATUS.AVAILABLE' | translate }}</option>
+                <option value="funded">{{ 'PROPERTY.STATUS.FUNDED' | translate }}</option>
+                <option value="matured">{{ 'PROPERTY.STATUS.MATURED' | translate }}</option>
+                <option value="sold">{{ 'PROPERTY.STATUS.SOLD' | translate }}</option>
+                <option value="pending">{{ 'PROPERTY.STATUS.PENDING' | translate }}</option>
+              </select>
+              <div *ngIf="statusRef.invalid && (statusRef.dirty || statusRef.touched)" class="invalid-feedback">
+                {{ 'PROPERTYEDIT.ERRORS.STATUS_REQUIRED' | translate }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card border-0 bg-success-subtle mb-3">
+        <div class="card-body p-3">
+          <h6 class="card-title text-success mb-3">
+            <iconify-icon icon="solar:dollar-minimalistic-bold-duotone" class="me-2"></iconify-icon>
+            {{ 'PROPERTYEDIT.TITLE_PRICE_FEATURES' | translate }}
+          </h6>
+
+          <div class="row g-3">
+            <div class="col-12 col-lg-6">
+              <label for="price" class="form-label fw-medium">
+                {{ 'PROPERTYEDIT.PRICE' | translate }} *
+              </label>
+              <div class="input-group input-group-lg" dir="ltr">
+                <span class="input-group-text bg-success text-white border-2">{{ 'CURRENCY.' + currency | translate
+                  }}</span>
+                <input type="number" class="form-control border-2 border-success" id="price"
+                  [(ngModel)]="editPropertyData.totalValue" name="totalValue" placeholder="0" min="1" required
+                  #priceRef="ngModel" [class.is-invalid]="priceRef.invalid && (priceRef.dirty || priceRef.touched)"
+                  [class.is-valid]="priceRef.valid" />
+                <div *ngIf="priceRef.invalid && (priceRef.dirty || priceRef.touched)" class="invalid-feedback">
+                  {{ 'PROPERTYEDIT.ERRORS.PRICE_REQUIRED' | translate }}
+                </div>
+              </div>
+            </div>
+
+            <div class="col-12 col-lg-6">
+              <label for="square" class="form-label fw-medium">
+                {{ 'PROPERTYEDIT.SIZE' | translate }} {{ 'PROPERTY.SQ_FT' | translate }} *
+              </label>
+              <input type="number" class="form-control form-control-lg border-2" id="square"
+                [(ngModel)]="editPropertyData.square" name="square" placeholder="0" min="1" required
+                #squareRef="ngModel" [class.is-invalid]="squareRef.invalid && (squareRef.dirty || squareRef.touched)"
+                [class.is-valid]="squareRef.valid" />
+              <div *ngIf="squareRef.invalid && (squareRef.dirty || squareRef.touched)" class="invalid-feedback">
+                {{ 'PROPERTYEDIT.ERRORS.SIZE_REQUIRED' | translate }}
+              </div>
+            </div>
+          </div>
+
+          <div class="row g-3 mt-1">
+            <div class="col-12 col-lg-6">
+              <label for="numberOfRooms" class="form-label fw-medium">
+                {{ 'PROPERTYEDIT.BEDROOMS' | translate }} *
+              </label>
+              <input type="number" class="form-control form-control-lg border-2" id="numberOfRooms"
+                [(ngModel)]="editPropertyData.numberOfRooms" name="numberOfRooms" placeholder="0" min="0" required
+                #roomsRef="ngModel" [class.is-invalid]="roomsRef.invalid && (roomsRef.dirty || roomsRef.touched)"
+                [class.is-valid]="roomsRef.valid" />
+              <div *ngIf="roomsRef.invalid && (roomsRef.dirty || roomsRef.touched)" class="invalid-feedback">
+                {{ 'PROPERTYEDIT.ERRORS.BEDROOMS_REQUIRED' | translate }}
+              </div>
+            </div>
+
+            <div class="col-12 col-lg-6">
+              <label for="numberOfBathrooms" class="form-label fw-medium">
+                {{ 'PROPERTYEDIT.BATHROOMS' | translate }} *
+              </label>
+              <input type="number" class="form-control form-control-lg border-2" id="numberOfBathrooms"
+                [(ngModel)]="editPropertyData.numberOfBathrooms" name="numberOfBathrooms" placeholder="0" min="0"
+                required #bathRef="ngModel" [class.is-invalid]="bathRef.invalid && (bathRef.dirty || bathRef.touched)"
+                [class.is-valid]="bathRef.valid" />
+              <div *ngIf="bathRef.invalid && (bathRef.dirty || bathRef.touched)" class="invalid-feedback">
+                {{ 'PROPERTYEDIT.ERRORS.BATHROOMS_REQUIRED' | translate }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card border-0 bg-warning-subtle">
+        <div class="card-body p-3">
+          <h6 class="card-title text-warning mb-3">
+            <iconify-icon icon="solar:document-text-bold-duotone" class="me-2"></iconify-icon>
+            {{ 'PROPERTYEDIT.TITLE_DESCRIPTION' | translate }}
+          </h6>
+          <textarea class="form-control form-control-lg border-2" id="description" rows="4"
+            [(ngModel)]="editPropertyData.description" name="description"
+            placeholder="{{ 'PROPERTYEDIT.DESCRIPTION_PLACEHOLDER' | translate }}"></textarea>
+        </div>
+      </div>
+
+      <div class="modal-footer bg-light-subtle border-top-0 pt-3">
+        <button type="submit" class="btn btn-success px-4 shadow-sm w-100 w-lg-auto" [disabled]="editForm.invalid">
+          <iconify-icon icon="solar:check-circle-bold-duotone" class="align-middle me-1"></iconify-icon>
+          {{ 'PROPERTYEDIT.BTN_SAVE_CHANGES' | translate }}
+        </button>
+      </div>
+    </form>
+  </div>
+</ng-template>

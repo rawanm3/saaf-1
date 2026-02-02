@@ -1,0 +1,113 @@
+<div class="card">
+  <div class="card-header">
+    <h4 class="card-title">{{ 'INVESTMENT.ALL_INVESTMENTS_LIST' | translate }}</h4>
+  </div>
+
+  <div class="card-body">
+    <div class="mb-3">
+      <input type="text" class="form-control" placeholder="{{ 'INVESTMENT.SEARCH_PLACEHOLDER' | translate }}"
+        [(ngModel)]="searchText" (ngModelChange)="filterInvestments()" />
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead>
+          <tr>
+            <th>{{ 'INVESTMENT.INVESTOR_NAME' | translate }}</th>
+            <th>{{ 'INVESTMENT.PROPERTY_INVESTMENT' | translate }}</th>
+            <th>{{ 'INVESTMENT.AMOUNT_INVESTED' | translate }}</th>
+            <th>{{ 'INVESTMENT.SHARES_PURCHASED' | translate }}</th>
+            <th>{{ 'INVESTMENT.INVESTMENT_DATE' | translate }}</th>
+            <th>{{ 'INVESTMENT.STATUS' | translate }}</th>
+            <th>{{ 'INVESTMENT.ACTION' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of paginatedInvestments">
+            <td>{{ item.investor?.name || ('INVESTMENT.UNKNOWN' | translate) }}</td>
+            <td>{{ item.property?.name }}</td>
+            <td>{{ item.amountInvested }} {{ 'CURRENCY.' + currency | translate }}</td>
+            <td>{{ item.sharesPurchased }}</td>
+            <td>{{ formatDate(item.investmentDate) }}</td>
+            <td>
+              <span [ngClass]="getStatusClass(item.status)">
+                {{ 'INVESTMENT.STATUS_' + (item.status.toUpperCase() || 'UNKNOWN') | translate }}
+              </span>
+            </td>
+            <td>
+              <div class="d-flex gap-2">
+                <a href="javascript:void(0);" class="btn btn-light btn-sm"
+                  (click)="openInvestmentModal(investmentModal, item)" title="View Investment Details"
+                  [attr.aria-label]="'View details for ' + (item.property?.name || '')">
+                  <iconify-icon icon="solar:eye-broken" class="align-middle fs-18"></iconify-icon>
+                </a>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <ngb-pagination [(page)]="page" [pageSize]="pageSize" [collectionSize]="collectionSize"
+      (pageChange)="refreshInvestments()">
+    </ngb-pagination>
+  </div>
+</div>
+
+<ng-template #investmentModal let-modal>
+  <div class="modal-header border-0 p-3 d-flex justify-content-end">
+    <button type="button" aria-label="Close" class="btn-close" (click)="modal.dismiss('Cross click')"></button>
+  </div>
+
+  <div class="modal-body">
+    <div class="row g-3">
+      <div class="col-md-6">
+        <div class="p-3 rounded-3" style="background-color: #faf7f3; border: 1px solid #f0e2ca;">
+          <h6 class="fw-semibold text-warning mb-3">
+            <iconify-icon icon="solar:document-linear" class="me-1"></iconify-icon>
+            {{ 'INVESTMENT.PROPERTY_INFORMATION' | translate }}
+          </h6>
+          <p><b>{{ 'INVESTMENT.NAME' | translate }}:</b> {{ selectedInvestment?.property?.name }}</p>
+          <p><b>{{ 'INVESTMENT.LOCATION' | translate }}:</b> {{ selectedInvestment?.property?.location }}</p>
+          <p><b>{{ 'INVESTMENT.TYPE' | translate }}:</b> {{ getTranslatedType(selectedInvestment?.property?.type) |
+            translate }}</p>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="p-3 rounded-3" style="background-color: #e8effa; border: 1px solid #c7dcfa;">
+          <h6 class="fw-semibold text-primary mb-3">
+            <iconify-icon icon="solar:user-linear" class="me-1"></iconify-icon>
+            {{ 'INVESTMENT.INVESTOR_INFORMATION' | translate }}
+          </h6>
+          <p><b>{{ 'INVESTMENT.INVESTOR_NAME' | translate }}:</b> {{ selectedInvestment?.investor?.name }}</p>
+          <p><b>{{ 'INVESTMENT.INVESTOR_EMAIL' | translate }}:</b> {{ selectedInvestment?.investor?.email }}</p>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="p-3 rounded-3" style="background-color: #e8f9f1; border: 1px solid #c9f0db;">
+          <h6 class="fw-semibold text-success mb-3">
+            <iconify-icon icon="solar:chart-2-linear" class="me-1"></iconify-icon>
+            {{ 'INVESTMENT.INVESTMENT_DETAILS' | translate }}
+          </h6>
+          <p><b>{{ 'INVESTMENT.AMOUNT_INVESTED' | translate }}:</b> {{ selectedInvestment?.amountInvested }} {{
+            'CURRENCY.' + currency | translate }}</p>
+          <p><b>{{ 'INVESTMENT.SHARES_PURCHASED' | translate }}:</b> {{ selectedInvestment?.sharesPurchased }}</p>
+          <p><b>{{ 'INVESTMENT.INVESTMENT_DATE' | translate }}:</b> {{ formatDate(selectedInvestment?.investmentDate) }}
+          </p>
+          <p><b>{{ 'INVESTMENT.STATUS_RETURNS' | translate }}:</b>
+            {{ 'INVESTMENT.STATUS_' + (selectedInvestment?.status?.toUpperCase() || 'UNKNOWN') | translate }} / {{
+            selectedInvestment?.returns }}%
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-footer border-0 pt-0">
+    <button type="button" class="btn btn-primary px-4" (click)="modal.dismiss('Close click')">
+      {{ 'CLOSE' | translate }}
+    </button>
+  </div>
+</ng-template>

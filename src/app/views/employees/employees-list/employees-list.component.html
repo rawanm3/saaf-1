@@ -1,0 +1,278 @@
+<div class="employees-container">
+  <div class="card">
+    <div class="card-header">
+      <div class="header-content">
+        <h3 class="card-title">
+          <i class="fas fa-users me-2"></i>
+          {{ 'EMPLOYEE.MANAGE_EMPLOYEES' | translate }}
+        </h3>
+        <button
+          routerLink="/employees/add"
+          class="btn btn-primary btn-lg"
+          [attr.aria-label]="'EMPLOYEE.ADD_NEW_EMPLOYEE' | translate">
+          <i class="fas fa-user-plus me-2"></i>
+          {{ 'EMPLOYEE.ADD_NEW_EMPLOYEE' | translate }}
+        </button>
+      </div>
+    </div>
+
+    <div class="card-body">
+      <div *ngIf="isLoading" class="loading-state text-center py-5">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">{{ 'COMMON.LOADING' | translate }}</span>
+        </div>
+        <p class="mt-3 text-muted">{{ 'EMPLOYEE.LOADING_EMPLOYEES' | translate }}</p>
+      </div>
+
+      <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-triangle me-2"></i>
+        {{ errorMessage }}
+        <button type="button" class="btn-close" (click)="errorMessage = ''"
+                [attr.aria-label]="'COMMON.CLOSE' | translate"></button>
+      </div>
+
+      <div *ngIf="!isLoading && employees.length > 0" class="table-responsive">
+        <table class="table table-striped table-hover employees-table">
+          <thead class="table-light">
+            <tr>
+              <th scope="col" width="80">
+                <i class="fas fa-hashtag me-2"></i>
+                {{ '#'}}
+              </th>
+              <th scope="col">
+                <i class="fas fa-user me-2"></i>
+                {{ 'EMPLOYEE.FULL_NAME' | translate }}
+              </th>
+              <th scope="col">
+                <i class="fas fa-envelope me-2"></i>
+                {{ 'COMMON.EMAIL' | translate }}
+              </th>
+              <th scope="col">
+                <i class="fas fa-user-tag me-2"></i>
+                {{ 'EMPLOYEE.ROLE' | translate }}
+              </th>
+              <th scope="col" class="text-center" width="200">
+                <i class="fas fa-cogs me-2"></i>
+                {{ 'COMMON.ACTIONS' | translate }}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let employee of employees; let i = index" class="employee-row">
+              <td class="employee-number text-center">
+                <span class="employee-index bg-primary text-white rounded-circle">{{ i + 1 }}</span>
+              </td>
+              <td class="employee-name">
+                <div class="d-flex align-items-center">
+                  <div class="">
+                    {{ employee.name.charAt(0) | uppercase }}
+                  </div>
+                  <span>{{ employee.name }}</span>
+                </div>
+              </td>
+              <td class="employee-email">{{ employee.email }}</td>
+              <td>
+                <span class="badge"
+                      [class]="getRoleBadgeClass(employee.role)">
+                  {{ getRoleDisplayName(employee.role) | translate }}
+                </span>
+              </td>
+              <td class="text-center">
+                <div class="btn-group btn-group-sm" role="group" dir="ltr">
+                  <button
+                    class="btn btn-outline-danger"
+                    (click)="deleteEmployee(employee._id!)"
+                    [attr.aria-label]="'EMPLOYEE.DELETE_EMPLOYEE' | translate"
+                    [title]="'EMPLOYEE.DELETE_EMPLOYEE' | translate">
+                    <i class="fas fa-trash"></i>
+                    <span class="ms-1 d-none d-sm-inline">{{ 'COMMON.DELETE' | translate }}</span>
+                  </button>
+                  <button
+                    class="btn btn-outline-primary"
+                    (click)="editEmployee(employee)"
+                    [attr.aria-label]="'EMPLOYEE.EDIT_EMPLOYEE' | translate"
+                    [title]="'EMPLOYEE.EDIT_EMPLOYEE' | translate">
+                    <i class="fas fa-edit"></i>
+                    <span class="ms-1 d-none d-sm-inline">{{ 'COMMON.EDIT' | translate }}</span>
+                  </button>
+
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div *ngIf="!isLoading && employees.length === 0" class="no-data text-center py-5">
+        <div class="no-data-icon mb-3">
+          <i class="fas fa-users-slash fa-3x text-muted"></i>
+        </div>
+        <h4 class="text-muted mb-2">{{ 'EMPLOYEE.NO_EMPLOYEES_FOUND' | translate }}</h4>
+        <p class="text-muted mb-4">{{ 'EMPLOYEE.NO_EMPLOYEES_DESCRIPTION' | translate }}</p>
+        <button
+          routerLink="/employees/add"
+          class="btn btn-primary btn-lg">
+          <i class="fas fa-user-plus me-2"></i>
+          {{ 'EMPLOYEE.ADD_FIRST_EMPLOYEE' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="showEditModal" class="modal fade show d-block" tabindex="-1" role="dialog"
+     [attr.aria-hidden]="!showEditModal" style="background-color: rgba(0,0,0,0.5);">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="fas fa-edit me-2"></i>
+          {{ 'EMPLOYEE.EDIT_EMPLOYEE' | translate }}
+        </h5>
+        <!-- <button type="button" class="btn-close" (click)="closeEditModal()"
+                [attr.aria-label]="'COMMON.CLOSE' | translate"></button> -->
+      </div>
+
+      <form [formGroup]="editForm" (ngSubmit)="updateEmployee()">
+        <div class="modal-body">
+          <div *ngIf="editErrorMessage" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            {{ editErrorMessage }}
+            <button type="button" class="btn-close" (click)="editErrorMessage = ''"></button>
+          </div>
+
+          <div class="form-group mb-3">
+            <label for="editName" class="form-label">
+              <i class="fas fa-user me-1"></i>
+              {{ 'EMPLOYEE.FULL_NAME' | translate }} *
+            </label>
+            <input
+              type="text"
+              class="form-control"
+              id="editName"
+              formControlName="name"
+              [class.is-invalid]="hasEditError('name', 'required') || hasEditError('name', 'minlength')">
+            <div class="invalid-feedback" *ngIf="hasEditError('name', 'required')">
+              {{ 'VALIDATION.NAME_REQUIRED' | translate }}
+            </div>
+            <div class="invalid-feedback" *ngIf="hasEditError('name', 'minlength')">
+              {{ 'VALIDATION.NAME_MIN_LENGTH' | translate }}
+            </div>
+          </div>
+
+          <div class="form-group mb-3">
+            <label for="editEmail" class="form-label">
+              <i class="fas fa-envelope me-1"></i>
+              {{ 'COMMON.EMAIL' | translate }} *
+            </label>
+            <input
+              type="email"
+              class="form-control"
+              id="editEmail"
+              formControlName="email"
+              [class.is-invalid]="hasEditError('email', 'required') || hasEditError('email', 'email')">
+            <div class="invalid-feedback" *ngIf="hasEditError('email', 'required')">
+              {{ 'VALIDATION.EMAIL_REQUIRED' | translate }}
+            </div>
+            <div class="invalid-feedback" *ngIf="hasEditError('email', 'email')">
+              {{ 'VALIDATION.EMAIL_INVALID' | translate }}
+            </div>
+          </div>
+
+          <div class="form-group mb-3">
+            <label for="editPassword" class="form-label">
+              <i class="fas fa-lock me-1"></i>
+              {{ 'EMPLOYEE.PASSWORD' | translate }}
+            </label>
+            <div class="password-input-container">
+              <input
+                [type]="showEditPassword ? 'text' : 'password'"
+                class="form-control password-input"
+                id="editPassword"
+                formControlName="password"
+                [class.is-invalid]="hasEditError('password', 'minlength')"
+                placeholder="{{ 'EMPLOYEE.PASSWORD_PLACEHOLDER' | translate }}">
+
+              <button
+                type="button"
+                class="password-toggle-btn"
+                (click)="toggleEditPasswordVisibility()"
+                [attr.aria-label]="showEditPassword ? ('COMMON.HIDE_PASSWORD' | translate) : ('COMMON.SHOW_PASSWORD' | translate)">
+                <i class="fas" [class.fa-eye]="!showEditPassword" [class.fa-eye-slash]="showEditPassword"></i>
+              </button>
+            </div>
+            <div class="form-text text-muted">
+              <i class="fas fa-info-circle me-1"></i>
+              {{ 'EMPLOYEE.PASSWORD_HELP' | translate }}
+            </div>
+            <div class="invalid-feedback" *ngIf="hasEditError('password', 'minlength')">
+              {{ 'VALIDATION.PASSWORD_MIN_LENGTH' | translate }}
+            </div>
+          </div>
+
+          <div class="form-group mb-3">
+            <label for="editConfirmPassword" class="form-label">
+              <i class="fas fa-lock me-1"></i>
+              {{ 'EMPLOYEE.CONFIRM_PASSWORD' | translate }}
+            </label>
+            <div class="password-input-container">
+              <input
+                [type]="showEditConfirmPassword ? 'text' : 'password'"
+                class="form-control password-input"
+                id="editConfirmPassword"
+                formControlName="confirmPassword"
+                [class.is-invalid]="editForm.hasError('passwordMismatch') && editForm.get('confirmPassword')?.touched">
+
+              <button
+                type="button"
+                class="password-toggle-btn"
+                (click)="toggleEditConfirmPasswordVisibility()"
+                [attr.aria-label]="showEditConfirmPassword ? ('COMMON.HIDE_PASSWORD' | translate) : ('COMMON.SHOW_PASSWORD' | translate)">
+                <i class="fas" [class.fa-eye]="!showEditConfirmPassword" [class.fa-eye-slash]="showEditConfirmPassword"></i>
+              </button>
+            </div>
+            <div class="invalid-feedback" *ngIf="editForm.hasError('passwordMismatch') && editForm.get('confirmPassword')?.touched">
+              <i class="fas fa-exclamation-triangle me-1"></i>
+              {{ 'VALIDATION.PASSWORDS_NOT_MATCH' | translate }}
+            </div>
+          </div>
+
+          <div class="form-group mb-3">
+            <label for="editRole" class="form-label">
+              <i class="fas fa-user-tag me-1"></i>
+              {{ 'EMPLOYEE.ROLE' | translate }} *
+            </label>
+            <select
+              class="form-select"
+              id="editRole"
+              formControlName="role"
+              [class.is-invalid]="hasEditError('role', 'required')">
+              <option value="employe">{{ 'EMPLOYEE.ROLE_EMPLOYEE' | translate }}</option>
+              <option value="accountant">{{ 'EMPLOYEE.ROLE_ACCOUNTANT' | translate }}</option>
+            </select>
+            <div class="invalid-feedback" *ngIf="hasEditError('role', 'required')">
+              {{ 'VALIDATION.ROLE_REQUIRED' | translate }}
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeEditModal()">
+            <i class="fas fa-times me-1"></i>
+            {{ 'COMMON.CANCEL' | translate }}
+          </button>
+          <button type="submit" class="btn btn-primary" [disabled]="editForm.invalid || isUpdating">
+            <span *ngIf="!isUpdating">
+              <i class="fas fa-save me-1"></i>
+              {{ 'COMMON.SAVE_CHANGES' | translate }}
+            </span>
+            <span *ngIf="isUpdating">
+              <i class="fas fa-spinner fa-spin me-1"></i>
+              {{ 'COMMON.SAVING' | translate }}
+            </span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

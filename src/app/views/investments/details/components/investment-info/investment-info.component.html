@@ -1,0 +1,129 @@
+<div class="card shadow-lg border-0 rounded-3" *ngIf="investment">
+  <div class="card-body p-4">
+    <div class="position-relative mb-3" *ngIf="investment.property?.images?.length; else noImage">
+      <div id="investmentCarousel" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner rounded shadow-sm carousel-inner-custom">
+          <div *ngFor="let img of investment.property.images; let i = index" class="carousel-item"
+            [class.active]="i === 0">
+            <img [src]="img" class="d-block w-100 rounded-top property-image" alt="Property image">
+          </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#investmentCarousel" data-bs-slide="prev"
+          aria-label="Previous Slide" title="Previous Slide">
+          <span class="carousel-control-prev-icon"></span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#investmentCarousel" data-bs-slide="next"
+          aria-label="Next Slide" title="Next Slide">
+          <span class="carousel-control-next-icon"></span>
+        </button>
+      </div>
+      <span class="position-absolute top-0 start-0 m-3">
+        <span [class]="getStatusClass(investment.status) + ' px-3 py-2 shadow-sm fs-14'">
+          {{ investment.status }}
+        </span>
+      </span>
+    </div>
+
+    <ng-template #noImage>
+      <div class="d-flex flex-column justify-content-center align-items-center rounded shadow-sm mb-3 no-image-box">
+        <div class="icon-box mb-3">
+          <iconify-icon icon="mdi:image-off-outline" class="fs-1 text-primary"></iconify-icon>
+        </div>
+        <h5 class="fw-semibold text-dark mb-1">No Images Available</h5>
+        <p class="text-muted mb-0">This property has no uploaded photos yet.</p>
+      </div>
+    </ng-template>
+
+    <div class="d-flex justify-content-between align-items-start mb-3">
+      <div>
+        <h3 class="fs-22 fw-bold text-dark mb-1">{{ investment.property?.name }}</h3>
+        <p class="text-muted mb-0 d-flex align-items-center gap-2">
+          <iconify-icon icon="solar:map-point-wave-bold-duotone" class="fs-18 text-primary"></iconify-icon>
+          {{ investment.property?.location }}
+        </p>
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <span class="badge bg-success-subtle text-success px-3 py-2 fs-16 shadow-sm">
+        Investment: {{ investment.amountInvested | currency:currency }}
+      </span>
+    </div>
+
+    <h5 class="fw-semibold text-dark mb-3">Investment Details</h5>
+    <ul class="list-group list-group-flush shadow-sm rounded">
+      <li class="list-group-item d-flex justify-content-between">
+        <strong>Investment Amount</strong>
+        <span class="text-success fw-bold">{{ investment.amountInvested | currency:currency }}</span>
+      </li>
+      <li class="list-group-item d-flex justify-content-between">
+        <strong>Shares Purchased</strong>
+        <span>{{ investment.sharesPurchased | number }}</span>
+      </li>
+      <li class="list-group-item d-flex justify-content-between">
+        <strong>Investment Date</strong>
+        <span>{{ formatDate(investment.investmentDate) }}</span>
+      </li>
+      <li class="list-group-item d-flex justify-content-between">
+        <strong>Status</strong>
+        <span [class]="getStatusClass(investment.status)">{{ investment.status }}</span>
+      </li>
+      <li class="list-group-item d-flex justify-content-between">
+        <strong>Dividends Received</strong>
+        <span class="text-success fw-bold">{{ investment.dividendsReceived | currency:currency }}</span>
+      </li>
+    </ul>
+
+    <h5 class="fw-semibold text-dark mt-4 mb-3">Property Information</h5>
+    <ul class="list-group list-group-flush shadow-sm rounded">
+      <li class="list-group-item d-flex justify-content-between">
+        <strong>Property Type</strong>
+        <span>{{ investment.property?.type }}</span>
+      </li>
+      <li class="list-group-item d-flex justify-content-between">
+        <strong>Share Price</strong>
+        <span>{{ investment.property?.sharePrice | currency:currency }}</span>
+      </li>
+      <li class="list-group-item d-flex justify-content-between">
+        <strong>Total Shares</strong>
+        <span>{{ investment.property?.totalShares | number }}</span>
+      </li>
+      <li class="list-group-item d-flex justify-content-between">
+        <strong>Remaining Shares</strong>
+        <span>{{ investment.property?.remainingShares | number }}</span>
+      </li>
+    </ul>
+
+    <div *ngIf="investment.exitInfo?.exitDate">
+      <h5 class="fw-semibold text-dark mt-4 mb-3">Exit Information</h5>
+      <ul class="list-group list-group-flush shadow-sm rounded">
+        <li class="list-group-item d-flex justify-content-between">
+          <strong>Exit Date</strong>
+          <span>{{ formatDate(investment.exitInfo.exitDate) }}</span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between">
+          <strong>Amount Returned</strong>
+          <span class="text-info fw-bold">{{ investment.exitInfo.amountReturned | currency:currency }}</span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between">
+          <strong>Profit/Loss</strong>
+          <span [class]="investment.exitInfo.profit >= 0 ? 'text-success fw-bold' : 'text-danger fw-bold'">
+            {{ investment.exitInfo.profit | currency:currency }}
+          </span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="d-flex align-items-center justify-content-between mt-4">
+      <a [routerLink]="['/investments']" class="link-primary fw-medium">
+        Back to List <i class="ri-arrow-right-line"></i>
+      </a>
+      <div>
+        <p class="mb-0 d-flex align-items-center gap-1">
+          <iconify-icon icon="solar:calendar-date-broken" class="fs-18 text-primary"></iconify-icon>
+          {{ currentYear }}
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

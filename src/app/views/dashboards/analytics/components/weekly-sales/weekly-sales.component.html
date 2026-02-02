@@ -1,0 +1,77 @@
+<div class="card">
+  <div class="card-header">
+    <h4 class="card-title mb-0">{{ 'ANALYTICS.WEEKLY_SALES' | translate }}</h4>
+  </div>
+
+  <div class="card-body p-0">
+    <ngb-carousel [showNavigationIndicators]="false">
+      <ng-template ngbSlide>
+        <img src="assets/images/properties/p-9.jpg" class="d-block w-100 rounded-0" alt="img-1" />
+      </ng-template>
+      <ng-template ngbSlide>
+        <img src="assets/images/properties/p-7.jpg" class="d-block w-100 rounded-0" alt="img-2" />
+      </ng-template>
+      <ng-template ngbSlide>
+        <img src="assets/images/properties/p-8.jpg" class="d-block w-100 rounded-0" alt="img-3" />
+      </ng-template>
+      <ng-template ngbSlide>
+        <img src="assets/images/properties/p-6.jpg" class="d-block w-100 rounded-0" alt="img-4" />
+      </ng-template>
+      <ng-template ngbSlide>
+        <img src="assets/images/properties/p-10.jpg" class="d-block w-100 rounded-0" alt="img-5" />
+      </ng-template>
+    </ngb-carousel>
+  </div>
+
+  <div class="card-footer border-top">
+    <div class="row text-center g-3">
+      <div class="col-6 col-md-4">
+        <div>
+          <i class="ri-building-2-line text-primary fs-4 mb-1 d-block"></i>
+          <h6 class="mb-0 text-muted">{{ 'ANALYTICS.TOTAL_PROPERTIES' | translate }}</h6>
+          <span class="fw-bold text-dark">{{ stats?.totalProperties || 0 }}</span>
+        </div>
+      </div>
+
+      <div class="col-6 col-md-4">
+        <div>
+          <i class="ri-home-2-line text-success fs-4 mb-1 d-block"></i>
+          <h6 class="mb-0 text-muted">{{ 'ANALYTICS.AVAILABLE_PROPERTIES' | translate }}</h6>
+          <span class="fw-bold text-dark">{{ stats?.availableProperties || 0 }}</span>
+        </div>
+      </div>
+
+      <div class="col-6 col-md-4">
+        <div>
+          <i class="ri-key-line text-danger fs-4 mb-1 d-block"></i>
+          <h6 class="mb-0 text-muted">{{ 'ANALYTICS.SOLD_PROPERTIES' | translate }}</h6>
+          <span class="fw-bold text-dark">{{ stats?.soldProperties || 0 }}</span>
+        </div>
+      </div>
+
+      <div class="col-6 col-md-4">
+        <div>
+          <i class="ri-hand-coin-line text-info fs-4 mb-1 d-block"></i>
+          <h6 class="mb-0 text-muted">{{ 'ANALYTICS.FUNDED_PROPERTIES' | translate }}</h6>
+          <span class="fw-bold text-dark">{{ stats?.fundedProperties || 0 }}</span>
+        </div>
+      </div>
+
+      <div class="col-6 col-md-4">
+        <div>
+          <i class="ri-time-line text-warning fs-4 mb-1 d-block"></i>
+          <h6 class="mb-0 text-muted">{{ 'ANALYTICS.MATURED_PROPERTIES' | translate }}</h6>
+          <span class="fw-bold text-dark">{{ stats?.maturedProperties || 0 }}</span>
+        </div>
+      </div>
+
+      <div class="col-6 col-md-4">
+        <div>
+          <i class="ri-hourglass-line text-secondary fs-4 mb-1 d-block"></i>
+          <h6 class="mb-0 text-muted">{{ 'ANALYTICS.PENDING_PROPERTIES' | translate }}</h6>
+          <span class="fw-bold text-dark">{{ stats?.pendingProperties || 0 }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,43 @@
+<div class="card">
+  <div class="card-body">
+    <div ngbDropdown class="float-end">
+      <a ngbDropdownToggle href="javascript:void(0);" class="arrow-none">
+        <i class="ri-more-2-fill fs-18 text-dark"></i>
+      </a>
+      <div ngbDropdownMenu class="dropdown-menu-end">
+        <a href="javascript:void(0);" class="dropdown-item">
+          <i class="bx bx-list-ul me-2"></i>To Do
+        </a>
+        <a href="javascript:void(0);" class="dropdown-item">
+          <i class="bx bx-line-chart me-2"></i>In Progress
+        </a>
+        <a href="javascript:void(0);" class="dropdown-item">
+          <i class="bx bx-check-square me-2"></i>Completed
+        </a>
+      </div>
+    </div>
+    <h5 class="card-title mb-3">Today's Schedules</h5>
+    @for (item of scheduleData; track $index; let last = $last) {
+      <div class="row align-items-center">
+        <div class="col-3 col-sm-2">
+          <p [class]="{ 'mb-0': last }">{{ item.time }}</p>
+        </div>
+        <div class="col-9 col-sm-10">
+          <ngb-alert
+            class="px-2"
+            [ngClass]="{ 'mb-0': last }"
+            [dismissible]="false"
+            [type]="item.variant"
+          >
+            <p class="mb-0">
+              {{ item.title }}
+            </p>
+            <p class="mb-0">
+              {{ item.duration }}
+            </p>
+          </ngb-alert>
+        </div>
+      </div>
+    }
+  </div>
+</div>

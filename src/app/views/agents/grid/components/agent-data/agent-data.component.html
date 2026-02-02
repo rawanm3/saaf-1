@@ -1,0 +1,139 @@
+<div class="row">
+  @for (item of agentList; track $index) {
+    <div class="col-xl-4 col-lg-6">
+      <div class="card">
+        <div class="card-body">
+          <div
+            class="d-flex flex-wrap align-items-center gap-2 border-bottom pb-3"
+          >
+            <img
+              [src]="item.image"
+              alt=""
+              class="avatar-lg rounded-3 border border-light border-3"
+            />
+            <div class="d-block">
+              <a href="javascript:void(0);" class="text-dark fw-medium fs-16">{{
+                item.name
+              }}</a>
+              <p class="mb-0">{{ item.email }}</p>
+              <p class="mb-0 text-primary"># {{ $index + 1 }}</p>
+            </div>
+            <div class="ms-auto">
+              <div ngbDropdown>
+                <a
+                  ngbDropdownToggle
+                  class="btn btn-sm btn-outline-light rounded arrow-none fs-16"
+                  role="button"
+                >
+                  <i class="ri-more-2-fill"></i>
+                </a>
+                <div ngbDropdownMenu class="dropdown-menu-end">
+                  <a href="javascript:void(0);" class="dropdown-item"
+                    >Download</a
+                  >
+
+                  <a href="javascript:void(0);" class="dropdown-item">Export</a>
+
+                  <a href="javascript:void(0);" class="dropdown-item">Import</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p class="mt-3 d-flex align-items-center gap-2 mb-2">
+            <iconify-icon
+              icon="solar:home-bold-duotone"
+              class="fs-18 text-primary"
+            ></iconify-icon
+            >{{ item.project }} Properties
+          </p>
+          <p class="d-flex align-items-center gap-2 mt-2">
+            <iconify-icon
+              icon="solar:map-point-wave-bold-duotone"
+              class="fs-18 text-primary"
+            ></iconify-icon
+            >{{ item.address }}
+          </p>
+          <h5 class="my-3">Social Media :</h5>
+          <ul class="list-inline d-flex gap-1 mb-0 align-items-center">
+            <li class="list-inline-item">
+              <a
+                href="javascript: void(0);"
+                class="btn btn-soft-primary avatar-sm d-flex align-items-center justify-content-center fs-20"
+              >
+                <i class="ri-facebook-fill"></i>
+              </a>
+            </li>
+
+            <li class="list-inline-item">
+              <a
+                href="javascript: void(0);"
+                class="btn btn-soft-danger avatar-sm d-flex align-items-center justify-content-center fs-20"
+              >
+                <i class="ri-instagram-line"></i>
+              </a>
+            </li>
+
+            <li class="list-inline-item">
+              <a
+                href="javascript: void(0);"
+                class="btn btn-soft-info avatar-sm d-flex align-items-center justify-content-center fs-20"
+              >
+                <i class="ri-twitter-line"></i>
+              </a>
+            </li>
+            <li class="list-inline-item">
+              <a
+                href="javascript: void(0);"
+                class="btn btn-soft-success avatar-sm d-flex align-items-center justify-content-center fs-20"
+              >
+                <i class="ri-whatsapp-line"></i>
+              </a>
+            </li>
+            <li class="list-inline-item">
+              <a
+                href="javascript: void(0);"
+                class="btn btn-soft-warning avatar-sm d-flex align-items-center justify-content-center fs-20"
+              >
+                <i class="ri-mail-line"></i>
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div class="card-footer border-top">
+          <div class="row g-2">
+            <div class="col-lg-6">
+              <a href="javascript:void(0);" class="btn btn-primary w-100"
+                ><iconify-icon
+                  icon="solar:outgoing-call-rounded-broken"
+                  class="align-middle fs-18"
+                ></iconify-icon>
+                Call Us</a
+              >
+            </div>
+            <div class="col-lg-6">
+              <a href="javascript:void(0);" class="btn btn-light w-100"
+                ><iconify-icon
+                  icon="solar:chat-round-dots-broken"
+                  class="align-middle fs-16"
+                ></iconify-icon>
+                Message</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>
+<div class="p-3 border-top">
+  <nav aria-label="Page navigation example">
+    <ngb-pagination
+      [collectionSize]="30"
+      [page]="1"
+      class="pagination justify-content-end mb-0"
+    >
+      <ng-template ngbPaginationPrevious>Previous</ng-template>
+      <ng-template ngbPaginationNext>Next</ng-template>
+    </ngb-pagination>
+  </nav>
+</div>

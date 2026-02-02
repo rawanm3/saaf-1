@@ -1,0 +1,58 @@
+<div class="card">
+  <div class="card-header d-flex align-items-center justify-content-between">
+    <h4 class="card-title">Weekly Inquiry</h4>
+    <div ngbDropdown>
+      <a
+        ngbDropdownToggle
+        class="btn btn-sm btn-outline-light rounded show"
+        role="button"
+      >
+        This Month
+      </a>
+      <div
+        ngbDropdownMenu
+        class="dropdown-menu-end"
+        data-popper-placement="bottom-end"
+        style="
+          position: absolute;
+          inset: 0px 0px auto auto;
+          margin: 0px;
+          transform: translate(0px, 34px);
+        "
+      >
+        <a href="javascript:void(0);" class="dropdown-item">Day</a>
+
+        <a href="javascript:void(0);" class="dropdown-item">Month</a>
+
+        <a href="javascript:void(0);" class="dropdown-item">Year</a>
+      </div>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="row">
+      <div class="col-12">
+        <div id="weekly-inquiry" class="apex-charts">
+          <apx-chart
+            [chart]="weeklyInquiryChart.chart!"
+            [series]="weeklyInquiryChart.series!"
+            [plotOptions]="weeklyInquiryChart.plotOptions!"
+            [grid]="weeklyInquiryChart.grid!"
+            [colors]="weeklyInquiryChart.colors!"
+            [dataLabels]="weeklyInquiryChart.dataLabels!"
+            [legend]="weeklyInquiryChart.legend!"
+            [xaxis]="weeklyInquiryChart.xaxis!"
+            [yaxis]="weeklyInquiryChart.yaxis!"
+            [tooltip]="weeklyInquiryChart.tooltip!"
+            [responsive]="weeklyInquiryChart.responsive!"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="card-footer d-flex align-items-center justify-content-between border-top"
+  >
+    <p class="mb-0 fw-medium fs-15">Jan-Dec {{ currentYear }}</p>
+    <p class="mb-0 text-dark fw-semibold fs-15">First Week 37</p>
+  </div>
+</div>

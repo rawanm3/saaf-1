@@ -1,0 +1,86 @@
+<div class="card">
+  <div class="card-header">
+    <h4 class="card-title">Interested Properties (3)</h4>
+  </div>
+</div>
+<div class="row mt-3">
+  @for (item of propertyList; track $index) {
+    <div class="col-lg-4">
+      <div class="card overflow-hidden">
+        <div class="position-relative">
+          <img [src]="item.image" alt="" class="img-fluid rounded-top" />
+          <span class="position-absolute top-0 start-0 p-1">
+            <button
+              type="button"
+              class="btn btn-warning avatar-sm d-inline-flex align-items-center justify-content-center fs-20 rounded text-light"
+            >
+              <iconify-icon icon="solar:bookmark-broken"></iconify-icon>
+            </button>
+          </span>
+        </div>
+        <div class="card-body">
+          <div class="d-flex align-items-center gap-2">
+            <div class="avatar bg-light rounded">
+              <iconify-icon
+                icon="solar:home-bold-duotone"
+                class="fs-24 text-primary avatar-title"
+              ></iconify-icon>
+            </div>
+            <div>
+              <a href="javascript:void(0);" class="text-dark fw-medium fs-16">{{
+                item.name
+              }}</a>
+              <p class="text-muted mb-0">{{ item.location }}</p>
+            </div>
+          </div>
+          <div class="row mt-2 g-2">
+            <div class="col-lg-4 col-4">
+              <span class="badge bg-light-subtle text-muted border fs-12">
+                <span class="fs-16"
+                  ><iconify-icon
+                    icon="solar:bed-broken"
+                    class="align-middle"
+                  ></iconify-icon
+                ></span>
+                {{ item.beds }} Beds
+              </span>
+            </div>
+            <div class="col-lg-4 col-4">
+              <span class="badge bg-light-subtle text-muted border fs-12">
+                <span class="fs-16"
+                  ><iconify-icon
+                    icon="solar:bath-broken"
+                    class="align-middle"
+                  ></iconify-icon
+                ></span>
+                {{ item.bath }} Bath
+              </span>
+            </div>
+            <div class="col-lg-4 col-4">
+              <span class="badge bg-light-subtle text-muted border fs-12">
+                <span class="fs-16"
+                  ><iconify-icon
+                    icon="solar:scale-broken"
+                    class="align-middle"
+                  ></iconify-icon
+                ></span>
+                {{ item.size }}ft
+              </span>
+            </div>
+            <div class="col-lg-4 col-4">
+              <span class="badge bg-light-subtle text-muted border fs-12">
+                <span class="fs-16"
+                  ><iconify-icon
+                    icon="solar:double-alt-arrow-up-broken"
+                    class="align-middle"
+                  ></iconify-icon
+                ></span>
+                {{ item.flor }} Floor
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

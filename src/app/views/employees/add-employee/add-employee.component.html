@@ -1,0 +1,165 @@
+<div class="add-employee-container">
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">
+        <i class="fas fa-user-plus me-2"></i>
+        {{ 'EMPLOYEE.ADD_EMPLOYEE' | translate }}
+      </h3>
+    </div>
+
+    <div class="card-body">
+      <form [formGroup]="employeeForm" (ngSubmit)="onSubmit()">
+
+        <div class="form-group mb-3">
+          <label for="name" class="form-label">
+            {{ 'EMPLOYEE.FULL_NAME' | translate }} <span class="text-danger">*</span>
+          </label>
+          <input
+            type="text"
+            id="name"
+            formControlName="name"
+            class="form-control"
+            [class.is-invalid]="hasError('name', 'required') || hasError('name', 'minlength')"
+            [placeholder]="'EMPLOYEE.ENTER_FULL_NAME' | translate">
+
+          <div class="invalid-feedback" *ngIf="hasError('name', 'required')">
+            {{ 'EMPLOYEE.ERROR.NAME_REQUIRED' | translate }}
+          </div>
+          <div class="invalid-feedback" *ngIf="hasError('name', 'minlength')">
+            {{ 'EMPLOYEE.ERROR.NAME_MINLENGTH' | translate:{value: 2} }}
+          </div>
+        </div>
+
+        <div class="form-group mb-3">
+          <label for="email" class="form-label">
+            {{ 'COMMON.EMAIL' | translate }} <span class="text-danger">*</span>
+          </label>
+          <input
+            type="email"
+            id="email"
+            formControlName="email"
+            class="form-control"
+            [class.is-invalid]="hasError('email', 'required') || hasError('email', 'email')"
+            [placeholder]="'EMPLOYEE.ENTER_EMAIL' | translate">
+
+          <div class="invalid-feedback" *ngIf="hasError('email', 'required')">
+            {{ 'EMPLOYEE.ERROR.EMAIL_REQUIRED' | translate }}
+          </div>
+          <div class="invalid-feedback" *ngIf="hasError('email', 'email')">
+            {{ 'EMPLOYEE.ERROR.EMAIL_INVALID' | translate }}
+          </div>
+        </div>
+
+        <div class="form-group mb-3">
+          <label for="password" class="form-label">
+            {{ 'COMMON.PASSWORD' | translate }} <span class="text-danger">*</span>
+          </label>
+          <div class="password-input-container">
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              id="password"
+              formControlName="password"
+              class="form-control password-input"
+              [class.is-invalid]="hasError('password', 'required') ||
+                                 hasPasswordError('uppercase') ||
+                                 hasPasswordError('number') ||
+                                 hasPasswordError('specialChar') ||
+                                 hasError('password', 'minlength')"
+              [placeholder]="'EMPLOYEE.ENTER_PASSWORD' | translate">
+
+            <button
+              type="button"
+              class="password-toggle-btn"
+              (click)="togglePasswordVisibility()"
+              [attr.aria-label]="showPassword ? ('COMMON.HIDE_PASSWORD' | translate) : ('COMMON.SHOW_PASSWORD' | translate)">
+              <i class="fas" [class.fa-eye]="!showPassword" [class.fa-eye-slash]="showPassword"></i>
+            </button>
+          </div>
+
+          <div class="invalid-feedback" *ngIf="hasError('password', 'required')">
+            {{ 'EMPLOYEE.ERROR.PASSWORD_REQUIRED' | translate }}
+          </div>
+          <div class="invalid-feedback" *ngIf="hasError('password', 'minlength')">
+            {{ 'EMPLOYEE.ERROR.PASSWORD_MINLENGTH' | translate:{value: 8} }}
+          </div>
+          <div class="invalid-feedback" *ngIf="hasPasswordError('uppercase')">
+            {{ 'EMPLOYEE.ERROR.PASSWORD_UPPERCASE' | translate }}
+          </div>
+          <div class="invalid-feedback" *ngIf="hasPasswordError('number')">
+            {{ 'EMPLOYEE.ERROR.PASSWORD_NUMBER' | translate }}
+          </div>
+          <div class="invalid-feedback" *ngIf="hasPasswordError('specialChar')">
+            {{ 'EMPLOYEE.ERROR.PASSWORD_SPECIAL_CHAR' | translate }}
+          </div>
+
+          <div class="form-text text-muted">
+            <small>
+              {{ 'EMPLOYEE.PASSWORD_REQUIREMENTS' | translate }}
+            </small>
+          </div>
+
+          <div class="password-strength mt-2" *ngIf="password?.value && password?.dirty">
+            <div class="progress" style="height: 5px;">
+              <div class="progress-bar"
+                   [class.bg-danger]="passwordStrength < 40"
+                   [class.bg-warning]="passwordStrength >= 40 && passwordStrength < 80"
+                   [class.bg-success]="passwordStrength >= 80"
+                   [style.width.%]="passwordStrength">
+              </div>
+            </div>
+            <small class="text-muted">
+              <span *ngIf="passwordStrength < 40">{{ 'EMPLOYEE.PASSWORD_WEAK' | translate }}</span>
+              <span *ngIf="passwordStrength >= 40 && passwordStrength < 80">{{ 'EMPLOYEE.PASSWORD_MEDIUM' | translate }}</span>
+              <span *ngIf="passwordStrength >= 80">{{ 'EMPLOYEE.PASSWORD_STRONG' | translate }}</span>
+            </small>
+          </div>
+        </div>
+
+        <div class="form-group mb-4">
+          <label for="role" class="form-label">
+            {{ 'EMPLOYEE.ROLE' | translate }} <span class="text-danger">*</span>
+          </label>
+          <select
+            id="role"
+            formControlName="role"
+            class="form-select"
+            [class.is-invalid]="hasError('role', 'required')">
+            <option value="">{{ 'EMPLOYEE.SELECT_ROLE' | translate }}</option>
+            <option value="employe">{{ 'EMPLOYEE.ROLE_EMPLOYEE' | translate }}</option>
+            <option value="accountant">{{ 'EMPLOYEE.ROLE_ACCOUNTANT' | translate }}</option>
+          </select>
+
+          <div class="invalid-feedback" *ngIf="hasError('role', 'required')">
+            {{ 'EMPLOYEE.ERROR.ROLE_REQUIRED' | translate }}
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button
+            type="submit"
+            class="btn btn-primary btn-lg"
+            [disabled]="isLoading || employeeForm.invalid">
+
+            <span *ngIf="!isLoading">
+              <i class="fas fa-save me-2"></i>
+              {{ 'EMPLOYEE.ADD_EMPLOYEE_BUTTON' | translate }}
+            </span>
+
+            <span *ngIf="isLoading">
+              <i class="fas fa-spinner fa-spin me-2"></i>
+              {{ 'COMMON.ADDING' | translate }}
+            </span>
+          </button>
+
+          <button
+            type="button"
+            class="btn btn-secondary btn-lg ms-2"
+            (click)="cancel()"
+            [disabled]="isLoading">
+            {{ 'COMMON.CANCEL' | translate }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

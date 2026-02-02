@@ -1,0 +1,31 @@
+<app-page-title title="Real Estate" subTitle="Inbox" />
+
+<div class="card">
+  <div class="row g-0">
+    <div class="col-xl-2">
+      <div
+        class="offcanvas-xl offcanvas-start"
+        tabindex="-1"
+        id="offcanvasExample"
+        aria-labelledby="offcanvasExampleLabel"
+      >
+        <email-menu />
+      </div>
+    </div>
+
+    <div class="col-xl-3">
+      <div
+        class="offcanvas-xl offcanvas-end"
+        tabindex="-1"
+        id="emaillist"
+        aria-labelledby="emaillistLabel"
+      >
+        <inbox-mail />
+      </div>
+    </div>
+
+    <div class="col-xl-7">
+      <email-view />
+    </div>
+  </div>
+</div>

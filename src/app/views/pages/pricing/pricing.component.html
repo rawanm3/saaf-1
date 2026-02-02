@@ -1,0 +1,64 @@
+<app-page-title title="Pages" subTitle="Pricing" />
+
+<div class="row justify-content-center">
+  <div class="col-xxl-11">
+    <div class="text-center my-4">
+      <h3>Simple Pricing Plans</h3>
+      <p class="text-muted text-center">
+        Get the power and control you need to manage your organization's
+        technical documentation
+      </p>
+    </div>
+    <div class="row justify-content-center pt-3">
+      @for (item of pricingData; track $index) {
+        <div class="col-lg-3">
+          <div class="card card-pricing">
+            <div
+              class="card-body rounded-top text-center bg-gradient bg-primary"
+            >
+              @if (item.isPopular) {
+                <div class="pricing-ribbon pricing-ribbon-primary float-end">
+                  Popular
+                </div>
+              }
+              <h5 class="mt-0 mb-3 fs-14 text-uppercase fw-semibold text-white">
+                {{ item.name }}
+              </h5>
+              <h2 class="mt-0 mb-0 fw-bold text-white">
+                {{ currency }}{{ item.price }}
+                <span class="fs-14 fw-medium text-white text-opacity-50"
+                  >/ Month</span
+                >
+              </h2>
+            </div>
+            <div class="card-body pt-0">
+              <ul class="card-pricing-features text-muted ps-0 list-unstyled">
+                @for (feature of item.features; track feature) {
+                  <li class="text-dark">
+                    <iconify-icon
+                      icon="solar:check-circle-bold-duotone"
+                      class="text-primary align-middle fs-20 me-2"
+                    ></iconify-icon
+                    >{{ feature }}
+                  </li>
+                }
+              </ul>
+
+              <div class="mt-4 text-center">
+                @if (item.subscribed) {
+                  <button class="btn btn-primary px-sm-4 disabled w-100">
+                    Current Plan
+                  </button>
+                } @else {
+                  <button class="btn btn-primary px-sm-4 w-100">
+                    Get Started
+                  </button>
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</div>

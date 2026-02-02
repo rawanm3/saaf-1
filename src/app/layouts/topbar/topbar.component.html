@@ -1,0 +1,127 @@
+<header class="">
+  <div class="topbar">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <div class="d-flex align-items-center gap-2">
+          <div class="topbar-item">
+            <button
+              type="button"
+              (click)="toggleMobileMenu()"
+              class="button-toggle-menu topbar-button"
+              [attr.aria-label]="('COMMON.MENU' | translate)"
+              [attr.title]="('COMMON.MENU' | translate)"
+            >
+              <i class="ri-menu-2-line fs-24"></i>
+              <span class="visually-hidden">{{ 'COMMON.MENU' | translate }}</span>
+            </button>
+          </div>
+
+          
+        </div>
+
+        <div class="d-flex align-items-center gap-1">         
+          <div ngbDropdown class="topbar-item">
+  <button
+    ngbDropdownToggle
+    type="button"
+    class="topbar-button position-relative arrow-none"
+    id="page-header-notifications-dropdown"
+  >
+    <i class="ri-notification-3-line fs-22"></i>
+
+    @if (unreadCount > 0) {
+    <span
+      class="position-absolute topbar-badge fs-10 translate-middle badge bg-danger rounded-pill"
+    >
+      {{ unreadCount }}
+      <span class="visually-hidden">{{ 'NOTIFICATIONS.UNREAD_TXT' | translate }}</span>
+    </span>
+    }
+  </button>
+
+  <div
+    ngbDropdownMenu
+    class="py-0 dropdown-lg dropdown-menu-end"
+    aria-labelledby="page-header-notifications-dropdown"
+  >
+    <div
+      class="p-3 border-top-0 border-start-0 border-end-0 border-dashed border"
+    >
+      <div class="row align-items-center">
+        <div class="col">
+          <h6 class="m-0 fs-16 fw-semibold">
+            {{ 'NOTIFICATIONS.TITLE' | translate }}
+          </h6>
+        </div>
+        <div class="col-auto">
+          <a
+            href="javascript: void(0);"
+            class="text-dark text-decoration-underline"
+            (click)="clearAllNotifications()"
+          >
+            <small>{{ 'NOTIFICATIONS.CLEAR_ALL' | translate }}</small>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <ngx-simplebar style="max-height: 280px">
+      @for (item of notificationList; track $index) {
+      <a
+        href="javascript:void(0);"
+        class="dropdown-item py-3 border-bottom text-wrap"
+        [style.background-color]="item.seen ? 'white' : '#f3f6f9'"
+        (click)="markItemAsRead(item._id, $index)"
+      >
+        <div class="d-flex">
+          <div class="flex-shrink-0">
+            <div class="avatar-sm me-2">
+              <span
+                class="avatar-title bg-soft-info text-info fs-20 rounded-circle"
+              >
+                <i class="ri-home-8-line"></i>
+              </span>
+            </div>
+          </div>
+
+          <div class="flex-grow-1">
+            <p class="mb-0">
+              <span class="fw-medium">{{ item.message }}</span>
+            </p>
+
+            @if (item.property) {
+            <p class="mb-0 fs-11 text-muted">
+              {{ item.property.name }} - {{ item.property.location }}
+            </p>
+            }
+
+            <p class="mb-0 fs-10 text-end text-muted">
+              {{ item.createdAt | date:'short' }}
+            </p>
+          </div>
+        </div>
+      </a>
+      } 
+      
+      @if (notificationList.length === 0) {
+      <div class="text-center p-4">
+        <span class="text-muted">{{ 'NOTIFICATIONS.EMPTY_STATE' | translate }}</span>
+      </div>
+      }
+    </ngx-simplebar>
+  </div>
+</div>
+          <div  class="topbar-item">
+           
+            <div class="dropdown-menu-end">
+              <button class="dropdown-item text-danger" (click)="logout()">
+                <i class="bx bx-log-out align-middle me-2 fs-18"></i
+                ><span class="align-middle">{{ 'COMMON.LOGOUT' | translate }}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>

@@ -1,0 +1,159 @@
+<div *ngIf="loading" class="alert alert-info">{{ 'CUSTOMER_DETAILS.LOADING_CUSTOMER' | translate }}...</div>
+<div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+
+<div class="row">
+  <div class="col-xl-8 col-lg-12">
+
+    <customer-info [customer]="customer" (editRequested)="enableEdit()" />
+
+    <div class="card mt-3" *ngIf="editMode">
+      <div class="card-body">
+        <form [formGroup]="customerForm" (ngSubmit)="saveChanges()">
+  <div class="row g-3">
+
+
+    <div class="col-md-6">
+      <label class="form-label">{{ 'CUSTOMER_DETAILS.NAME' | translate }}</label>
+      <input
+        type="text"
+        class="form-control"
+        [ngClass]="{
+          'is-invalid': customerForm.get('name')?.touched && customerForm.get('name')?.invalid
+        }"
+        formControlName="name"
+      />
+      <div class="invalid-feedback" *ngIf="customerForm.get('name')?.touched && customerForm.get('name')?.invalid">
+        <div *ngIf="customerForm.get('name')?.hasError('required')">
+          {{ 'CUSTOMER.ERROR.NAME_AR_REQUIRED' | translate }}
+        </div>
+        <div *ngIf="customerForm.get('name')?.hasError('minlength')">
+          {{ 'CUSTOMER.ERROR.NAME_AR_MINLENGTH' | translate }}
+        </div>
+        
+      </div>
+    </div>
+
+
+    <div class="col-md-6">
+      <label class="form-label">{{ 'CUSTOMER_DETAILS.EMAIL' | translate }}</label>
+      <input
+        type="email"
+        class="form-control"
+        [ngClass]="{
+          'is-invalid': customerForm.get('email')?.touched && customerForm.get('email')?.invalid
+        }"
+        formControlName="email"
+      />
+      <div class="invalid-feedback" *ngIf="customerForm.get('email')?.touched && customerForm.get('email')?.invalid">
+        <div *ngIf="customerForm.get('email')?.hasError('required')">
+          {{ 'CUSTOMER.ERROR.EMAIL_REQUIRED' | translate }}
+        </div>
+        <div *ngIf="customerForm.get('email')?.hasError('email')">
+          {{ 'CUSTOMER.ERROR.EMAIL_INVALID' | translate }}
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <label class="form-label">{{ 'CUSTOMER_DETAILS.PHONE' | translate }}</label>
+      <input
+        type="text"
+        class="form-control"
+        [ngClass]="{
+          'is-invalid': customerForm.get('phone')?.touched && customerForm.get('phone')?.invalid
+        }"
+        formControlName="phone"
+      />
+      <div class="invalid-feedback" *ngIf="customerForm.get('phone')?.touched && customerForm.get('phone')?.invalid">
+        <div *ngIf="customerForm.get('phone')?.hasError('required')">
+          {{ 'CUSTOMER.ERROR.PHONE_REQUIRED' | translate }}
+        </div>
+        <div *ngIf="customerForm.get('phone')?.hasError('pattern')">
+          {{ 'CUSTOMER.ERROR.PHONE_PATTERN' | translate }}
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <label class="form-label">{{ 'CUSTOMER_DETAILS.COUNTRY' | translate }}</label>
+      <input
+        type="text"
+        class="form-control"
+        [ngClass]="{
+          'is-invalid': customerForm.get('country')?.touched && customerForm.get('country')?.invalid
+        }"
+        formControlName="country"
+      />
+      <div class="invalid-feedback" *ngIf="customerForm.get('country')?.touched && customerForm.get('country')?.invalid">
+        <div *ngIf="customerForm.get('country')?.hasError('required')">
+          {{ 'CUSTOMER.ERROR.PASSWORD_REQUIRED' | translate }}
+        </div>
+      </div>
+    </div>
+
+   
+    <div class="col-md-6">
+      <label class="form-label">{{ 'CUSTOMER_DETAILS.STATUS' | translate }}</label>
+      <select
+        class="form-select"
+        [ngClass]="{
+          'is-invalid': customerForm.get('status')?.touched && customerForm.get('status')?.invalid
+        }"
+        formControlName="status"
+      >
+        <option value="">{{ 'CUSTOMER_DETAILS.SELECT_STATUS' | translate }}</option>
+        <option *ngFor="let s of statusOptions" [value]="s">{{ s }}</option>
+      </select>
+      <div class="invalid-feedback" *ngIf="customerForm.get('status')?.touched && customerForm.get('status')?.invalid">
+        {{ 'CUSTOMER.ERROR.STATUS' | translate }}
+      </div>
+    </div>
+
+ 
+    <div class="col-md-6">
+      <label class="form-label">{{ 'CUSTOMER_DETAILS.ROLE' | translate }}</label>
+      <select
+        class="form-select"
+        [ngClass]="{
+          'is-invalid': customerForm.get('role')?.touched && customerForm.get('role')?.invalid
+        }"
+        formControlName="role"
+      >
+        <option value="">{{ 'CUSTOMER_DETAILS.SELECT_ROLE' | translate }}</option>
+        <option *ngFor="let r of roleOptions" [value]="r">{{ r }}</option>
+      </select>
+      <div class="invalid-feedback" *ngIf="customerForm.get('role')?.touched && customerForm.get('role')?.invalid">
+        {{ 'CUSTOMER.ERROR.ROLE' | translate }}
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-3 d-flex gap-2">
+    <button class="btn btn-primary" type="submit" [disabled]="saving || customerForm.invalid">
+      {{ 'CUSTOMER_DETAILS.SAVE' | translate }}
+    </button>
+    <button type="button" class="btn btn-light" (click)="editMode=false">
+      {{ 'CUSTOMER_DETAILS.CANCEL' | translate }}
+    </button>
+  </div>
+
+  <div *ngIf="saveError" class="text-danger mt-2">{{ saveError }}</div>
+</form>
+
+      </div>
+    </div>
+
+
+  </div>
+  <div class="col-xl-4 col-lg-12">
+    <customer-transactions [userId]="(customer?._id ?? customer?.id) ?? ''"
+      [ibanImageUrl]="customer?.ibanImageUrl ?? ''" [ibanNumber]="customer?.iban ?? ''"
+      [walletId]="(customer?.walletId ?? customer?.wallet?._id ?? customer?.wallet?.id) ?? ''">
+    </customer-transactions>
+  </div>
+
+  <div class="row">
+    <div class="col-xl-12">
+      <customer-transaction-history [userId]="(customer?._id ?? customer?.id) ?? ''" />
+    </div>
+  </div>

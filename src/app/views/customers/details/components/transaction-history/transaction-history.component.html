@@ -1,0 +1,58 @@
+    <div class="card p-2">
+      <div class="px-2 py-3 d-flex justify-content-between align-items-center">
+        <div>
+          <h4 class="card-title">{{ 'CUSTOMER_DETAILS.TRANSACTION_HISTORY' | translate }}</h4>
+        </div>
+       
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table align-middle text-nowrap table-hover table-centered mb-0">
+            <thead class="bg-light-subtle">
+              <tr>
+                <th>{{ 'CUSTOMER_DETAILS.TRANSACTION_DATE' | translate }}</th>
+                <th>{{ 'CUSTOMER_DETAILS.TRANSACTION_TYPE' | translate }}</th>
+                <th>{{ 'CUSTOMER_DETAILS.AMOUNT' | translate }}</th>
+                <th>{{ 'CUSTOMER_DETAILS.STATUS' | translate }}</th>
+              </tr>
+            </thead>
+            <tbody *ngIf="!isLoading && !errorMessage; else loadingOrError">
+<tr *ngFor="let item of pagedTransactions; trackBy: trackByIndex; let i = index">
+                
+                <td>{{ item.date | date:'medium' }}</td>
+                <td>{{ item.type | titlecase }}</td>
+                <td>{{ item.amount | currency:item.currency }}</td>
+                <td>
+                  <span class="badge" [ngClass]="{ 'bg-success': item.status === 'completed' , 'bg-warning': item.status === 'pending', 'bg-danger': item.status === 'rejected'  }">{{ item.status }}</span>
+                </td>
+  
+            </tbody>
+            <ng-template #loadingOrError>
+              <tr>
+                <td colspan="9" class="text-center py-3">
+                  <ng-container *ngIf="isLoading">{{ 'CUSTOMER_DETAILS.LOADING_TRANSACTION_HISTORY' | translate }}...</ng-container>
+                  <ng-container *ngIf="!isLoading && errorMessage">{{ errorMessage }}</ng-container>
+                  <ng-container *ngIf="!isLoading && !errorMessage && transactionList.length === 0">{{ 'CUSTOMER_DETAILS.NO_TRANSACTION_HISTORY_FOUND' | translate }}</ng-container>
+                </td>
+              </tr>
+            </ng-template>
+          </table>
+        </div>
+      </div>
+      <div class="card-footer">
+        <nav [attr.aria-label]="'COMMON.PAGE_NAVIGATION' | translate">
+            <ngb-pagination
+  [collectionSize]="transactionList.length"
+  [(page)]="page"
+  [pageSize]="pageSize"
+  [maxSize]="5"
+  [rotate]="true"
+  [boundaryLinks]="true"
+  class="pagination justify-content-end mb-0"
+>
+            <ng-template ngbPaginationPrevious>{{ 'COMMON.PREVIOUS' | translate }}</ng-template>
+            <ng-template ngbPaginationNext>{{ 'COMMON.NEXT' | translate }}</ng-template>
+          </ngb-pagination>
+        </nav>
+      </div>
+    </div>

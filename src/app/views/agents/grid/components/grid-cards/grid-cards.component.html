@@ -1,0 +1,165 @@
+<div class="row">
+  <div class="col-xl-6 col-lg-12">
+    <div class="card">
+      <div class="card-body">
+        <div class="row align-items-center">
+          <div class="col-lg-7">
+            <h4 class="text-dark mb-1">Welcome Back , Gaston</h4>
+            <p class="fs-14">This is your properties portfolio report</p>
+            <div class="row align-items-center text-center mb-2">
+              <div class="col-lg-7 border-end border-light">
+                <div class="row align-items-center">
+                  <div class="col-lg-6">
+                    <div id="grid-chart" class="apex-charts">
+                      <apx-chart
+                        [chart]="gridChart.chart!"
+                        [series]="gridChart.series!"
+                        [legend]="gridChart.legend!"
+                        [stroke]="gridChart.stroke!"
+                        [plotOptions]="gridChart.plotOptions!"
+                        [labels]="gridChart.labels!"
+                        [colors]="gridChart.colors!"
+                        [dataLabels]="gridChart.dataLabels!"
+                        [responsive]="gridChart.responsive!"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-lg-6">
+                    <h5>Properties</h5>
+                    <h2 class="fw-semibold text-dark">250</h2>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-5">
+                <div class="ps-2">
+                  <p class="d-flex align-items-center mb-2 gap-2">
+                    <i class="ri-circle-fill text-primary"></i>80 Vacant
+                  </p>
+                  <p class="d-flex align-items-center mb-2 gap-2">
+                    <i class="ri-circle-fill text-warning"></i>40 Occupied
+                  </p>
+                  <p class="d-flex align-items-center gap-2 mb-0">
+                    <i class="ri-circle-fill text-success"></i>30 Unlisted
+                  </p>
+                </div>
+              </div>
+            </div>
+            <p class="text-muted mb-0 d-flex align-items-center gap-1">
+              Last Updated <span>:</span>
+              <span class="text-dark">4 day ago</span>
+            </p>
+          </div>
+          <div class="col-lg-5 text-end">
+            <img src="assets/images/home-2.png" alt="" class="img-fluid" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-3 col-lg-6">
+    <div class="card">
+      <div
+        class="card-header d-flex align-items-center border-bottom border-dashed"
+      >
+        <h4 class="card-title mb-0">Development Task</h4>
+        <div class="ms-auto">
+          <div ngbDropdown>
+            <a
+              ngbDropdownToggle
+              class="drop-arrow-none card-drop p-0"
+              role="button"
+            >
+              <i class="ti ti-dots-vertical"></i>
+            </a>
+            <div ngbDropdownMenu class="dropdown-menu-end">
+              <a href="javascript:void(0);" class="dropdown-item">Download</a>
+              <a href="javascript:void(0);" class="dropdown-item">Share</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-lg-5">
+            <h5 class="text-dark fw-medium mb-1">250</h5>
+            <p class="text-muted mb-0">Total properties</p>
+          </div>
+          <div class="col-lg-4 col-3 text-center">
+            <h5 class="text-dark fw-medium mb-1">30</h5>
+            <p class="text-muted mb-0">Pending</p>
+          </div>
+          <div class="col-xl-3 col-3 text-end">
+            <h5 class="text-dark fw-medium mb-1">04</h5>
+            <p class="text-muted mb-0">Day Left</p>
+          </div>
+        </div>
+        <ngb-progressbar-stacked
+          class="progress-lg bg-light-subtle rounded-0 gap-1 overflow-visible mt-2"
+        >
+          <ngb-progressbar
+            type="primary"
+            [value]="40"
+            class="rounded-pill"
+            style="height: 10px"
+          ></ngb-progressbar>
+          <ngb-progressbar
+            type="warning"
+            [value]="30"
+            class="rounded-pill"
+            style="height: 10px"
+          ></ngb-progressbar>
+          <ngb-progressbar
+            type="info"
+            [value]="30"
+            class="rounded-pill"
+            style="height: 10px"
+          ></ngb-progressbar>
+        </ngb-progressbar-stacked>
+        <p class="mb-0 mt-3">
+          <span class="text-success fw-medium mb-0"
+            ><i class="ri-arrow-up-line"></i>34.4%</span
+          >
+          vs last month
+        </p>
+      </div>
+      <div class="card-footer d-flex justify-content-between py-2">
+        <p class="text-muted mb-0 d-flex align-items-center gap-1">
+          Last Updated <span>:</span> <span class="text-dark">12 hour ago</span>
+        </p>
+        <a href="javascript:void(0);" class="link-primary fw-medium"
+          >View More</a
+        >
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-3 col-lg-6">
+    <div class="card bg-primary bg-gradient">
+      <div class="card-body">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <div>
+            <h4 class="card-title mb-2 text-white">Total Seal Properties</h4>
+            <p class="text-white fw-medium fs-24 mb-0">450</p>
+          </div>
+          <div>
+            <div class="avatar-md bg-light rounded">
+              <iconify-icon
+                icon="solar:home-bold-duotone"
+                class="fs-32 text-primary avatar-title"
+              ></iconify-icon>
+            </div>
+          </div>
+        </div>
+        <div id="seal_properties" data-colors="#ffffff" class="apex-charts">
+          <apx-chart
+            [chart]="sealPropertiesChart.chart!"
+            [series]="sealPropertiesChart.series!"
+            [stroke]="sealPropertiesChart.stroke!"
+            [markers]="sealPropertiesChart.markers!"
+            [colors]="sealPropertiesChart.colors!"
+            [tooltip]="sealPropertiesChart.tooltip!"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

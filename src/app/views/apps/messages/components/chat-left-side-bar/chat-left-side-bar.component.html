@@ -1,0 +1,278 @@
+<div class="card position-relative overflow-hidden">
+  <div
+    class="card-header border-0 d-flex justify-content-between align-items-center gap-3"
+  >
+    <form class="chat-search pb-0">
+      <div class="chat-search-box">
+        <input
+          class="form-control"
+          type="text"
+          name="search"
+          placeholder="Search ..."
+        />
+        <button type="submit" class="btn btn-sm btn-link search-icon p-0 fs-15">
+          <i class="ri-search-eye-line"></i>
+        </button>
+      </div>
+    </form>
+    <a
+      class="fs-20"
+      type="button"
+      (click)="openSetting('Contactoffcanvas')"
+      role="button"
+    >
+      <i class="ri-settings-2-line"></i>
+    </a>
+  </div>
+  <h4 class="card-title mb-3 mx-3">Active</h4>
+  <div class="swiper mySwiper mx-3">
+    <swiper-container [config]="swiperConfig" class="swiper-wrapper">
+      @for (usr of users; track $index) {
+        <swiper-slide class="swiper-slide avatar">
+          <a href="javascript:void(0);" class="rounded-circle">
+            <div class="position-relative">
+              <img
+                [src]="usr.avatar"
+                alt=""
+                class="avatar rounded-circle flex-shrink-0"
+              />
+
+              <span
+                class="position-absolute bottom-0 end-0 p-1 bg-success border border-light border-2 rounded-circle"
+              >
+                <span class="visually-hidden">New alerts</span>
+              </span>
+            </div>
+          </a>
+        </swiper-slide>
+      }
+    </swiper-container>
+  </div>
+  <h4 class="card-title m-3">
+    Message <span class="badge bg-danger badge-pill">5</span>
+  </h4>
+  <ul
+    ngbNav
+    #nav="ngbNav"
+    class="nav nav-pills chat-tab-pills nav-justified p-1 rounded mx-1"
+  >
+    <li ngbNavItem class="nav-item">
+      <a ngbNavLink role="button"> Chat </a>
+      <ng-template ngbNavContent>
+        <ngx-simplebar class="px-2 mb-3 chat-setting-height" data-simplebar>
+          @for (item of users; track $index) {
+            <div class="d-flex flex-column h-100 border-bottom">
+              <a
+                href="javascript:void(0);"
+                (click)="getDetail(item)"
+                class="d-block"
+              >
+                <div class="d-flex align-items-center px-2 pb-2 mb-1 rounded">
+                  <div class="position-relative">
+                    <img
+                      [src]="item.avatar"
+                      alt=""
+                      class="avatar rounded-circle flex-shrink-0"
+                    />
+
+                    <span
+                      class="position-absolute bottom-0 end-0 p-1 bg-success border border-light border-2 rounded-circle"
+                    >
+                      <span class="visually-hidden">New alerts</span>
+                    </span>
+                  </div>
+                  <div class="d-block ms-3 flex-grow-1">
+                    <div
+                      class="d-flex justify-content-between align-items-center mb-1"
+                    >
+                      <h5 class="mb-0">{{ item.name }}</h5>
+                      <div>
+                        <p class="text-muted fs-13 mb-0">
+                          {{ item.time | date: 'shortTime' }}
+                        </p>
+                      </div>
+                    </div>
+                    <div
+                      class="d-flex justify-content-between align-items-center"
+                    >
+                      @if (item.activityStatus == 'typing' &&
+                      selectedUser.id == item.id) {
+                        <span class="w-75 text-primary">typing...</span>
+                      } @else {
+                        <p
+                          class="mb-0 text-muted d-flex align-items-center gap-1 d-flex align-items-center gap-1"
+                        >
+                          @if (item.chatIcon) {
+                            <iconify-icon
+                              [icon]="item.chatIcon"
+                              class="text-warning fs-18"
+                            ></iconify-icon>
+                          }
+                          {{ item.message }}
+                        </p>
+                        <div>
+                          <i class="ri-check-double-line fs-18 text-muted"></i>
+                          @if ($index == 0) {
+                            <i class="ri-pushpin-2-fill text-success"></i>
+                          }
+                        </div>
+                      }
+                    </div>
+                  </div>
+                </div>
+              </a>
+            </div>
+          }
+        </ngx-simplebar>
+      </ng-template>
+    </li>
+    <li ngbNavItem class="nav-item">
+      <a ngbNavLink role="button"> Group </a>
+      <ng-template ngbNavContent>
+        <ngx-simplebar class="px-2 mb-3 chat-setting-height">
+          <div class="d-flex flex-column h-100 border-bottom">
+            <a href="javascript:void(0);" class="d-block">
+              <div
+                class="d-flex align-items-center bg-light bg-opacity-75 p-2 mb-1 rounded"
+              >
+                <div class="position-relative">
+                  <div class="avatar flex-shrink-0">
+                    <span
+                      class="avatar-title bg-primary text-white fs-4 rounded-circle"
+                    >
+                      <i class="ri-group-line"></i>
+                    </span>
+                  </div>
+                </div>
+                <div class="d-block ms-3 flex-grow-1">
+                  <h5 class="mb-0 fw-medium">Create New Group</h5>
+                </div>
+              </div>
+            </a>
+          </div>
+          @for (grp of groupList; track $index) {
+            <div class="d-flex flex-column h-100 border-bottom">
+              <a href="javascript:void(0);" class="d-block">
+                <div class="d-flex align-items-center p-2 mb-1 rounded">
+                  <div class="position-relative">
+                    <div class="avatar flex-shrink-0">
+                      <span
+                        class="avatar-title bg-{{ grp.variant }}-subtle text-{{
+                          grp.variant
+                        }} fw-medium fs-4 rounded-circle"
+                      >
+                        {{ grp.groupName.charAt(0) }}
+                      </span>
+                    </div>
+                    <span
+                      class="position-absolute bottom-0 end-0 p-1 bg-success border border-light border-2 rounded-circle"
+                    >
+                      <span class="visually-hidden">New alerts</span>
+                    </span>
+                  </div>
+                  <div class="d-block ms-3 flex-grow-1">
+                    <div
+                      class="d-flex justify-content-between align-items-center mb-1"
+                    >
+                      <h5 class="mb-0">{{ grp.groupName }}</h5>
+                      <div>
+                        <p class="text-muted fs-13 mb-0">
+                          {{ grp.time | date: 'shortTime' }}
+                        </p>
+                      </div>
+                    </div>
+                    <div
+                      class="d-flex justify-content-between align-items-center"
+                    >
+                      <p
+                        class="mb-0 text-muted d-flex align-items-center gap-1"
+                      >
+                        <span class="fw-medium text-primary"
+                        >{{ grp.name }} :</span
+                        >{{ grp.description }}
+                      </p>
+                      @if (grp.change) {
+                        <span class="badge bg-danger badge-pill">{{
+                            grp.change
+                          }}</span>
+                      } @else {
+                        <i class="ri-check-double-line fs-18 text-primary"></i>
+                      }
+                    </div>
+                  </div>
+                </div>
+              </a>
+            </div>
+          }
+        </ngx-simplebar>
+      </ng-template>
+    </li>
+    <li ngbNavItem class="nav-item">
+      <a ngbNavLink role="button"> Contact </a>
+      <ng-template ngbNavContent>
+        <ngx-simplebar class="px-2 mb-3 chat-setting-height">
+          <div class="d-flex flex-column h-100 border-bottom">
+            <a href="javascript:void(0);" class="d-block">
+              <div
+                class="d-flex align-items-center justify-content-between bg-light bg-opacity-75 p-2 mb-1 rounded"
+              >
+                <div class="position-relative">
+                  <div class="avatar flex-shrink-0">
+                    <span
+                      class="avatar-title bg-primary text-white fs-4 rounded-circle"
+                    >
+                      <i class="ri-user-add-line"></i>
+                    </span>
+                  </div>
+                </div>
+                <div class="d-block ms-3 flex-grow-1">
+                  <h5 class="mb-0 fw-medium">Add New Contact</h5>
+                </div>
+                <iconify-icon
+                  icon="solar:qr-code-bold-duotone"
+                  class="fs-20 text-primary"
+                ></iconify-icon>
+              </div>
+            </a>
+          </div>
+          @for (usr of users; track $index) {
+            <div class="d-flex flex-column h-100 border-bottom">
+              <a
+                href="javascript:void(0);"
+                (click)="getDetail(usr)"
+                class="d-block"
+              >
+                <div class="d-flex align-items-center p-2 mb-1 rounded">
+                  <div class="position-relative">
+                    <img
+                      [src]="usr.avatar"
+                      alt=""
+                      class="avatar rounded-circle flex-shrink-0"
+                    />
+                  </div>
+                  <div class="d-block ms-3 flex-grow-1">
+                    <div
+                      class="d-flex justify-content-between align-items-center mb-1"
+                    >
+                      <h5 class="mb-0">{{ usr.name }}</h5>
+                    </div>
+                    <div
+                      class="d-flex justify-content-between align-items-center"
+                    >
+                      <p
+                        class="mb-0 text-muted d-flex align-items-center gap-1"
+                      >
+                        Are we going to have th...
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </a>
+            </div>
+          }
+        </ngx-simplebar>
+      </ng-template>
+    </li>
+  </ul>
+  <div [ngbNavOutlet]="nav"></div>
+</div>

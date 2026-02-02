@@ -1,0 +1,127 @@
+<app-page-title title="Pages" subTitle="FAQs" />
+
+<div class="row g-xl-4">
+  <div class="col-xl-6">
+    <h4 class="mb-3 fw-semibold fs-16">General</h4>
+
+    <div ngbAccordion>
+      @for (item of faqList.General; track $index; let first = $first) {
+        <div ngbAccordionItem [collapsed]="first ? false : true">
+          <h2 ngbAccordionHeader>
+            <button
+              ngbAccordionButton
+              class="fw-medium"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#faq1"
+              aria-expanded="true"
+              aria-controls="faq1"
+            >
+              {{ item.question }}
+            </button>
+          </h2>
+          <div ngbAccordionCollapse id="faq1" aria-labelledby="faq1">
+            <div ngbAccordionBody>
+              {{ item.answer }}
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+
+    <h4 class="mb-3 mt-4 fw-semibold fs-16">Refunds</h4>
+
+    <div ngbAccordion>
+      @for (item of faqList.Refunds; track $index; let first = $first) {
+        <div ngbAccordionItem [collapsed]="first ? false : true">
+          <h2 ngbAccordionHeader>
+            <button
+              ngbAccordionButton
+              class="fw-medium"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#faq1"
+              aria-expanded="true"
+              aria-controls="faq1"
+            >
+              {{ item.question }}
+            </button>
+          </h2>
+          <div ngbAccordionCollapse id="faq1" aria-labelledby="faq1">
+            <div ngbAccordionBody>
+              {{ item.answer }}
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+
+  <div class="col-xl-6">
+    <h4 class="mb-3 fw-semibold fs-16">Payments</h4>
+
+    <div ngbAccordion>
+      @for (item of faqList.Payments; track $index; let first = $first) {
+        <div ngbAccordionItem [collapsed]="first ? false : true">
+          <h2 ngbAccordionHeader>
+            <button
+              ngbAccordionButton
+              class="fw-medium"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#faq1"
+              aria-expanded="true"
+              aria-controls="faq1"
+            >
+              {{ item.question }}
+            </button>
+          </h2>
+          <div ngbAccordionCollapse id="faq1" aria-labelledby="faq1">
+            <div ngbAccordionBody>
+              {{ item.answer }}
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+
+    <h4 class="mb-3 mt-4 fw-semibold fs-16">Support</h4>
+
+    <div ngbAccordion>
+      @for (item of faqList.Support; track $index; let first = $first) {
+        <div ngbAccordionItem [collapsed]="first ? false : true">
+          <h2 ngbAccordionHeader>
+            <button
+              ngbAccordionButton
+              class="fw-medium"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#faq1"
+              aria-expanded="true"
+              aria-controls="faq1"
+            >
+              {{ item.question }}
+            </button>
+          </h2>
+          <div ngbAccordionCollapse id="faq1" aria-labelledby="faq1">
+            <div ngbAccordionBody>
+              {{ item.answer }}
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</div>
+
+<div class="row my-5">
+  <div class="col-12 text-center">
+    <h4>Can't find a questions?</h4>
+    <button type="button" class="btn btn-success mt-2">
+      <i class="ri-mail-line me-1"></i> Email us your question
+    </button>
+    <button type="button" class="btn btn-info mt-2 ms-1">
+      <i class="ri-twitter-line me-1"></i> Send us a tweet
+    </button>
+  </div>
+</div>
