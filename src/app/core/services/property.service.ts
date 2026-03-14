@@ -24,8 +24,8 @@ import {
   providedIn: 'root',
 })
 export class PropertyService {
-  private baseUrl = 'http://saaf.net.sa/api/realestate'
-  private cyclesUrl = 'http://saaf.net.sa/api/propertycycle'
+  private baseUrl = 'https://saaf.net.sa/api/realestate'
+  private cyclesUrl = 'https://saaf.net.sa/api/propertycycle'
 
   private propertiesSource = new BehaviorSubject<Property[]>([])
   private propertySource = new BehaviorSubject<Property | null>(null)
