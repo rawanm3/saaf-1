@@ -177,7 +177,7 @@
       <iconify-icon [icon]="isEditMode ? 'solar:pen-2-bold-duotone' : 'solar:home-bold-duotone'"
         class="align-middle me-2 text-primary">
       </iconify-icon>
-      {{ isEditMode ? 'Edit Property' : selectedProperty?.name }}
+      {{ isEditMode ? ('PROPERTY.EDIT_TITLE' | translate) : selectedProperty?.name  }}
     </h4>
     <!-- <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button> -->
   </div>

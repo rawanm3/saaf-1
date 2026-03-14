@@ -46,4 +46,16 @@ export class PropertyInfoComponent implements OnChanges {
   onCancel() {
     this.cancel.emit()
   }
+
+  getTranslatedType(type: string): string {
+  if (!type) return '';
+
+  // تحويل النوع إلى مفتاح ترجمة
+  const typeKey = type
+    .toUpperCase()
+    .replace(/\s+/g, '_')
+    .replace(/[\/\-]/g, '_');
+
+  return `PROPERTY.TYPE_${typeKey}`;
+}
 }

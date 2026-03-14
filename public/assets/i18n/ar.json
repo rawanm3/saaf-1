@@ -202,6 +202,11 @@
     }
   },
   "PROPERTY": {
+  "TYPE_RESIDENTIAL_COMMERCIAL_PROPERTY": "عقار سكني / تجاري",
+  "TYPE_ADMINISTRATIVE_PROPERTY": "عقار إداري (مكاتب)",
+  "TYPE_RESIDENTIAL_COMPLEX": "مجمع سكني",
+  "TYPE_RESIDENTIAL_COMMERCIAL_COMPLEX": "مجمع سكني / تجاري",
+  "TYPE_COMMERCIAL_ADMINISTRATIVE_COMPLEX": "مجمع تجاري / إداري",
     "ERROR_POSITIVE_NUMBER": "يجب أن تكون القيمة رقمًا موجبًا",
     "MAINTENANCE_EXPENSE": "مصروفات الصيانة",
     "UTILITIES_EXPENSE": "مصروفات الخدمات (كهرباء، مياه... إلخ)",
@@ -342,6 +347,7 @@
     "EDIT": "تعديل",
     "DELETE": "حذف",
     "EDIT_PROPERTY": "تعديل العقار",
+    "EDIT_TITLE": "تعديل العقار",
     "MIN_INVESTMENT": "الحد الأدنى للاستثمار",
     "HOLDING_PERIOD_MONTHS": "فترة الاحتفاظ (بالشهور)",
     "RENTED": "مؤجر",
@@ -584,6 +590,8 @@
       "withdraw": "سحب",
       "deposit": "إيداع",
       "NA": "غير متوفر",
+      "distribution": "توزيع أرباح",
+      "investment": "استثمار",
       "TYPE_VALUES": {
         "deposit": "إيداع",
         "withdraw": "سحب",
@@ -742,7 +750,8 @@
     "AGENT_NAME": "اسم الوكيل",
     "ACTION": "الإجراء",
     "LOADING_TRANSACTION_HISTORY": "جاري تحميل تاريخ المعاملات",
-    "NO_TRANSACTION_HISTORY_FOUND": "لا يوجد تاريخ معاملات"
+    "NO_TRANSACTION_HISTORY_FOUND": "لا يوجد تاريخ معاملات",
+    "DATE_FORMAT": "{{date}} في {{time}}"
   },
   "DISTRIBUTIONS": {
     "TITLE": "الارباح",
@@ -1202,5 +1211,8 @@
     "EMPLOYEE_ADDED_SUCCESS": "تم إضافة الموظف بنجاح",
     "EMAIL_ALREADY_EXISTS": "البريد الإلكتروني مسجل مسبقاً",
     "EMPLOYEE_ADD_ERROR": "حدث خطأ أثناء إضافة الموظف"
-  }
+  },
+
+  "SAAF.All Rights Reserved": "سعف . جميع الحقوق محفوظة"
+
 }

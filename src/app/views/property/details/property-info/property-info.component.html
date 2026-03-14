@@ -16,10 +16,10 @@
         </button>
       </div>
       <span class="position-absolute top-0 start-0 m-3">
-        <span class="badge bg-warning text-light px-3 py-2 shadow-sm fs-14">
-          {{ property.status || 'For Sale' }}
-        </span>
-      </span>
+  <span class="badge bg-warning text-light px-3 py-2 shadow-sm fs-14">
+    {{ 'PROPERTY.STATUS.' + (property.status?.toUpperCase() || 'AVAILABLE') | translate }}
+  </span>
+</span>
     </div>
 
     <ng-template #noImage>
@@ -51,8 +51,9 @@
     <h5 class="fw-semibold text-dark mb-3">{{ 'PROPERTY.PROPERTY_DETAILS' | translate }}</h5>
     <ul class="list-group list-group-flush shadow-sm rounded">
       <li class="list-group-item d-flex justify-content-between">
-        <strong>{{ 'PROPERTY.TYPE' | translate }}</strong> <span>{{ property.type }}</span>
-      </li>
+  <strong>{{ 'PROPERTY.TYPE' | translate }}</strong>
+  <span>{{ getTranslatedType(property.type) | translate }}</span>
+</li>
       <li class="list-group-item d-flex justify-content-between">
         <strong>{{ 'PROPERTY.MIN_INVESTMENT' | translate }}</strong> <span>{{ property.minInvestment}} {{ 'CURRENCY.' +
           currency | translate }}</span>

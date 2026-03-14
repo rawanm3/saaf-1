@@ -205,6 +205,11 @@
     }
   },
   "PROPERTY": {
+  "TYPE_RESIDENTIAL_COMMERCIAL_PROPERTY": "Residential/Commercial Property",
+  "TYPE_ADMINISTRATIVE_PROPERTY": "Administrative Property (Offices)",
+  "TYPE_RESIDENTIAL_COMPLEX": "Residential Complex",
+  "TYPE_RESIDENTIAL_COMMERCIAL_COMPLEX": "Residential/Commercial Complex",
+  "TYPE_COMMERCIAL_ADMINISTRATIVE_COMPLEX": "Commercial/Administrative Complex",
     "PROPERTY_CYCLE": {
       "TITLE": "Property Distribution Cycles",
       "SUBTITLE": "Manage property financial distribution cycles",
@@ -372,6 +377,7 @@
     "EDIT": "Edit",
     "DELETE": "Delete",
     "EDIT_PROPERTY": "Edit Property",
+    "EDIT_TITLE": "Edit Property",
     "MIN_INVESTMENT": "Min Investment",
     "HOLDING_PERIOD_MONTHS": "Holding Period (months)",
     "RENTED": "Rented",
@@ -869,6 +875,7 @@
     "ACTION": "Action"
   },
   "CUSTOMER_DETAILS": {
+    "DATE_FORMAT": "{{date}} at {{time}}",
     "GENERAL_INFO": "General Information",
     "TITLE": "Customer Details",
     "SUBTITLE": "Manage customer information",
@@ -1355,5 +1362,8 @@
     "EMAIL_ALREADY_EXISTS": "Email already exists",
     "INVALID_ROLE": "Invalid role"
 
-  }
+  },
+
+  "SAAF.All Rights Reserved": "SAAF. All Rights Reserved"
+
 }
