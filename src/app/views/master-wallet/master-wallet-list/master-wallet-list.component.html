@@ -1,0 +1,141 @@
+<div class="container-fluid py-4" [dir]="translate.currentLang === 'ar' ? 'rtl' : 'ltr'">
+    
+    <!-- Header Area -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold text-dark mb-1">{{ 'WALLET.MASTER_TITLE' | translate }}</h3>
+            <p class="text-muted small mb-0">{{ 'WALLET.SUBTITLE2' | translate }}</p>
+        </div>
+        <button class="btn btn-outline-primary shadow-sm" (click)="loadMasterWallet()" [disabled]="loading">
+            <i class="ri-refresh-line me-1" [class.ri-spin]="loading"></i> {{ 'COMMON.REFRESH' | translate }}
+        </button>
+    </div>
+
+    <!-- Stats Cards (Balances) -->
+    <div class="row g-3 mb-4" *ngIf="masterData">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm bg-primary text-white p-3 h-100">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <p class="opacity-75 mb-1 small">{{ 'WALLET.TOTAL_BALANCE' | translate }}</p>
+                        <h2 class="fw-bold mb-0">{{ masterData.masterWallet.balances.total | number:'1.2-2' }} <small class="fs-6">SAR</small></h2>
+                    </div>
+                    <div class="bg-white bg-opacity-25 p-2 rounded-3">
+                        <i class="ri-wallet-3-line fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm p-3 h-100 border-start border-4 border-success">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <p class="text-muted mb-1 small">{{ 'WALLET.AVAILABLE' | translate }}</p>
+                        <h2 class="fw-bold mb-0 text-success">{{ masterData.masterWallet.balances.available | number:'1.2-2' }} <small class="fs-6">SAR</small></h2>
+                    </div>
+                    <div class="bg-success-subtle text-success p-2 rounded-3">
+                        <i class="ri-checkbox-circle-line fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm p-3 h-100 border-start border-4 border-warning">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <p class="text-muted mb-1 small">{{ 'WALLET.PENDING' | translate }}</p>
+                        <h2 class="fw-bold mb-0 text-warning">{{ (masterData.masterWallet.balances.pending || 0) | number:'1.2-2' }} <small class="fs-6">SAR</small></h2>
+                    </div>
+                    <div class="bg-warning-subtle text-warning p-2 rounded-3">
+                        <i class="ri-time-line fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Transactions Table -->
+    <div class="card border-0 shadow-sm" style="border-radius: 15px;">
+        <div class="card-header bg-white py-3 border-0 d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 fw-bold"><i class="ri-history-line me-2 text-primary"></i>{{ 'WALLET.TRANSACTION_HISTORY' | translate }}</h5>
+            <span class="badge bg-light text-dark px-3 py-2 border">{{ masterData?.total }} {{ 'WALLET.RECORD_COUNT' | translate }}</span>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light text-muted small">
+                        <tr>
+                            <th class="ps-4 py-3">{{ 'WALLET.DATE' | translate }}</th>
+                            <th>{{ 'WALLET.USER' | translate }}</th>
+                            <th>{{ 'WALLET.TYPE' | translate }}</th>
+                            <th>{{ 'WALLET.AMOUNT' | translate }}</th>
+                            <th>{{ 'WALLET.PROCESSED_BY' | translate }}</th>
+                            <th>{{ 'WALLET.STATUS' | translate }}</th>
+                            <th class="pe-4">{{ 'WALLET.NOTES' | translate }}</th>
+                        </tr>
+                    </thead>
+                    <tbody *ngIf="masterData?.transactions">
+                        <tr *ngFor="let trx of paginatedTransactions">
+                            <td class="ps-4">
+                                <div class="fw-semibold small">{{ trx.createdAt | date:'mediumDate' }}</div>
+                                <div class="text-muted" style="font-size: 10px;">{{ trx.createdAt | date:'shortTime' }}</div>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-xs me-2 bg-info-subtle text-info rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 32px; height: 32px; font-size: 12px;">
+                                        {{ trx.userId?.name?.charAt(0) }}
+                                    </div>
+                                    <span class="small fw-medium">{{ trx.userId?.name || 'N/A' }}</span>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="small fw-bold">{{ trx.type | uppercase }}</span>
+                            </td>
+                            <td>
+                                <div [ngClass]="getTypeClass(trx.type)" class="fw-bold">
+                                    {{ (trx.type === 'debit' ? '-' : '+') }} {{ trx.amount | number:'1.2-2' }}
+                                </div>
+                            </td>
+                            <td>
+                                <span class="small text-muted">{{ trx.processedBy?.name || 'System' }}</span>
+                            </td>
+                            <td>
+                                <span class="badge rounded-pill px-3 py-1" [ngClass]="getStatusClass(trx.status)">
+                                    {{ trx.status }}
+                                </span>
+                            </td>
+                            <td class="pe-4">
+                                <span class="text-muted small">{{ trx.notes || '-' }}</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <!-- Empty State -->
+                <div *ngIf="!loading && (!masterData || masterData.transactions.length === 0)" class="text-center py-5">
+                    <i class="ri-inbox-line fs-1 text-muted"></i>
+                    <p class="text-muted mt-2">{{ 'WALLET.NO_TRANSACTIONS' | translate }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="d-flex justify-content-center align-items-center py-3 gap-2">
+
+    <button class="btn btn-sm btn-outline-secondary"
+            (click)="currentPage = currentPage - 1"
+            [disabled]="currentPage === 1">
+        Prev
+    </button>
+
+    <span class="small">
+        Page {{ currentPage }} of {{ totalPages }}
+    </span>
+
+    <button class="btn btn-sm btn-outline-secondary"
+            (click)="currentPage = currentPage + 1"
+            [disabled]="currentPage === totalPages">
+        Next
+    </button>
+
+</div>
+    </div>
+</div>

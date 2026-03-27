@@ -13,5 +13,12 @@ export type TransactionType = {
   agentName: string;
   investedProperty: string;
   walletId: string;
-  userId: string; 
+  userId: string;
+  currency?: string;
+  balanceBefore?: number;
+  balanceAfter?: number;
+  notes?: string;
+  processedBy?: string;
+  shares?: number;
+  referenceModel?: string;
 };

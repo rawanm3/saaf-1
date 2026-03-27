@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core'
-import { HttpClient, HttpHeaders } from '@angular/common/http'
+import { HttpClient } from '@angular/common/http'
 import { Observable } from 'rxjs'
+import { environment } from '@environment/environment'
+import { AuthenticationService } from './auth.service'
 
 export interface PendingPaymentsResponse {
   pendingDeposits: any[]
@@ -11,40 +13,39 @@ export interface PendingPaymentsResponse {
   providedIn: 'root',
 })
 export class WalletService {
-  private apiUrl = 'https://saaf.net.sa/api/wallet'
+  private apiUrl = `${environment.apiUrl}/wallet`
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private authService: AuthenticationService
+  ) {}
 
-  private getAuthHeaders(): HttpHeaders {
-    const token = localStorage.getItem('token')
-    return new HttpHeaders({
-      Authorization: token ? `Bearer ${token}` : '',
-      'Content-Type': 'application/json',
-    })
+  private get headers() {
+    return { Authorization: this.authService.session || this.authService.employeeSession || '' }
   }
+
+  // ─── Deposit / Withdraw ───────────────────────────────────────
 
   getPendingPayments(): Observable<PendingPaymentsResponse> {
     return this.http.get<PendingPaymentsResponse>(
       `${this.apiUrl}/pending-payments`,
-      { headers: this.getAuthHeaders() }
+      { headers: this.headers }
     )
   }
 
   approveDeposit(paymentId: string): Observable<any> {
-    console.log('Calling approveDeposit with', paymentId)
     return this.http.post(
       `${this.apiUrl}/approve-deposit`,
       { paymentId },
-      { headers: this.getAuthHeaders() }
+      { headers: this.headers }
     )
   }
 
   approveWithdraw(paymentId: string): Observable<any> {
-    console.log('Calling approveWithdraw with', paymentId)
     return this.http.post(
       `${this.apiUrl}/approve-withdraw`,
       { paymentId },
-      { headers: this.getAuthHeaders() }
+      { headers: this.headers }
     )
   }
 
@@ -52,7 +53,7 @@ export class WalletService {
     return this.http.post(
       `${this.apiUrl}/deposit/reject`,
       { paymentId, reason },
-      { headers: this.getAuthHeaders() }
+      { headers: this.headers }
     )
   }
 
@@ -60,13 +61,70 @@ export class WalletService {
     return this.http.post(
       `${this.apiUrl}/withdraw/reject`,
       { paymentId, reason },
-      { headers: this.getAuthHeaders() }
+      { headers: this.headers }
     )
   }
 
   updateAmount(paymentId: string, data: { amount: number }): Observable<any> {
-    return this.http.put(`${this.apiUrl}/update-amount/${paymentId}`, data, {
-      headers: this.getAuthHeaders(),
-    })
+    return this.http.put(
+      `${this.apiUrl}/update-amount/${paymentId}`,
+      data,
+      { headers: this.headers }
+    )
+  }
+
+  // ─── Pending Distributions ────────────────────────────────────
+
+  getPendingDistributions(): Observable<any> {
+    return this.http.get(
+      `${this.apiUrl}/pending-distributions`,
+      { headers: this.headers }
+    )
+  }
+
+  updatePendingDistribution(transactionId: string): Observable<any> {
+    return this.http.put(
+      `${this.apiUrl}/pending-distributions/${transactionId}`,
+      {},
+      { headers: this.headers }
+    )
+  }
+
+  // ─── Master Wallet ────────────────────────────────────────────
+
+  addToMasterWallet(data: {
+    propertyId: string
+    amount: number | null
+    totalexpense: number | null
+    currency: string
+    notes: string
+  }): Observable<any> {
+    return this.http.post(
+      `${this.apiUrl}/master/add`,
+      data,
+      { headers: this.headers }
+    )
+  }
+
+  distributeInvestments(data: {
+    propertyId: string
+    totalAmount: number | null
+    currency: string
+    notes: string
+  }): Observable<any> {
+    return this.http.post(
+      `${this.apiUrl}/master/distribute`,
+      data,
+      { headers: this.headers }
+    )
+  }
+
+  // ─── Master Wallet Info ───────────────────────────────────────
+
+  getMasterWallet(): Observable<any> {
+    return this.http.get(
+      `${this.apiUrl}/master-wallet`,
+      { headers: this.headers }
+    )
   }
 }

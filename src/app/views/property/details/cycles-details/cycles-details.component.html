@@ -1,240 +1,180 @@
-<div class="container py-2">
-    <h3 class="mb-2 text-primary">{{ 'PROPERTY.CYCLES' | translate }}</h3>
-    <div class="card shadow-sm mb-4">
+<div class="container-fluid py-4" >
+    
+    <!-- Header Card -->
+    <div class="card border-0 shadow-sm mb-4 overflow-hidden" *ngIf="propertyFinancials" style="border-radius: 15px;">
         <div class="card-body p-0">
-            <ul class="list-group list-group-flush">
-                <li *ngFor="let cycle of cycles; trackBy: trackByCycleId" class="list-group-item px-4 py-3">
-                    <div class="d-flex justify-content-between align-items-center flex-wrap">
-                        <div class="mb-2 mb-md-0">
-                            <h6 class="fw-bold mb-1 text-secondary">
-                                {{ 'PROPERTY.PERIOD' | translate }}:
-                            </h6>
-                            <p class="mb-0 text-muted">
-                                {{ cycle.periodStart | date: 'mediumDate' }} -
-                                {{ cycle.periodEnd | date: 'mediumDate' }}
-                            </p>
+            <div class="row g-0">
+                <div class="col-md-8 p-4">
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="icon-box bg-primary-subtle text-primary me-3 p-3 rounded-3">
+                            <i class="ri-building-2-fill fs-3"></i>
                         </div>
-                        <div class="d-flex gap-2 flex-wrap justify-content-end">
-                            <button type="button" class="btn btn-outline-info btn-sm d-flex align-items-center"
-                                (click)="toggleDetails(cycle)">
-                                <i class="ri-eye-line me-1"></i>
-                                {{
-                                cycle.showDetails
-                                ? ('COMMON.HIDE' | translate)
-                                : ('COMMON.VIEW_DETAILS' | translate)
-                                }}
-                            </button>
-                            <button type="button" class="btn btn-outline-primary btn-sm d-flex align-items-center"
-                                (click)="onEdit(cycle)">
-                                <i class="ri-edit-line me-1"></i>
-                                {{ 'COMMON.EDIT' | translate }}
-                            </button>
-                            <button type="button" class="btn btn-success btn-sm d-flex align-items-center"
-                                (click)="approveCycle(cycle._id)">
-                                <i class="ri-check-line me-1"></i>
-                                {{ 'PROPERTY.APPROVE' | translate }}
-                            </button>
-                            <button type="button" class="btn btn-danger btn-sm d-flex align-items-center"
-                                (click)="rejectCycle(cycle._id)">
-                                <i class="ri-close-line me-1"></i>
-                                {{ 'PROPERTY.REJECT' | translate }}
-                            </button>
+                        <div>
+                            <h3 class="fw-bold mb-0 text-dark">{{ propertyFinancials.propertyName }}</h3>
+                            <p class="text-muted mb-0 small">{{ 'PROPERTY.FINANCIAL_MANAGEMENT' | translate }}</p>
                         </div>
                     </div>
-                    <div *ngIf="cycle.showDetails"
-                        class="card mt-3 p-3 bg-light border-0 shadow-sm animate__animated animate__fadeIn">
-                        <div class="row g-2">
-                            <div class="col-md-6" *ngFor="let expense of expenseFields">
-                                <strong class="text-dark">{{ expense.label | translate }}:</strong>
-                                <span class="ms-1 text-muted">
-                                    {{ 'CURRENCY.SAR' | translate }} {{ cycle[expense.control] | number: '1.2-2' }}
-                                </span>
-                            </div>
-                            <div class="col-md-6">
-                                <strong class="text-dark">{{ 'PROPERTY.TOTAL_EXPENSES' | translate }}:</strong>
-                                <span class="ms-1 text-danger fw-bold">
-                                    {{ 'CURRENCY.SAR' | translate }} {{ cycle.totalExpenses | number: '1.2-2' }}
-                                </span>
-                            </div>
-                            <div class="col-md-6">
-                                <strong class="text-dark">{{ 'PROPERTY.NET_REVENUE' | translate }}:</strong>
-                                <span class="ms-1 text-success fw-bold">
-                                    {{ 'CURRENCY.SAR' | translate }} {{ cycle.netRevenue | number: '1.2-2' }}
-                                </span>
-                            </div>
-                        </div>
+                    <div class="d-flex gap-3 mt-3">
+                        <span class="badge rounded-pill bg-light text-dark border p-2 px-3">
+                            <i class="ri-pie-chart-line me-1 text-primary"></i> {{ 'PROPERTY.TOTAL_SHARES' | translate }}: {{ propertyFinancials.totalShares }}
+                        </span>
+                        <span class="badge rounded-pill bg-light text-dark border p-2 px-3">
+                            <i class="ri-funds-line me-1 text-success"></i> {{ 'PROPERTY.EXPECTED_YIELD' | translate }}: {{ propertyFinancials.expectedNetYield }}
+                        </span>
                     </div>
-                </li>
-
-                <li *ngIf="cycles.length === 0" class="list-group-item text-muted text-center py-4">
-                    {{ 'PROPERTY.NO_CYCLES' | translate }}
-                </li>
-            </ul>
+                </div>
+                <div class="col-md-4 bg-primary-subtle d-flex align-items-center justify-content-center p-4">
+                    <button class="btn btn-danger btn-lg shadow-sm px-4" (click)="downloadPayoutPDF()" [disabled]="pdfLoading">
+                        <span *ngIf="pdfLoading" class="spinner-border spinner-border-sm me-2"></span>
+                        <i *ngIf="!pdfLoading" class="ri-file-pdf-fill me-2"></i>
+                        {{ 'PROPERTY.DOWNLOAD_REPORT' | translate }}
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
-    <button *ngIf="!isEmployee()" class="btn btn-primary mt-3 mb-4 d-flex align-items-center" (click)="onCreateNew()">
-        <i class="ri-add-line me-2"></i>
-        {{ 'PROPERTY.CREATE_CYCLE' | translate }}
+    <div class="row g-4">
+        <!-- إضافة دخل جديد -->
+        <div class="col-lg-4" *ngIf="isAuthorized()">
+            <div class="card border-0 shadow-sm h-100" style="border-radius: 15px;">
+                <div class="card-header bg-white py-3 border-0">
+                    <h5 class="mb-0 fw-bold"><i class="ri-add-circle-fill text-primary me-2"></i>{{ 'PROPERTY.ADD_REVENUE' | translate }}</h5>
+                </div>
+                <div class="card-body">
+                    <form [formGroup]="revenueForm" (ngSubmit)="submitRevenue()">
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">{{ 'PROPERTY.GROSS_INCOME' | translate }}</label>
+                            <div class="input-group">
+                                <input type="number" class="form-control form-control-lg border-end-0" formControlName="amount" placeholder="0.00">
+                                <span class="input-group-text bg-white border-start-0 text-muted">SAR</span>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">{{ 'PROPERTY.EXPENSES' | translate }}</label>
+                            <input type="number" class="form-control" formControlName="totalexpense" placeholder="0.00">
+                        </div>
+                        
+                        <div class="p-3 bg-light rounded-3 mb-3 border-start border-4 border-primary">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="small text-muted">{{ 'PROPERTY.NET_PROFIT' | translate }}:</span>
+                                <h4 class="mb-0 fw-bold text-primary">{{ netRevenue | number:'1.2-2' }} <small>SAR</small></h4>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <textarea class="form-control" formControlName="notes" rows="2" [placeholder]="'PROPERTY.NOTES_PLACEHOLDER' | translate"></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 py-2 fw-bold" [disabled]="revenueForm.invalid || netRevenue <= 0 || submittingRevenue">
+                            <span *ngIf="submittingRevenue" class="spinner-border spinner-border-sm me-2"></span>
+                            {{ 'PROPERTY.SAVE_TO_WALLET' | translate }}
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- جدول المستثمرين -->
+        <div [class]="isAuthorized() ? 'col-lg-8' : 'col-lg-12'">
+            <div class="card border-0 shadow-sm" style="border-radius: 15px;">
+                <div class="card-header bg-white py-3 border-0 d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 fw-bold"><i class="ri-group-fill text-secondary me-2"></i>{{ 'PROPERTY.INVESTOR_DETAILS' | translate }}</h5>
+                    <span class="badge bg-secondary-subtle text-secondary px-3 py-2">{{ investors.length }} {{ 'PROPERTY.INVESTOR_COUNT' | translate }}</span>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light text-muted small uppercase">
+                                <tr>
+                                    <th class="ps-4 py-3">{{ 'PROPERTY.INVESTOR' | translate }}</th>
+                                    <th>{{ 'PROPERTY.OWNERSHIP' | translate }}</th>
+                                    <th>{{ 'PROPERTY.INVESTED_AMOUNT' | translate }}</th>
+                                    <th>{{ 'PROPERTY.DIVIDENDS_RECEIVED' | translate }}</th>
+                                    <th>{{ 'PROPERTY.REMAINING_RETURN' | translate }}</th>
+                                    <th>{{ 'PROPERTY.LAST_PAYOUT' | translate }}</th>
+                                    <th>{{ 'PROPERTY.NEXT_PAYOUT' | translate }}</th>
+                                    <th class="pe-4 text-end" *ngIf="isAuthorized()">{{ 'PROPERTY.ACTION' | translate }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <ng-container *ngFor="let inv of paginatedInvestors">
+                                    <tr>
+                                        <td class="ps-4">
+                                            <div class="d-flex align-items-center">
+                                                <div class="avatar-sm me-3 bg-info-subtle text-info rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 40px; height: 40px;">
+                                                    {{ inv.investorName?.charAt(0) }}
+                                                </div>
+                                                <div>
+                                                    <div class="fw-bold text-dark">{{ inv.investorName }}</div>
+                                                    <div class="text-muted small" style="font-size: 11px;">{{ inv.investorEmail }}</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="small fw-bold">{{ inv.sharesPurchased }} {{ 'PROPERTY.SHARES' | translate }}</div>
+                                            <div class="badge bg-success-subtle text-success" style="font-size: 10px;">{{ inv.ownershipPercent }}</div>
+                                        </td>
+                                        <td class="fw-semibold small">{{ inv.amountInvested }}</td>
+                                        <td class="text-primary fw-bold">{{ inv.dividendsReceived }}</td>
+                                        <td>
+                                            <span class="px-2 py-1 rounded small fw-bold" 
+                                                [ngClass]="inv.remainingReturn?.toString().includes('-') ? 'bg-danger-subtle text-danger' : 'bg-success-subtle text-success'">
+                                                {{ inv.remainingReturn }}
+                                            </span>
+                                        </td>
+                                        <td><div class="small fw-semibold text-muted">{{ inv.lastPayoutDate }}</div></td>
+                                        <td><div class="small fw-semibold text-muted">{{ inv.nextPayoutDate }}</div></td>
+                                        <td class="pe-4 text-end" *ngIf="isAuthorized()">
+                                            <button class="btn btn-sm btn-outline-primary rounded-pill px-3" (click)="toggleTransfer(inv)">
+                                                {{ 'PROPERTY.TRANSFER' | translate }}
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <!-- صف التحويل المنسدل -->
+                                    <tr *ngIf="inv.showTransfer" class="bg-light shadow-inner">
+                                        <td colspan="8" class="p-3">
+                                            <div class="card border-0 shadow-sm mx-3">
+                                                <div class="card-body d-flex gap-2 align-items-end">
+                                                    <div style="flex: 1;">
+                                                        <label class="small fw-bold mb-1">{{ 'PROPERTY.TRANSFER_AMOUNT' | translate }}</label>
+                                                        <input type="number" class="form-control form-control-sm" [(ngModel)]="inv.transferAmount" placeholder="0.00">
+                                                    </div>
+                                                    <div style="flex: 2;">
+                                                        <label class="small fw-bold mb-1">{{ 'PROPERTY.NOTES' | translate }}</label>
+                                                        <input type="text" class="form-control form-control-sm" [(ngModel)]="inv.transferNotes" [placeholder]="'PROPERTY.TRANSFER_REASON' | translate">
+                                                    </div>
+                                                    <button class="btn btn-sm btn-success px-4" (click)="submitTransfer(inv)" [disabled]="!inv.transferAmount">{{ 'PROPERTY.SEND' | translate }}</button>
+                                                    <button class="btn btn-sm btn-light border" (click)="toggleTransfer(inv)">{{ 'PROPERTY.CANCEL' | translate }}</button>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </ng-container>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-center align-items-center py-3 gap-2">
+
+    <button class="btn btn-sm btn-outline-secondary"
+            (click)="currentPage = currentPage - 1"
+            [disabled]="currentPage === 1">
+        Prev
     </button>
 
-    <div *ngIf="showCreateCycleForm" class="card p-4 mt-4 shadow animate__animated animate__fadeInUp">
-        <h5 class="mb-4 text-primary">
-            {{
-            editMode
-            ? ('PROPERTY.EDIT_CYCLE' | translate)
-            : ('PROPERTY.CREATE_NEW_CYCLE' | translate)
-            }}
-        </h5>
+    <span class="small fw-bold">
+        Page {{ currentPage }} of {{ totalPages }}
+    </span>
 
-        <form [formGroup]="cycleForm" (ngSubmit)="createOrUpdateCycle()">
-            <div class="row g-3 mb-3">
-                <div class="col-md-6">
-                    <label class="form-label fw-semibold">{{ 'PROPERTY.PERIOD_START' | translate }}</label>
-                    <input type="date" class="form-control" formControlName="periodStart" />
-                    <div *ngIf="cycleForm.get('periodStart')?.touched && cycleForm.get('periodStart')?.invalid"
-                        class="text-danger small mt-1">
-                        <ng-container *ngIf="cycleForm.get('periodStart')?.errors?.['required']">
-                            {{ 'PROPERTY.ERROR_PERIOD_START' | translate }}
-                        </ng-container>
-                    </div>
-                </div>
+    <button class="btn btn-sm btn-outline-secondary"
+            (click)="currentPage = currentPage + 1"
+            [disabled]="currentPage === totalPages">
+        Next
+    </button>
 
-                <div class="col-md-6">
-                    <label class="form-label fw-semibold">{{ 'PROPERTY.PERIOD_END' | translate }}</label>
-                    <input type="date" class="form-control" formControlName="periodEnd" />
-                    <div *ngIf="cycleForm.get('periodEnd')?.touched && cycleForm.get('periodEnd')?.invalid"
-                        class="text-danger small mt-1">
-                        <ng-container *ngIf="cycleForm.get('periodEnd')?.errors?.['required']">
-                            {{ 'PROPERTY.ERROR_PERIOD_END' | translate }}
-                        </ng-container>
-                    </div>
-                </div>
+</div>
             </div>
-
-            <div *ngIf="cycleForm.errors?.['invalidPeriod']" class="alert alert-warning py-2 small">
-                <i class="ri-error-warning-line me-1"></i>
-                {{ 'PROPERTY.ERROR_INVALID_PERIOD' | translate }}
-            </div>
-
-            <div class="row g-3 mb-3">
-                <div class="col-md-6">
-                    <label class="form-label fw-semibold">{{ 'PROPERTY.GROSS_COLLECTED' | translate }}</label>
-                    <div class="input-group">
-                        <span class="input-group-text">{{ 'CURRENCY.SAR' | translate }}</span>
-                        <input type="number" class="form-control" formControlName="grossCollected" min="0" />
-                    </div>
-                    <div *ngIf="cycleForm.get('grossCollected')?.touched && cycleForm.get('grossCollected')?.invalid"
-                        class="text-danger small mt-1">
-                        <ng-container *ngIf="cycleForm.get('grossCollected')?.errors?.['required']">
-                            {{ 'PROPERTY.ERROR_GROSS_COLLECTED' | translate }}
-                        </ng-container>
-                        <ng-container *ngIf="cycleForm.get('grossCollected')?.errors?.['min']">
-                            {{ 'PROPERTY.ERROR_POSITIVE_NUMBER' | translate }}
-                        </ng-container>
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-                    <label class="form-label fw-semibold">{{ 'PROPERTY.PROPERTY_VALUE' | translate }}</label>
-                    <div class="input-group">
-                        <span class="input-group-text">{{ 'CURRENCY.SAR' | translate }}</span>
-                        <input type="number" class="form-control" formControlName="propertyValue" min="0" />
-                    </div>
-                    <div *ngIf="cycleForm.get('propertyValue')?.touched && cycleForm.get('propertyValue')?.invalid"
-                        class="text-danger small mt-1">
-                        <ng-container *ngIf="cycleForm.get('propertyValue')?.errors?.['required']">
-                            {{ 'PROPERTY.ERROR_PROPERTY_VALUE' | translate }}
-                        </ng-container>
-                        <ng-container *ngIf="cycleForm.get('propertyValue')?.errors?.['min']">
-                            {{ 'PROPERTY.ERROR_POSITIVE_NUMBER' | translate }}
-                        </ng-container>
-                    </div>
-                </div>
-            </div>
-
-            <fieldset class="border p-3 mb-3 rounded shadow-sm bg-light">
-                <legend class="fw-bold small text-primary px-2 float-none w-auto">
-                    {{ 'PROPERTY.EXPENSES_DETAILS' | translate }}
-                </legend>
-
-                <div class="row g-3">
-                    <div class="col-md-6 col-lg-4" *ngFor="let expense of expenseFields">
-                        <label class="form-label small fw-semibold text-muted">{{ expense.label | translate }}</label>
-                        <div class="input-group input-group-sm">
-                            <span class="input-group-text">{{ 'CURRENCY.SAR' | translate }}</span>
-                            <input type="number" class="form-control" [formControlName]="expense.control" min="0" />
-                        </div>
-                        <div *ngIf="cycleForm.get(expense.control)?.touched && cycleForm.get(expense.control)?.invalid"
-                            class="text-danger small mt-1">
-                            <ng-container *ngIf="cycleForm.get(expense.control)?.errors?.['min']">
-                                {{ 'PROPERTY.ERROR_EXPENSE' | translate:{ field: (expense.label | translate) } }}
-                            </ng-container>
-                        </div>
-                    </div>
-                </div>
-
-                <hr class="my-3" />
-
-                <div class="row g-3">
-                    <div class="col-md-6 col-lg-4">
-                        <label class="form-label small fw-semibold text-dark">
-                            {{ 'PROPERTY.TOTAL_EXPENSES' | translate }}
-                        </label>
-                        <div class="input-group input-group-sm">
-                            <span class="input-group-text">{{ 'CURRENCY.SAR' | translate }}</span>
-                            <input type="number" class="form-control bg-light fw-bold" formControlName="totalExpenses"
-                                readonly />
-                        </div>
-                    </div>
-                </div>
-            </fieldset>
-
-            <div *ngIf="cycleForm.errors?.['expensesExceedIncome']" class="alert alert-warning py-2 small">
-                <i class="ri-alert-line me-1"></i>
-                {{ 'PROPERTY.ERROR_EXPENSES_EXCEED' | translate }}
-            </div>
-
-            <div class="row g-3 mb-3">
-                <div class="col-md-4">
-                    <label class="form-label fw-semibold">{{ 'PROPERTY.NET_REVENUE' | translate }}</label>
-                    <div class="input-group">
-                        <span class="input-group-text">{{ 'CURRENCY.SAR' | translate }}</span>
-                        <input type="number" class="form-control bg-light fw-bold text-success"
-                            formControlName="netRevenue" readonly />
-                    </div>
-                    <div *ngIf="cycleForm.errors?.['netRevenueInvalid']" class="text-danger small mt-1">
-                        {{ 'PROPERTY.ERROR_NET_REVENUE' | translate }}
-                    </div>
-                </div>
-
-                <div class="col-md-4">
-                    <label class="form-label fw-semibold">{{ 'PROPERTY.MONTHLY_RETURN' | translate }}</label>
-                    <div class="input-group">
-                        <span class="input-group-text">{{ 'CURRENCY.SAR' | translate }}</span>
-                        <input type="number" class="form-control bg-light" formControlName="monthlyReturn" readonly />
-                    </div>
-                </div>
-
-                <div class="col-md-4">
-                    <label class="form-label fw-semibold">{{ 'PROPERTY.ANNUAL_RETURN' | translate }}</label>
-                    <div class="input-group">
-                        <span class="input-group-text">{{ 'CURRENCY.SAR' | translate }}</span>
-                        <input type="number" class="form-control bg-light" formControlName="annualReturn" readonly />
-                    </div>
-                </div>
-            </div>
-
-            <div class="d-flex gap-2 mt-4">
-                <button type="submit" class="btn btn-primary d-flex align-items-center" [disabled]="cycleForm.invalid">
-                    <i class="ri-save-line me-2"></i>
-                    {{ 'PROPERTY.SAVE' | translate }}
-                </button>
-                <button type="button" class="btn btn-secondary d-flex align-items-center" (click)="cancelEdit()">
-                    <i class="ri-close-circle-line me-2"></i>
-                    {{ 'COMMON.CANCEL' | translate }}
-                </button>
-            </div>
-        </form>
+        </div>
     </div>
 </div>

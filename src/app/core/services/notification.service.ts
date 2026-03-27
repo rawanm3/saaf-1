@@ -9,7 +9,7 @@ import { environment } from '@environment/environment.prod'
   providedIn: 'root'
 })
 export class NotificationService {
-  private apiUrl = 'http://api.saaf.net.sa:9000/api/notifications'; 
+  private apiUrl =  `${environment.apiUrl}/notifications`
 
   private newNotificationSubject = new Subject<any>();
 

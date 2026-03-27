@@ -107,6 +107,13 @@ export const VIEWS_ROUTES: Route[] = [
     loadChildren: () =>
       import('./Distributions/Distributions.route').then((mod) => mod.Wallet_ROUTES),
   },
+{
+  path: 'master-wallet', // تأكد أنها مكتوبة هكذا (بدون مسافات وبأحرف صغيرة)
+  canActivate: [roleGuard],
+  data: { roles: ['admin', 'accountant'] },
+  loadChildren: () =>
+    import('./master-wallet/MasterWallet.route').then((mod) => mod.Wallet_ROUTES),
+},
   {
     path: 'pages',
     loadChildren: () =>

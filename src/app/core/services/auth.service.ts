@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 import { Observable, throwError } from 'rxjs';
 import type { User } from '@core/helper/fake-backend';
+import { environment } from '@environment/environment.prod';
 
 @Injectable({ providedIn: 'root' })
 export class AuthenticationService {
@@ -12,8 +13,10 @@ export class AuthenticationService {
   public readonly employeeAuthSessionKey = '_LAhomes_EMPLOYEE_AUTH_SESSION_KEY_';
   public readonly userRoleKey = '_LAhomes_USER_ROLE_';
 
-  private readonly BASE_API_URL = 'https://saaf.net.sa/api';
-  private readonly AUTH_API_URL = 'https://saaf.net.sa/api/register';
+  private readonly BASE_API_URL =  `${environment.apiUrl}`
+  private readonly AUTH_API_URL = `${environment.apiUrl}/register`
+  //   private readonly BASE_API_URL = 'http://localhost:9000/api';
+  // private readonly AUTH_API_URL = 'http://localhost:9000/api/register';
 
   constructor(private http: HttpClient) {}
 

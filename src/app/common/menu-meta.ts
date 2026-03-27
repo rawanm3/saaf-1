@@ -110,13 +110,14 @@ export const MENU_ITEMS: MenuItemType[] = [
     url: '/wallet/list',
     role: 'accountant',
   },
-  {
-    key: 'distributions',
-    label: 'SIDEBAR.DISTRIBUTIONS',
-    icon: 'ri-exchange-dollar-line',
-    url: '/distributions/list',
-    role: 'accountant',
-  },
+  // {
+  //   key: 'distributions',
+  //   label: 'SIDEBAR.DISTRIBUTIONS',
+  //   icon: 'ri-exchange-dollar-line',
+  //   url: '/distributions/list',
+  //   role: 'accountant',
+  // },
+
   {
     key: 'employees',
     label: 'SIDEBAR.EMPLOYEES',
@@ -139,5 +140,12 @@ export const MENU_ITEMS: MenuItemType[] = [
         role: 'admin',
       },
     ],
+  },
+    {
+    key: 'master-wallet',
+    label: 'SIDEBAR.MASTER_WALLET',
+    icon: 'ri-wallet-3-line',
+    url: 'master-wallet/master-wallet-list', // تأكدي من أن هذا هو مسار الصفحة الصحيح في الـ Routing
+    // يمكنك تعديل الصلاحية أو جعلها مصفوفة ['admin', 'accountant'] حسب إعداداتك
   },
 ]

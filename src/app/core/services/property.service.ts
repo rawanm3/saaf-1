@@ -19,18 +19,32 @@ import {
   PropertyStats,
   UpdateDistributionDto,
 } from '@core/models/property.model'
+import { AddToMasterWalletResponse, GeneratePayoutPdfResponse, InvestorData,  InvestorDetailsResponse,  MasterWalletResponse, PropertyInvestorsResponse, PropertyPayoutResponse, TransferResponse } from '@core/models/wallet.model'
+import { environment } from '@environment/environment.prod'
 
 @Injectable({
   providedIn: 'root',
 })
 export class PropertyService {
-  private baseUrl = 'https://saaf.net.sa/api/realestate'
-  private cyclesUrl = 'https://saaf.net.sa/api/propertycycle'
+  // private baseUrl = 'http://localhost:9000/api/realestate'
+  // private cyclesUrl = 'http://localhost:9000/api/wallet'
+    private baseUrl = `${environment.apiUrl}/realestate`
+  private cyclesUrl = `${environment.apiUrl}/wallet`
 
   private propertiesSource = new BehaviorSubject<Property[]>([])
   private propertySource = new BehaviorSubject<Property | null>(null)
-  private cyclesSource = new BehaviorSubject<PropertyCycle[]>([])
+private cyclesSource = new BehaviorSubject<PropertyCycle[]>([])
+private masterWalletSource = new BehaviorSubject<MasterWalletResponse | null>(null)
+private investorsSource = new BehaviorSubject<InvestorData[]>([])
+private investorDetailsSource = new BehaviorSubject<InvestorData | null>(null)
+private payoutDetailsSource = new BehaviorSubject<PropertyPayoutResponse | null>(null)
+private payoutPdfSource = new BehaviorSubject<string | null>(null)
 
+payoutDetails$ = this.payoutDetailsSource.asObservable()
+payoutPdf$ = this.payoutPdfSource.asObservable()
+masterWallet$ = this.masterWalletSource.asObservable()
+investors$ = this.investorsSource.asObservable()
+investorDetails$ = this.investorDetailsSource.asObservable()
   properties$ = this.propertiesSource.asObservable()
   property$ = this.propertySource.asObservable()
   cycles$ = this.cyclesSource.asObservable()
@@ -61,11 +75,11 @@ export class PropertyService {
     })
   }
 
-  getCyclesStats(): Observable<CycleStats> {
-    return this.http.get<CycleStats>(`${this.cyclesUrl}/stats`, {
-      headers: this.headers,
-    })
-  }
+  // getCyclesStats(): Observable<CycleStats> {
+  //   return this.http.get<CycleStats>(`${this.cyclesUrl}/stats`, {
+  //     headers: this.headers,
+  //   })
+  // }
 
   getAllRealEstates(): Observable<Property[]> {
     return this.http
@@ -211,92 +225,92 @@ export class PropertyService {
       .pipe(tap((res) => this.propertiesSource.next(res)))
   }
 
-  getPropertyCycles(propertyId: string): Observable<PropertyCycle[]> {
-    return this.http
-      .get<{ cycles?: PropertyCycle[] } | PropertyCycle[]>(
-        `${this.cyclesUrl}/list/${propertyId}`,
-        {
-          headers: this.headers,
-        }
-      )
-      .pipe(
-        map((res) => (Array.isArray(res) ? res : res.cycles || [])),
-        tap((cycles) => this.cyclesSource.next(cycles)),
-        catchError((err) => {
-          console.error('Error fetching property cycles:', err)
-          return of([])
-        })
-      )
-  }
+  // getPropertyCycles(propertyId: string): Observable<PropertyCycle[]> {
+  //   return this.http
+  //     .get<{ cycles?: PropertyCycle[] } | PropertyCycle[]>(
+  //       `${this.cyclesUrl}/list/${propertyId}`,
+  //       {
+  //         headers: this.headers,
+  //       }
+  //     )
+  //     .pipe(
+  //       map((res) => (Array.isArray(res) ? res : res.cycles || [])),
+  //       tap((cycles) => this.cyclesSource.next(cycles)),
+  //       catchError((err) => {
+  //         console.error('Error fetching property cycles:', err)
+  //         return of([])
+  //       })
+  //     )
+  // }
 
-  createPropertyCycle(data: Partial<PropertyCycle>): Observable<PropertyCycle> {
-    return this.http
-      .post<PropertyCycle>(`${this.cyclesUrl}/create`, data, {
-        headers: this.headers,
-      })
-      .pipe(
-        tap((newCycle) => {
-          const current = this.cyclesSource.value
-          this.cyclesSource.next([newCycle, ...current])
-        })
-      )
-  }
+  // createPropertyCycle(data: Partial<PropertyCycle>): Observable<PropertyCycle> {
+  //   return this.http
+  //     .post<PropertyCycle>(`${this.cyclesUrl}/create`, data, {
+  //       headers: this.headers,
+  //     })
+  //     .pipe(
+  //       tap((newCycle) => {
+  //         const current = this.cyclesSource.value
+  //         this.cyclesSource.next([newCycle, ...current])
+  //       })
+  //     )
+  // }
 
-  updatePropertyCycle(
-    cycleId: string,
-    data: Partial<PropertyCycle>
-  ): Observable<PropertyCycle> {
-    return this.http
-      .put<PropertyCycle>(`${this.cyclesUrl}/update/${cycleId}`, data, {
-        headers: this.headers,
-      })
-      .pipe(
-        tap((updated) => {
-          const updatedList = this.cyclesSource.value.map((c) =>
-            c._id === updated._id ? updated : c
-          )
-          this.cyclesSource.next(updatedList)
-        })
-      )
-  }
+  // updatePropertyCycle(
+  //   cycleId: string,
+  //   data: Partial<PropertyCycle>
+  // ): Observable<PropertyCycle> {
+  //   return this.http
+  //     .put<PropertyCycle>(`${this.cyclesUrl}/update/${cycleId}`, data, {
+  //       headers: this.headers,
+  //     })
+  //     .pipe(
+  //       tap((updated) => {
+  //         const updatedList = this.cyclesSource.value.map((c) =>
+  //           c._id === updated._id ? updated : c
+  //         )
+  //         this.cyclesSource.next(updatedList)
+  //       })
+  //     )
+  // }
 
-  approvePropertyCycle(cycleId: string): Observable<PropertyCycle> {
-    return this.http
-      .post<PropertyCycle>(
-        `${this.cyclesUrl}/approve/${cycleId}`,
-        {},
-        {
-          headers: this.headers,
-        }
-      )
-      .pipe(
-        tap((approved) => {
-          const updatedList = this.cyclesSource.value.map((c) =>
-            c._id === approved._id ? approved : c
-          )
-          this.cyclesSource.next(updatedList)
-        })
-      )
-  }
+  // approvePropertyCycle(cycleId: string): Observable<PropertyCycle> {
+  //   return this.http
+  //     .post<PropertyCycle>(
+  //       `${this.cyclesUrl}/approve/${cycleId}`,
+  //       {},
+  //       {
+  //         headers: this.headers,
+  //       }
+  //     )
+  //     .pipe(
+  //       tap((approved) => {
+  //         const updatedList = this.cyclesSource.value.map((c) =>
+  //           c._id === approved._id ? approved : c
+  //         )
+  //         this.cyclesSource.next(updatedList)
+  //       })
+  //     )
+  // }
 
-  rejectPropertyCycle(cycleId: string): Observable<PropertyCycle> {
-    return this.http
-      .post<PropertyCycle>(
-        `${this.cyclesUrl}/reject/${cycleId}`,
-        {},
-        {
-          headers: this.headers,
-        }
-      )
-      .pipe(
-        tap((rejected) => {
-          const updatedList = this.cyclesSource.value.map((c) =>
-            c._id === rejected._id ? rejected : c
-          )
-          this.cyclesSource.next(updatedList)
-        })
-      )
-  }
+  // rejectPropertyCycle(cycleId: string): Observable<PropertyCycle> {
+  //   return this.http
+  //     .post<PropertyCycle>(
+  //       `${this.cyclesUrl}/reject/${cycleId}`,
+  //       {},
+  //       {
+  //         headers: this.headers,
+  //       }
+  //     )
+  //     .pipe(
+  //       tap((rejected) => {
+  //         const updatedList = this.cyclesSource.value.map((c) =>
+  //           c._id === rejected._id ? rejected : c
+  //         )
+  //         this.cyclesSource.next(updatedList)
+  //       })
+  //     )
+  // }
 
   // getPendingDistributions(): Observable<PropertyCycle[]> {
   //   return this.http.get<PropertyCycle[]>(
@@ -324,9 +338,120 @@ export class PropertyService {
         })
       )
   }
-  getPropertyCycleById(cycleId: string): Observable<PropertyCycle> {
-    return this.http.get<PropertyCycle>(`${this.cyclesUrl}/cycle/${cycleId}`, {
+  // getPropertyCycleById(cycleId: string): Observable<PropertyCycle> {
+  //   return this.http.get<PropertyCycle>(`${this.cyclesUrl}/cycle/${cycleId}`, {
+  //     headers: this.headers,
+  //   })
+  // }
+addToMasterWallet(data: {
+  propertyId: string
+  amount: number
+  totalexpense?: number
+  notes?: string
+}): Observable<AddToMasterWalletResponse> {
+  return this.http
+    .post<AddToMasterWalletResponse>(`${this.cyclesUrl}/master/add`, data, {
       headers: this.headers,
     })
-  }
+    .pipe(
+      tap((res) => {
+        // optional: تحدثي الماستر واليت مباشرة
+        const current = this.masterWalletSource.value
+        if (current) {
+          this.masterWalletSource.next({
+            ...current,
+            masterWallet: res.masterWallet,
+            transactions: [res.transaction, ...current.transactions],
+            total: current.total + 1,
+          })
+        }
+      })
+    )
+}
+
+getPropertyInvestors(propertyId: string): Observable<PropertyInvestorsResponse> {
+  return this.http
+    .get<PropertyInvestorsResponse>(
+      `${this.cyclesUrl}/property/${propertyId}/investors`,
+      { headers: this.headers }
+    )
+    .pipe(
+      tap((res) => this.investorsSource.next(res.investors))
+    )
+}
+
+getInvestorById(
+  propertyId: string,
+  investorId: string
+): Observable<InvestorDetailsResponse> {
+  return this.http
+    .get<InvestorDetailsResponse>(
+      `${this.cyclesUrl}/property/${propertyId}/investor/${investorId}`,
+      { headers: this.headers }
+    )
+    .pipe(
+      tap((res) => this.investorDetailsSource.next(res.investor))
+    )
+}
+
+transferToInvestor(data: {
+  investorId: string
+  propertyId: string
+  amount: number
+  notes?: string
+}): Observable<TransferResponse> {
+  return this.http
+    .post<TransferResponse>(`${this.cyclesUrl}/transfer`, data, {
+      headers: this.headers,
+    })
+}
+
+getMasterWallet(): Observable<MasterWalletResponse> {
+  return this.http
+    .get<MasterWalletResponse>(`${this.cyclesUrl}/master-wallet`, {
+      headers: this.headers,
+    })
+    .pipe(
+      tap((res) => this.masterWalletSource.next(res)),
+      catchError((err) => {
+        console.error('Error fetching master wallet:', err)
+        return throwError(() => err)
+      })
+    )
+}
+getPropertyPayoutDetails(
+  propertyId: string
+): Observable<PropertyPayoutResponse> {
+  return this.http
+    .get<PropertyPayoutResponse>(
+      `${this.baseUrl}/payout-details/${propertyId}`,
+      { headers: this.headers }
+    )
+    .pipe(
+      tap((res) => this.payoutDetailsSource.next(res)),
+      catchError((err) => {
+        console.error('Error fetching payout details:', err)
+        return throwError(() => err)
+      })
+    )
+}
+generatePropertyPayoutPDF(
+  propertyId: string
+): Observable<GeneratePayoutPdfResponse> {
+  return this.http
+    .get<GeneratePayoutPdfResponse>(
+      `${this.baseUrl}/payout-pdf/${propertyId}`,
+      { headers: this.headers }
+    )
+    .pipe(
+      tap((res) => {
+        // نخزن رابط الـ PDF
+        this.payoutPdfSource.next(res.file)
+      }),
+      catchError((err) => {
+        console.error('Error generating payout PDF:', err)
+        return throwError(() => err)
+      })
+    )
+}
 }
