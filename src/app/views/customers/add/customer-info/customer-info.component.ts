@@ -30,6 +30,7 @@ export class CustomerInfoComponent implements OnInit {
   missingFields: string[] = [];
   selectedFiles: FileMap = {};
   isSubmitting = false;
+  selectedCountryCode: string = '20'; // Default country code for Egypt
 
   private readonly requiredFields = [
     'name',
@@ -50,10 +51,10 @@ export class CustomerInfoComponent implements OnInit {
     this.customerForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(2)]],
       nameEN: ['', [Validators.minLength(2)]],
-      nationalId: ['', [Validators.required, Validators.minLength(10)]],
+      nationalId: ['', [Validators.required]], // No min/max length
       country: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      phone: ['', [Validators.required, Validators.pattern(/^\+?[0-9]{9,15}$/)]],
+      phone: ['', [Validators.required, Validators.pattern(/^[0-9]{9,15}$/)]], // Numbers only, no +
       password: [
         '',
         [
@@ -78,7 +79,7 @@ export class CustomerInfoComponent implements OnInit {
       const passwordControl = this.customerForm.get('password');
       const nafathControl = this.customerForm.get('nafathSub');
 
-      if (v === 'sa' || v === 'saudi arabia') {
+      if (v === 'sa' || v === 'saudi arabia' || v === 'ksa') {
         nafathControl?.setValidators([Validators.required]);
         passwordControl?.clearValidators();
         passwordControl?.setValue('');
@@ -97,29 +98,46 @@ export class CustomerInfoComponent implements OnInit {
     });
   }
 
-  onFileSelected(event: Event, field: keyof FileMap): void {
-    const input = event.target as HTMLInputElement;
-    const file = input.files?.[0];
-    if (!file) return;
+  formatPhoneNumber(event: any): void {
+    let value = event.target.value;
+    // Remove any non-digit characters
+    value = value.replace(/[^0-9]/g, '');
 
-    if (!['image/png', 'image/jpeg'].includes(file.type)) {
-      Swal.fire('خطأ', 'يُسمح فقط بصور JPG أو PNG', 'warning');
-      return;
+    // Limit to 15 digits
+    if (value.length > 15) {
+      value = value.slice(0, 15);
     }
 
-    if (file.size > 2 * 1024 * 1024) {
-      Swal.fire('حجم الملف كبير', 'الحد الأقصى هو 2 ميجابايت', 'warning');
-      return;
-    }
-
-    this.selectedFiles[field] = file;
-    this.customerForm.patchValue({ [field]: file.name });
-    this.customerForm.get(field as string)?.updateValueAndValidity();
+    // Update the form control value without emitting event to avoid loop
+    this.customerForm.get('phone')?.setValue(value, { emitEvent: false });
   }
+
+  onFileSelected(event: Event, field: keyof FileMap): void {
+  const input = event.target as HTMLInputElement;
+  const file = input.files?.[0];
+  if (!file) return;
+
+  if (!['image/png', 'image/jpeg'].includes(file.type)) {
+    Swal.fire('خطأ', 'يُسمح فقط بصور JPG أو PNG', 'warning');
+    return;
+  }
+
+  if (file.size > 10 * 1024 * 1024) {
+    Swal.fire('حجم الملف كبير', 'الحد الأقصى هو 10 ميجابايت', 'warning');
+    return;
+  }
+
+  this.selectedFiles[field] = file;
+  this.customerForm.patchValue({ [field]: file.name });
+  this.customerForm.get(field as string)?.updateValueAndValidity();
+}
 
   private buildPayload(): CustomerPayload {
     const fv = this.customerForm.value;
     const country = fv.country?.trim().toLowerCase();
+
+    // Combine selected country code with phone number
+    const fullPhoneNumber = fv.phone ? `+${this.selectedCountryCode}${fv.phone}` : '';
 
     const payload: CustomerPayload = {
       name: fv.name?.trim(),
@@ -127,7 +145,7 @@ export class CustomerInfoComponent implements OnInit {
       nationalId: fv.nationalId?.trim(),
       country: fv.country?.trim(),
       email: fv.email?.trim(),
-      phone: fv.phone?.trim(),
+      phone: fullPhoneNumber, // Phone with selected country code
       iban: fv.iban?.trim(),
       nationalIdImageUrl: fv.nationalIdImageUrl?.trim(),
       ibanImageUrl: fv.ibanImageUrl?.trim(),
@@ -137,7 +155,7 @@ export class CustomerInfoComponent implements OnInit {
       customerStatus: fv.status,
     };
 
-    if (country !== 'sa' && country !== 'saudi arabia') {
+    if (country !== 'sa' && country !== 'saudi arabia' && country !== 'ksa') {
       payload.password = fv.password;
     } else {
       payload.nafathSub = fv.nafathSub;
@@ -147,7 +165,7 @@ export class CustomerInfoComponent implements OnInit {
   }
 
   private computeMissingFields(payload: CustomerPayload): string[] {
-    const isSaudi = ['sa', 'saudi arabia'].includes(payload.country.toLowerCase());
+    const isSaudi = ['sa', 'saudi arabia', 'ksa'].includes(payload.country?.toLowerCase() || '');
     return this.requiredFields.filter((f) => {
       if (f === 'password' && isSaudi) return false;
       const val = (payload as any)[f];
@@ -161,17 +179,14 @@ export class CustomerInfoComponent implements OnInit {
   }
 
   private extractErrorMessage(error: any): string {
-    console.log('Full error object:', error); // للمساعدة في التصحيح
+    console.log('Full error object:', error);
 
-    // معالجة الحالة الخاصة: رسالة تحتوي على validation errors كنص في خاصية error
     if (error?.error?.message && error?.error?.error) {
       const mainMessage = error.error.message;
       const validationErrors = error.error.error;
 
-      // إذا كان validationErrors نصاً يحتوي على أخطاء متعددة
       if (typeof validationErrors === 'string') {
         if (validationErrors.includes('validation failed')) {
-          // استخراج الأخطاء التفصيلية من النص
           const formattedErrors = this.parseValidationErrorText(validationErrors);
           if (formattedErrors) {
             return `<strong>${mainMessage}</strong><br><br>${formattedErrors}`;
@@ -181,12 +196,10 @@ export class CustomerInfoComponent implements OnInit {
       }
     }
 
-    // إذا كان هناك رسالة مباشرة
     if (error?.error?.message) {
       return error.error.message;
     }
 
-    // إذا كان هناك أخطاء متعددة (مصفوفة أو كائن)
     if (error?.error?.errors) {
       if (Array.isArray(error.error.errors)) {
         return error.error.errors.join('<br>');
@@ -206,38 +219,27 @@ export class CustomerInfoComponent implements OnInit {
       }
     }
 
-    // رسالة خطأ عامة
     if (error?.message) {
       return error.message;
     }
 
-    // رسالة افتراضية
-    return error?.error?.message || error?.message || '';
-
+    return error?.error?.message || error?.message || 'حدث خطأ غير متوقع';
   }
 
   private parseValidationErrorText(errorText: string): string {
-    // مثال: "User validation failed: nationalId: kareemelkady753@gmail.com is not a valid National ID, email: sdffdss@xdf is not a valid email"
-
-    // إزالة الجزء الأول من الرسالة
     const errorParts = errorText.split(': ');
     if (errorParts.length < 2) return errorText;
 
-    // أخذ الجزء الذي يحتوي على الأخطاء التفصيلية
     const detailedErrors = errorParts.slice(1).join(': ');
-
-    // تقسيم الأخطاء بناء على الفاصلة
     const individualErrors = detailedErrors.split(', ');
 
     const formattedErrors = individualErrors.map(error => {
-      // تقسيم كل خطأ إلى حرفين: اسم الحقل والرسالة
       const parts = error.split(': ');
       if (parts.length === 2) {
         const field = parts[0];
         const message = parts[1];
         const fieldName = this.getFieldDisplayName(field);
 
-        // ترجمة أو تحسين بعض الرسائل الشائعة
         let enhancedMessage = message;
         if (message.includes('is not a valid National ID')) {
           enhancedMessage = 'رقم الهوية غير صالح';
@@ -278,10 +280,9 @@ export class CustomerInfoComponent implements OnInit {
 
   onSubmit(): void {
     if (this.customerForm.invalid) {
-  this.customerForm.markAllAsTouched();
-  return;
-}
-
+      this.customerForm.markAllAsTouched();
+      return;
+    }
 
     this.isSubmitting = true;
     const payload = this.buildPayload();
@@ -296,7 +297,6 @@ export class CustomerInfoComponent implements OnInit {
         next: (res: any) => {
           this.isSubmitting = false;
 
-          // استخراج رسالة النجاح من الاستجابة
           const response = res.body || res;
           const successMessage = response?.message ||
                                 response?.data?.message ||
@@ -317,17 +317,14 @@ export class CustomerInfoComponent implements OnInit {
           });
         },
         error: (err: any) => {
-  this.isSubmitting = false;
-
-  const errorMessage = this.extractErrorMessage(err);
-
-  Swal.fire({
-    icon: 'error',
-    html: errorMessage,   // ← رسالة الباك فقط
-    confirmButtonText: 'حسناً',
-  });
-}
-
+          this.isSubmitting = false;
+          const errorMessage = this.extractErrorMessage(err);
+          Swal.fire({
+            icon: 'error',
+            html: errorMessage,
+            confirmButtonText: 'حسناً',
+          });
+        }
       });
   }
 }

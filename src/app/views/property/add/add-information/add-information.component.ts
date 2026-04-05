@@ -17,7 +17,7 @@ import { CommonModule } from '@angular/common'
 import { PropertyService } from '@core/services/property.service'
 import { Property } from '@core/models/property.model'
 import { TranslateModule } from '@ngx-translate/core'
-import Swal from 'sweetalert2' 
+import Swal from 'sweetalert2'
 
 @Component({
   selector: 'add-information',
@@ -57,7 +57,6 @@ export class AddInformationComponent implements OnInit {
         name: [
           '',
           [
-            Validators.required,
             Validators.minLength(3),
             Validators.maxLength(100),
             Validators.pattern(/^[a-zA-Z0-9\u0600-\u06FF\s\-_,\.]+$/),
@@ -66,17 +65,15 @@ export class AddInformationComponent implements OnInit {
         location: [
           '',
           [
-            Validators.required,
             Validators.minLength(5),
             Validators.maxLength(200),
           ],
         ],
-        type: ['', Validators.required],
-        status: ['', Validators.required],
+        type: [''],
+        status: [''],
         square: [
           null,
           [
-            Validators.required,
             Validators.min(1),
             Validators.max(1000000),
             Validators.pattern(/^\d+(\.\d{1,2})?$/),
@@ -84,17 +81,16 @@ export class AddInformationComponent implements OnInit {
         ],
         numberOfRooms: [
           null,
-          [Validators.required, Validators.min(1), Validators.pattern(/^\d+$/)],
+          [Validators.min(1), Validators.pattern(/^\d+$/)],
         ],
         numberOfBathrooms: [
           null,
-          [Validators.required, Validators.min(1), Validators.pattern(/^\d+$/)],
+          [Validators.min(1), Validators.pattern(/^\d+$/)],
         ],
         propertyNumber: ['', Validators.maxLength(20)],
         totalValue: [
           null,
           [
-            Validators.required,
             Validators.min(1),
             Validators.pattern(/^\d*\.?\d+$/),
           ],
@@ -106,7 +102,6 @@ export class AddInformationComponent implements OnInit {
         expectedNetYield: [
           null,
           [
-            Validators.required,
             Validators.min(0),
             Validators.max(100),
             Validators.pattern(/^\d*\.?\d+$/),
@@ -115,7 +110,6 @@ export class AddInformationComponent implements OnInit {
         expectedAnnualReturn: [
           null,
           [
-            Validators.required,
             Validators.min(0),
             Validators.max(100),
             Validators.pattern(/^\d*\.?\d+$/),
@@ -123,7 +117,7 @@ export class AddInformationComponent implements OnInit {
         ],
         holdingPeriodMonths: [
           '',
-          [Validators.required, Validators.min(0), Validators.pattern(/^\d+$/)],
+          [Validators.min(0), Validators.pattern(/^\d+$/)],
         ],
         sharePrice: [
           1,
@@ -131,7 +125,7 @@ export class AddInformationComponent implements OnInit {
         ],
         totalShares: [
           null,
-          [Validators.required, Validators.min(1), Validators.pattern(/^\d+$/)],
+          [Validators.min(1), Validators.pattern(/^\d+$/)],
         ],
         remainingShares: [null, [Validators.min(0)]],
         investedAmount: [0, [Validators.min(0)]],
@@ -143,7 +137,6 @@ export class AddInformationComponent implements OnInit {
         previousValue: [
           null,
           [
-            Validators.required,
             Validators.min(0),
             Validators.pattern(/^\d*\.?\d+$/),
           ],
@@ -151,7 +144,6 @@ export class AddInformationComponent implements OnInit {
         newValue: [
           null,
           [
-            Validators.required,
             Validators.min(0),
             Validators.pattern(/^\d*\.?\d+$/),
           ],
@@ -191,11 +183,11 @@ export class AddInformationComponent implements OnInit {
             Validators.pattern(/^\d*\.?\d+$/),
           ],
         ],
-        description: ['', [Validators.required, Validators.maxLength(1000)]],
+        description: ['', [Validators.maxLength(1000)]],
         features: this.fb.array([]),
         images: this.fb.array(
           [],
-          [Validators.required, Validators.minLength(1)]
+          [Validators.minLength(1)]
         ),
         coordinates: this.fb.group({
           latitude: [
@@ -217,7 +209,6 @@ export class AddInformationComponent implements OnInit {
           status: [
             'available',
             [
-              Validators.required,
               Validators.pattern(/^(available|sold|rented|under_maintenance)$/),
             ],
           ],

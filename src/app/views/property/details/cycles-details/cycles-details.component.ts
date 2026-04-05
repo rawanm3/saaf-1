@@ -6,6 +6,7 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import Swal from 'sweetalert2';
 import { AuthenticationService } from '@core/services/auth.service';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-cycles-details',
@@ -18,21 +19,28 @@ export class CyclesDetailsComponent implements OnInit {
   @Input() propertyId!: string;
 
   investors: any[] = [];
-  propertyFinancials: any = null; 
+  propertyFinancials: any = null;
   loading = false;
   pdfLoading = false;
   submittingRevenue = false;
   revenueForm!: FormGroup;
-currentPage = 1;
-itemsPerPage = 5; // أو 10 حسب ما تحبي
-totalPages = 0;
+  currentPage = 1;
+  itemsPerPage = 5;
+  totalPages = 0;
+
+  // متغيرات PDF
+  pdfUrl: SafeResourceUrl | null = null;
+  showPdfModal = false;
+  generatedFileName: string = ''; // تغيير من null إلى string فارغ
+
   constructor(
     private propertyService: PropertyService,
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private translate: TranslateService,
     private cdr: ChangeDetectorRef,
-    private authService: AuthenticationService
+    private authService: AuthenticationService,
+    private sanitizer: DomSanitizer
   ) {}
 
   ngOnInit(): void {
@@ -48,19 +56,15 @@ totalPages = 0;
 
   loadData(): void {
     this.loading = true;
-    // نعتمد على payout-details لأنها تحتوي على كل شيء (العقار + المستثمرين)
     this.propertyService.getPropertyPayoutDetails(this.propertyId).subscribe({
       next: (res: any) => {
-  this.propertyFinancials = res;
-  this.investors = res.investors || [];
-
-  // 👇 pagination
-  this.totalPages = Math.ceil(this.investors.length / this.itemsPerPage);
-  this.currentPage = 1;
-
-  this.loading = false;
-  this.cdr.detectChanges();
-},
+        this.propertyFinancials = res;
+        this.investors = res.investors || [];
+        this.totalPages = Math.ceil(this.investors.length / this.itemsPerPage);
+        this.currentPage = 1;
+        this.loading = false;
+        this.cdr.detectChanges();
+      },
       error: (err) => {
         this.loading = false;
         console.error('Error loading data', err);
@@ -75,10 +79,11 @@ totalPages = 0;
       notes: ['']
     });
   }
+
   get paginatedInvestors() {
-  const start = (this.currentPage - 1) * this.itemsPerPage;
-  return this.investors.slice(start, start + this.itemsPerPage);
-}
+    const start = (this.currentPage - 1) * this.itemsPerPage;
+    return this.investors.slice(start, start + this.itemsPerPage);
+  }
 
   get netRevenue(): number {
     const amount = Number(this.revenueForm.get('amount')?.value || 0);
@@ -86,23 +91,87 @@ totalPages = 0;
     return amount - expenses;
   }
 
-  downloadPayoutPDF(): void {
+  // ✅ دالة إنشاء وفتح PDF
+  generateAndOpenPDF(): void {
     this.pdfLoading = true;
+
     this.propertyService.generatePropertyPayoutPDF(this.propertyId).subscribe({
       next: (res: any) => {
         this.pdfLoading = false;
+
         if (res && res.file) {
-          const link = document.createElement('a');
-          link.href = res.file;
-          link.target = '_blank';
-          link.download = `Report_${this.propertyId}.pdf`;
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
+          // استخراج اسم الملف من الرابط
+          const fileName = res.file.split('/').pop();
+          this.generatedFileName = fileName || '';
+
+          // فتح PDF في تبويب جديد
+          if (this.generatedFileName) {
+            this.openPDFInNewTab(this.generatedFileName);
+          }
+
+          // عرض رسالة نجاح
+          Swal.fire({
+            icon: 'success',
+            title: this.translate.instant('PROPERTY.PDF_GENERATED'),
+            text: this.translate.instant('PROPERTY.PDF_OPENED_NEW_TAB'),
+            timer: 3000,
+            showConfirmButton: false
+          });
         }
       },
-      error: () => { this.pdfLoading = false; Swal.fire('Error', 'Could not generate PDF', 'error'); }
+      error: (err) => {
+        this.pdfLoading = false;
+        Swal.fire('Error', err.error?.message || 'Could not generate PDF', 'error');
+      }
     });
+  }
+
+  // ✅ فتح PDF في تبويب جديد
+  openPDFInNewTab(fileName: string): void {
+    if (!fileName) return;
+    const url = `${this.propertyService['baseUrl']}/view-pdf/${fileName}`;
+    window.open(url, '_blank');
+  }
+
+  // ✅ عرض PDF في مودال
+  viewPDFInModal(fileName: string): void {
+    if (!fileName) return;
+    const url = `${this.propertyService['baseUrl']}/view-pdf/${fileName}`;
+    this.pdfUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url);
+    this.showPdfModal = true;
+  }
+
+  // ✅ تحميل PDF
+  downloadPDF(fileName: string): void {
+    if (!fileName) return;
+
+    this.propertyService.viewPDFInline(fileName).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `Payout_Report_${this.propertyFinancials?.propertyName || this.propertyId}.pdf`;
+        link.click();
+        window.URL.revokeObjectURL(url);
+
+        Swal.fire({
+          icon: 'success',
+          title: this.translate.instant('PROPERTY.DOWNLOAD_STARTED'),
+          timer: 2000,
+          showConfirmButton: false
+        });
+      },
+      error: (err) => {
+        console.error('Download error:', err);
+        Swal.fire('Error', 'Could not download PDF', 'error');
+      }
+    });
+  }
+
+  // ✅ إغلاق المودال
+  closePdfModal(): void {
+    this.showPdfModal = false;
+    this.pdfUrl = null;
   }
 
   submitRevenue(): void {
@@ -133,9 +202,8 @@ totalPages = 0;
     }
   }
 
-submitTransfer(inv: any): void {
-    // محاولة التقاط المعرف من أكثر من مكان متوقع
-const id = inv.investorId;
+  submitTransfer(inv: any): void {
+    const id = inv.investorId;
     if (!id) {
       console.error('لم يتم العثور على معرف للمستثمر في الكائن التالي:', inv);
       Swal.fire('Error', this.translate.instant('PROPERTY.MISSING_INVESTOR_ID'), 'error');
@@ -148,7 +216,7 @@ const id = inv.investorId;
     }
 
     const payload = {
-      investorId: id, // تأكد أن السيرفر يتوقع هذا المسمى "investorId"
+      investorId: id,
       propertyId: this.propertyId,
       amount: inv.transferAmount,
       notes: inv.transferNotes || ''
@@ -164,7 +232,8 @@ const id = inv.investorId;
         Swal.fire('Error', err.error?.message || this.translate.instant('PROPERTY.TRANSFER_FAILED'), 'error');
       }
     });
-}
+  }
+
   isAuthorized(): boolean {
     const role = this.authService.userRole;
     return role === 'admin' || role === 'accountant';

@@ -67,7 +67,7 @@
   <!-- ─── Filter Bar (Search + Dates + PDF) ─── -->
   <div class="card-body pb-0">
     <div class="row g-2 align-items-end">
-      
+
       <!-- Search -->
       <div class="col-lg-3 col-md-4">
         <label class="form-label small fw-medium text-muted">{{ 'TRANSACTIONS.SEARCH' | translate }}</label>
@@ -96,14 +96,28 @@
         <input type="date" class="form-control form-control-sm bg-light" [(ngModel)]="endDate">
       </div>
 
-      <!-- Export Button -->
+      <!-- Export Buttons -->
       <div class="col-lg-auto col-md-2 col-12">
-        <button class="btn btn-sm btn-outline-danger w-100 d-flex align-items-center justify-content-center gap-1" 
-                (click)="downloadPDF()"
-                [disabled]="isMasterLoading">
-          <iconify-icon icon="solar:file-download-bold-duotone" class="fs-18"></iconify-icon>
-          {{ 'TRANSACTIONS.DOWNLOAD_PDF' | translate }}
-        </button>
+        <div class="d-flex gap-2">
+          <!-- View PDF Button -->
+          <button class="btn btn-sm btn-outline-primary flex-fill d-flex align-items-center justify-content-center gap-1"
+                  (click)="generateAndViewPDF()"
+                  [disabled]="isGeneratingPDF || isMasterLoading">
+            <iconify-icon icon="solar:eye-broken" class="fs-18"></iconify-icon>
+            {{ 'TRANSACTIONS.VIEW_PDF' | translate }}
+          </button>
+
+          <!-- Download PDF Button -->
+          <button class="btn btn-sm btn-outline-danger flex-fill d-flex align-items-center justify-content-center gap-1"
+                  (click)="downloadPDF()"
+                  [disabled]="isGeneratingPDF || isMasterLoading">
+            <iconify-icon [icon]="isGeneratingPDF ? 'solar:round-sort-bold' : 'solar:file-download-bold-duotone'"
+                          [class.spin]="isGeneratingPDF"
+                          class="fs-18">
+            </iconify-icon>
+            {{ (isGeneratingPDF ? 'TRANSACTIONS.GENERATING' : 'TRANSACTIONS.DOWNLOAD_PDF') | translate }}
+          </button>
+        </div>
       </div>
 
       <!-- Loading Spinner (Far Right) -->
@@ -164,6 +178,7 @@
       </tbody>
     </table>
   </div>
+
   <!-- ─── Mobile Cards (hidden on desktop) ─── -->
   <div class="d-md-none px-3 mt-3">
     <div *ngIf="paginatedTransactions.length === 0" class="text-center text-muted py-4">

@@ -25,25 +25,77 @@ export class TransactionService {
   private get headers() {
     return { Authorization: this.authService.session || '' }
   }
+
   generateTransactionsPDF(startDate?: string, endDate?: string): Observable<string> {
-  let params: any = {}
+    let params: any = {}
 
-  if (startDate) params.startDate = startDate
-  if (endDate) params.endDate = endDate
+    if (startDate) params.startDate = startDate
+    if (endDate) params.endDate = endDate
 
-  return this.http
-    .get<any>(`${this.baseUrl}${this.apiPrefix}/generate-transactions-pdf`, {
-      headers: this.headers,
-      params,
-    })
-    .pipe(
-      map((res) => res?.file || ''),
-      catchError((err) => {
-        console.error('PDF Error:', err)
-        return of('')
+    return this.http
+      .get<any>(`${this.baseUrl}${this.apiPrefix}/generate-transactions-pdf`, {
+        headers: this.headers,
+        params,
       })
-    )
-}
+      .pipe(
+        map((res) => res?.file || ''),
+        catchError((err) => {
+          console.error('PDF Error:', err)
+          return of('')
+        })
+      )
+  }
+
+  // ✅ عرض ملف PDF مباشرة في المتصفح
+  viewPDF(filename: string): Observable<Blob> {
+    return this.http
+      .get(`${this.baseUrl}${this.apiPrefix}/view-pdf/${filename}`, {
+        headers: this.headers,
+        responseType: 'blob',
+      })
+      .pipe(
+        catchError((err) => {
+          console.error('View PDF Error:', err)
+          return of(new Blob())
+        })
+      )
+  }
+
+  // ✅ تحميل ملف PDF
+  downloadPDF(filename: string): Observable<Blob> {
+    return this.http
+      .get(`${this.baseUrl}${this.apiPrefix}/view-pdf/${filename}`, {
+        headers: this.headers,
+        responseType: 'blob',
+      })
+      .pipe(
+        catchError((err) => {
+          console.error('Download PDF Error:', err)
+          return of(new Blob())
+        })
+      )
+  }
+
+  // ✅ فتح PDF في تبويب جديد (طريقة بديلة)
+  openPDFInNewTab(filename: string): void {
+    const pdfUrl = `${this.baseUrl}${this.apiPrefix}/view-pdf/${filename}`;
+    window.open(pdfUrl, '_blank');
+  }
+
+  // ✅ تحميل PDF باسم مخصص
+  downloadPDFWithCustomName(filename: string, customName?: string): void {
+    this.downloadPDF(filename).subscribe((blob: Blob) => {
+      if (blob.size > 0) {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = customName ? `${customName}.pdf` : filename;
+        link.click();
+        window.URL.revokeObjectURL(url);
+      }
+    });
+  }
+
   // ─── كل التراكنشنز ───
   // ─── كل التراكنشنز بكل حقولها ───
   getAllTransactions(): Observable<TransactionType[]> {

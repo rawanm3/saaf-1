@@ -31,18 +31,19 @@ export type TabType = 'all' | 'deposit' | 'withdraw' | 'master' | 'distribution'
 })
 export class TransactionsComponent {
   Math = Math
-startDate: string = ''
-endDate: string = ''
+  startDate: string = ''
+  endDate: string = ''
+
   // ─── كل التراكنشنز مدمجة ───
   allTransactions: TransactionType[] = []      // all + master مدمجين بدون تكرار
   filteredTransactions: TransactionType[] = []
 
   masterWalletInfo: any = null
   isMasterLoading = false
+  isGeneratingPDF = false  // ✅ مؤشر تحميل PDF
 
   // ─── Tabs ───
   activeTab: TabType = 'all'
-
 
   tabs: { key: TabType; labelKey: string; icon: string; types?: string[] }[] = [
     { key: 'all',          labelKey: 'TRANSACTIONS.TAB_ALL',          icon: 'solar:list-bold-duotone' },
@@ -97,38 +98,35 @@ endDate: string = ''
   }
 
   // ─── تحميل الكل — getAllTransactions بتعمل دمج تلقائي مع master ───
-loadAll() {
-  this.isMasterLoading = true
+  loadAll() {
+    this.isMasterLoading = true
 
-  // 1️⃣ تحميل كل الترانزاكشنز
-  this.transactionService.getAllTransactions().subscribe({
-    next: (merged) => {
-      this.allTransactions = merged
-      this.transactionService.setTransactions(merged)
-      this.applyTabFilter()
-      this.updateStats() // هيشتغل مؤقتًا بدون master balance
-    },
-    error: () => {
-      this.allTransactions = []
-      this.applyTabFilter()
-    },
-  })
+    // 1️⃣ تحميل كل الترانزاكشنز
+    this.transactionService.getAllTransactions().subscribe({
+      next: (merged) => {
+        this.allTransactions = merged
+        this.transactionService.setTransactions(merged)
+        this.applyTabFilter()
+        this.updateStats()
+      },
+      error: () => {
+        this.allTransactions = []
+        this.applyTabFilter()
+      },
+    })
 
-  // 2️⃣ تحميل master wallet
-  this.transactionService.getMasterWalletTransactions().subscribe({
-    next: (res) => {
-      this.masterWalletInfo = res.masterWallet
-
-      // تحديث الإحصائيات بعد ما الرصيد وصل
-      this.updateStats()
-
-      this.isMasterLoading = false
-    },
-    error: () => {
-      this.isMasterLoading = false
-    },
-  })
-}
+    // 2️⃣ تحميل master wallet
+    this.transactionService.getMasterWalletTransactions().subscribe({
+      next: (res) => {
+        this.masterWalletInfo = res.masterWallet
+        this.updateStats()
+        this.isMasterLoading = false
+      },
+      error: () => {
+        this.isMasterLoading = false
+      },
+    })
+  }
 
   // ─── Tab switch ───
   switchTab(tab: TabType) {
@@ -194,32 +192,113 @@ loadAll() {
     }
   }
 
-updateStats() {
-  const all = this.allTransactions
+  updateStats() {
+    const all = this.allTransactions
 
-  // عدد العمليات
-  this.stateList[0].amount = all.length.toString()
+    // عدد العمليات
+    this.stateList[0].amount = all.length.toString()
 
-  // إجمالي المبالغ
-  const total = all.reduce((sum, t) => sum + (t.amount || 0), 0)
-  this.stateList[1].amount = `${total.toLocaleString()} SAR`
+    // إجمالي المبالغ
+    const total = all.reduce((sum, t) => sum + (t.amount || 0), 0)
+    this.stateList[1].amount = `${total.toLocaleString()} SAR`
 
-  // رصيد الماستر (من state مش من res)
-  const balanceSAR = this.masterWalletInfo?.balances?.total ?? 0
-  this.stateList[2].amount = `${balanceSAR.toLocaleString()} SAR`
-}
-downloadPDF() {
-  this.transactionService
-    .generateTransactionsPDF(this.startDate, this.endDate)
-    .subscribe((url) => {
-      if (url) {
-        const link = document.createElement('a')
-        link.href = url
-        link.download = 'transactions-report.pdf'
-        link.click()
-      }
-    })
-}
+    // رصيد الماستر (من state مش من res)
+    const balanceSAR = this.masterWalletInfo?.balances?.total ?? 0
+    this.stateList[2].amount = `${balanceSAR.toLocaleString()} SAR`
+  }
+
+  // ✅ إنشاء وفتح PDF مباشرة
+  generateAndViewPDF() {
+    this.isGeneratingPDF = true
+
+    this.transactionService
+      .generateTransactionsPDF(this.startDate, this.endDate)
+      .subscribe({
+        next: (fileUrl: string) => {
+          this.isGeneratingPDF = false
+
+          if (fileUrl) {
+            // استخراج اسم الملف من الرابط
+            const filename = fileUrl.split('/').pop()
+
+            if (filename) {
+              // فتح PDF في تبويب جديد
+              this.transactionService.openPDFInNewTab(filename)
+            } else {
+              // إذا لم نستطع استخراج الاسم، نفتح الرابط مباشرة
+              window.open(fileUrl, '_blank')
+            }
+          } else {
+            console.error('لم يتم استلام رابط الملف')
+            this.showError('حدث خطأ في إنشاء التقرير')
+          }
+        },
+        error: (err) => {
+          this.isGeneratingPDF = false
+          console.error('Error generating PDF:', err)
+          this.showError('حدث خطأ أثناء إنشاء التقرير')
+        }
+      })
+  }
+
+  // ✅ تحميل PDF (اختياري)
+  downloadPDF() {
+    this.isGeneratingPDF = true
+
+    this.transactionService
+      .generateTransactionsPDF(this.startDate, this.endDate)
+      .subscribe({
+        next: (fileUrl: string) => {
+          this.isGeneratingPDF = false
+
+          if (fileUrl) {
+            const filename = fileUrl.split('/').pop()
+
+            if (filename) {
+              // تحميل الملف باسم مخصص
+              const dateRange = this.getDateRangeLabel()
+              this.transactionService.downloadPDFWithCustomName(
+                filename,
+                `تقرير_المعاملات_${dateRange}`
+              )
+            } else {
+              // طريقة بديلة للتحميل
+              const link = document.createElement('a')
+              link.href = fileUrl
+              link.download = 'transactions-report.pdf'
+              link.click()
+            }
+          } else {
+            this.showError('حدث خطأ في إنشاء التقرير')
+          }
+        },
+        error: (err) => {
+          this.isGeneratingPDF = false
+          console.error('Error generating PDF:', err)
+          this.showError('حدث خطأ أثناء إنشاء التقرير')
+        }
+      })
+  }
+
+  // ✅ الحصول على تسمية نطاق التاريخ
+  private getDateRangeLabel(): string {
+    if (this.startDate && this.endDate) {
+      return `${this.startDate}_to_${this.endDate}`
+    } else if (this.startDate) {
+      return `from_${this.startDate}`
+    } else if (this.endDate) {
+      return `until_${this.endDate}`
+    }
+    return 'all_transactions'
+  }
+
+  // ✅ عرض رسالة خطأ (يمكنك تخصيصها حسب نظام الـ UI الخاص بك)
+  private showError(message: string) {
+    // يمكنك استخدام Toastr, SweetAlert, أو أي نظام إشعارات
+    console.error(message)
+    alert(message) // مؤقتاً
+  }
+
   getTypeKey(type: string): string {
     return type ? 'TRANSACTIONS.TYPE_VALUES.' + type : 'TRANSACTIONS.NA'
   }
@@ -242,9 +321,9 @@ downloadPDF() {
     this.modalService.open(tpl, { size: 'lg', centered: true })
   }
 
-get masterWalletBalance(): string {
-  if (!this.masterWalletInfo) return '—'
-  const sar = this.masterWalletInfo.balances?.total ?? 0
-  return `${sar.toLocaleString()} SAR`
-}
+  get masterWalletBalance(): string {
+    if (!this.masterWalletInfo) return '—'
+    const sar = this.masterWalletInfo.balances?.total ?? 0
+    return `${sar.toLocaleString()} SAR`
+  }
 }

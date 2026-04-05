@@ -435,9 +435,14 @@ getPropertyPayoutDetails(
       })
     )
 }
-generatePropertyPayoutPDF(
-  propertyId: string
-): Observable<GeneratePayoutPdfResponse> {
+// أضف هذه الدوال في نهاية كلاس PropertyService
+
+/**
+ * إنشاء تقرير PDF لتوزيعات أرباح العقار
+ * @param propertyId - معرف العقار
+ * @returns رابط ملف PDF
+ */
+generatePropertyPayoutPDF(propertyId: string): Observable<GeneratePayoutPdfResponse> {
   return this.http
     .get<GeneratePayoutPdfResponse>(
       `${this.baseUrl}/payout-pdf/${propertyId}`,
@@ -445,13 +450,58 @@ generatePropertyPayoutPDF(
     )
     .pipe(
       tap((res) => {
-        // نخزن رابط الـ PDF
-        this.payoutPdfSource.next(res.file)
+        // تخزين رابط الـ PDF في الـ BehaviorSubject
+        this.payoutPdfSource.next(res.file);
       }),
       catchError((err) => {
-        console.error('Error generating payout PDF:', err)
-        return throwError(() => err)
+        console.error('Error generating payout PDF:', err);
+        return throwError(() => err);
       })
-    )
+    );
+}
+
+/**
+ * عرض ملف PDF مباشرة في المتصفح (inline)
+ * @param filename - اسم ملف PDF
+ * @returns Observable لعرض الملف
+ */
+viewPDFInline(filename: string): Observable<Blob> {
+  return this.http
+    .get(`${this.baseUrl}/view-pdf/${filename}`, {
+      headers: {
+        ...this.headers,
+        'Accept': 'application/pdf'
+      },
+      responseType: 'blob' // مهم: لاستقبال الملف كـ Blob
+    })
+    .pipe(
+      catchError((err) => {
+        console.error('Error viewing PDF:', err);
+        return throwError(() => err);
+      })
+    );
+}
+
+// دالة مساعدة لفتح PDF في تبويب جديد
+openPDFInNewTab(filename: string): void {
+  const url = `${this.baseUrl}/view-pdf/${filename}`;
+  window.open(url, '_blank');
+}
+
+// دالة مساعدة لتحميل PDF
+downloadPDF(filename: string, customName?: string): void {
+  this.viewPDFInline(filename).subscribe({
+    next: (blob) => {
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = customName || filename;
+      link.click();
+      window.URL.revokeObjectURL(url);
+    },
+    error: (err) => {
+      console.error('Error downloading PDF:', err);
+    }
+  });
 }
 }

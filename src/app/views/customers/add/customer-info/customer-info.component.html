@@ -44,29 +44,18 @@
         class="text-danger">
         {{ 'CUSTOMER.ERROR.NATIONAL_ID_REQUIRED' | translate }}
       </small>
-
-      <small
-        *ngIf="customerForm.get('nationalId')?.hasError('minlength') && (customerForm.get('nationalId')?.touched || customerForm.get('nationalId')?.dirty)"
-        class="text-danger">
-        {{ 'CUSTOMER.ERROR.NATIONAL_ID_PATTERN' | translate }}
-      </small>
     </div>
 
     <div class="col-md-6">
-      <label class="form-label">{{ 'CUSTOMER.COUNTRY' | translate }}</label>
-      <select formControlName="country" class="form-select">
-        <option value="">{{ 'CUSTOMER.SELECT_COUNTRY' | translate }}</option>
-        <option value="Egypt">{{ 'CUSTOMER.COUNTRY_EG' | translate }}</option>
-        <option value="United States">{{ 'CUSTOMER.COUNTRY_US' | translate }}</option>
-        <option value="United Kingdom">{{ 'CUSTOMER.COUNTRY_UK' | translate }}</option>
-        <option value="France">{{ 'CUSTOMER.COUNTRY_FR' | translate }}</option>
-      </select>
-      <small
-        *ngIf="customerForm.get('country')?.hasError('required') && (customerForm.get('country')?.touched || customerForm.get('country')?.dirty)"
-        class="text-danger">
-        {{ 'CUSTOMER.ERROR.COUNTRY_REQUIRED' | translate }}
-      </small>
-    </div>
+  <label class="form-label">{{ 'CUSTOMER.COUNTRY' | translate }}</label>
+  <input type="text" formControlName="country" class="form-control"
+    [placeholder]="'CUSTOMER.PLACEHOLDER.COUNTRY' | translate" />
+  <small
+    *ngIf="customerForm.get('country')?.hasError('required') && (customerForm.get('country')?.touched || customerForm.get('country')?.dirty)"
+    class="text-danger">
+    {{ 'CUSTOMER.ERROR.COUNTRY_REQUIRED' | translate }}
+  </small>
+</div>
 
     <div class="col-md-6" *ngIf="customerForm.get('country')?.value?.toLowerCase() !== 'sa'">
       <label class="form-label">{{ 'CUSTOMER.PASSWORD' | translate }}</label>
@@ -126,24 +115,60 @@
     </div>
 
     <div class="col-md-6">
-      <label class="form-label">{{ 'CUSTOMER.PHONE' | translate }}</label>
-      <input type="text" formControlName="phone" class="form-control"
-        [placeholder]="'CUSTOMER.PLACEHOLDER.PHONE' | translate" />
+  <label class="form-label">{{ 'CUSTOMER.PHONE' | translate }}</label>
+  <div class="input-group">
+    <select class="form-select" style="max-width: 140px;" [(ngModel)]="selectedCountryCode" [ngModelOptions]="{standalone: true}">
+      <option value="20">{{ 'CUSTOMER.COUNTRY_CODE.EGYPT' | translate }}</option>
+      <option value="966">{{ 'CUSTOMER.COUNTRY_CODE.SAUDI_ARABIA' | translate }}</option>
+      <option value="971">{{ 'CUSTOMER.COUNTRY_CODE.UAE' | translate }}</option>
+      <option value="965">{{ 'CUSTOMER.COUNTRY_CODE.KUWAIT' | translate }}</option>
+      <option value="974">{{ 'CUSTOMER.COUNTRY_CODE.QATAR' | translate }}</option>
+      <option value="973">{{ 'CUSTOMER.COUNTRY_CODE.BAHRAIN' | translate }}</option>
+      <option value="968">{{ 'CUSTOMER.COUNTRY_CODE.OMAN' | translate }}</option>
+      <option value="962">{{ 'CUSTOMER.COUNTRY_CODE.JORDAN' | translate }}</option>
+      <option value="961">{{ 'CUSTOMER.COUNTRY_CODE.LEBANON' | translate }}</option>
+      <option value="212">{{ 'CUSTOMER.COUNTRY_CODE.MOROCCO' | translate }}</option>
+      <option value="216">{{ 'CUSTOMER.COUNTRY_CODE.TUNISIA' | translate }}</option>
+      <option value="213">{{ 'CUSTOMER.COUNTRY_CODE.ALGERIA' | translate }}</option>
+      <option value="249">{{ 'CUSTOMER.COUNTRY_CODE.SUDAN' | translate }}</option>
+      <option value="218">{{ 'CUSTOMER.COUNTRY_CODE.LIBYA' | translate }}</option>
+      <option value="970">{{ 'CUSTOMER.COUNTRY_CODE.PALESTINE' | translate }}</option>
+      <option value="963">{{ 'CUSTOMER.COUNTRY_CODE.SYRIA' | translate }}</option>
+      <option value="964">{{ 'CUSTOMER.COUNTRY_CODE.IRAQ' | translate }}</option>
+      <option value="967">{{ 'CUSTOMER.COUNTRY_CODE.YEMEN' | translate }}</option>
+      <option value="1">{{ 'CUSTOMER.COUNTRY_CODE.USA' | translate }}</option>
+      <option value="44">{{ 'CUSTOMER.COUNTRY_CODE.UK' | translate }}</option>
+      <option value="33">{{ 'CUSTOMER.COUNTRY_CODE.FRANCE' | translate }}</option>
+      <option value="49">{{ 'CUSTOMER.COUNTRY_CODE.GERMANY' | translate }}</option>
+      <option value="39">{{ 'CUSTOMER.COUNTRY_CODE.ITALY' | translate }}</option>
+      <option value="34">{{ 'CUSTOMER.COUNTRY_CODE.SPAIN' | translate }}</option>
+      <option value="91">{{ 'CUSTOMER.COUNTRY_CODE.INDIA' | translate }}</option>
+      <option value="92">{{ 'CUSTOMER.COUNTRY_CODE.PAKISTAN' | translate }}</option>
+      <option value="90">{{ 'CUSTOMER.COUNTRY_CODE.TURKEY' | translate }}</option>
+      <option value="61">{{ 'CUSTOMER.COUNTRY_CODE.AUSTRALIA' | translate }}</option>
+      <option value="86">{{ 'CUSTOMER.COUNTRY_CODE.CHINA' | translate }}</option>
+      <option value="81">{{ 'CUSTOMER.COUNTRY_CODE.JAPAN' | translate }}</option>
+      <option value="7">{{ 'CUSTOMER.COUNTRY_CODE.RUSSIA' | translate }}</option>
+    </select>
+    <input type="text" formControlName="phone" class="form-control"
+      [placeholder]="'CUSTOMER.PLACEHOLDER.PHONE' | translate"
+      (input)="formatPhoneNumber($event)" />
+  </div>
 
-      <small *ngIf="
-      customerForm.get('phone')?.hasError('required') &&
-      (customerForm.get('phone')?.touched || customerForm.get('phone')?.dirty)
-    " class="text-danger">
-        {{ 'CUSTOMER.ERROR.PHONE_REQUIRED' | translate }}
-      </small>
+  <small *ngIf="
+  customerForm.get('phone')?.hasError('required') &&
+  (customerForm.get('phone')?.touched || customerForm.get('phone')?.dirty)
+" class="text-danger">
+    {{ 'CUSTOMER.ERROR.PHONE_REQUIRED' | translate }}
+  </small>
 
-      <small *ngIf="
-      customerForm.get('phone')?.hasError('pattern') &&
-      (customerForm.get('phone')?.touched || customerForm.get('phone')?.dirty)
-    " class="text-danger">
-        {{ 'CUSTOMER.ERROR.PHONE_PATTERN' | translate }}
-      </small>
-    </div>
+  <small *ngIf="
+  customerForm.get('phone')?.hasError('pattern') &&
+  (customerForm.get('phone')?.touched || customerForm.get('phone')?.dirty)
+" class="text-danger">
+    {{ 'CUSTOMER.ERROR.PHONE_PATTERN' | translate }}
+  </small>
+</div>
 
     <div class="col-md-6">
       <label class="form-label">{{ 'CUSTOMER.IBAN' | translate }}</label>

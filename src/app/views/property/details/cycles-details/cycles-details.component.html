@@ -1,5 +1,5 @@
-<div class="container-fluid py-4" >
-    
+<div class="container-fluid py-4">
+
     <!-- Header Card -->
     <div class="card border-0 shadow-sm mb-4 overflow-hidden" *ngIf="propertyFinancials" style="border-radius: 15px;">
         <div class="card-body p-0">
@@ -23,17 +23,29 @@
                         </span>
                     </div>
                 </div>
-                <div class="col-md-4 bg-primary-subtle d-flex align-items-center justify-content-center p-4">
-                    <button class="btn btn-danger btn-lg shadow-sm px-4" (click)="downloadPayoutPDF()" [disabled]="pdfLoading">
+                <div class="col-md-4 bg-primary-subtle d-flex align-items-center justify-content-center p-4 gap-2">
+                    <!-- زر إنشاء وفتح PDF -->
+                    <button class="btn btn-danger btn-lg shadow-sm px-4" (click)="generateAndOpenPDF()" [disabled]="pdfLoading">
                         <span *ngIf="pdfLoading" class="spinner-border spinner-border-sm me-2"></span>
                         <i *ngIf="!pdfLoading" class="ri-file-pdf-fill me-2"></i>
                         {{ 'PROPERTY.DOWNLOAD_REPORT' | translate }}
+                    </button>
+
+                    <!-- زر عرض آخر PDF تم إنشاؤه -->
+                    <button *ngIf="generatedFileName" class="btn btn-outline-danger shadow-sm px-3" (click)="openPDFInNewTab(generatedFileName)" title="{{ 'PROPERTY.VIEW_LAST_PDF' | translate }}">
+                        <i class="ri-eye-line"></i>
+                    </button>
+
+                    <!-- زر تحميل PDF -->
+                    <button *ngIf="generatedFileName" class="btn btn-outline-success shadow-sm px-3" (click)="downloadPDF(generatedFileName)" title="{{ 'PROPERTY.DOWNLOAD_PDF' | translate }}">
+                        <i class="ri-download-line"></i>
                     </button>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- باقي المحتوى كما هو مع تصحيح إغلاق العلامات -->
     <div class="row g-4">
         <!-- إضافة دخل جديد -->
         <div class="col-lg-4" *ngIf="isAuthorized()">
@@ -54,7 +66,7 @@
                             <label class="form-label small fw-bold">{{ 'PROPERTY.EXPENSES' | translate }}</label>
                             <input type="number" class="form-control" formControlName="totalexpense" placeholder="0.00">
                         </div>
-                        
+
                         <div class="p-3 bg-light rounded-3 mb-3 border-start border-4 border-primary">
                             <div class="d-flex justify-content-between align-items-center">
                                 <span class="small text-muted">{{ 'PROPERTY.NET_PROFIT' | translate }}:</span>
@@ -118,7 +130,7 @@
                                         <td class="fw-semibold small">{{ inv.amountInvested }}</td>
                                         <td class="text-primary fw-bold">{{ inv.dividendsReceived }}</td>
                                         <td>
-                                            <span class="px-2 py-1 rounded small fw-bold" 
+                                            <span class="px-2 py-1 rounded small fw-bold"
                                                 [ngClass]="inv.remainingReturn?.toString().includes('-') ? 'bg-danger-subtle text-danger' : 'bg-success-subtle text-success'">
                                                 {{ inv.remainingReturn }}
                                             </span>
@@ -156,24 +168,60 @@
                     </div>
                 </div>
                 <div class="d-flex justify-content-center align-items-center py-3 gap-2">
-
-    <button class="btn btn-sm btn-outline-secondary"
-            (click)="currentPage = currentPage - 1"
-            [disabled]="currentPage === 1">
-        Prev
-    </button>
-
-    <span class="small fw-bold">
-        Page {{ currentPage }} of {{ totalPages }}
-    </span>
-
-    <button class="btn btn-sm btn-outline-secondary"
-            (click)="currentPage = currentPage + 1"
-            [disabled]="currentPage === totalPages">
-        Next
-    </button>
-
+                    <button class="btn btn-sm btn-outline-secondary"
+                            (click)="currentPage = currentPage - 1"
+                            [disabled]="currentPage === 1">
+                        Prev
+                    </button>
+                    <span class="small fw-bold">
+                        Page {{ currentPage }} of {{ totalPages }}
+                    </span>
+                    <button class="btn btn-sm btn-outline-secondary"
+                            (click)="currentPage = currentPage + 1"
+                            [disabled]="currentPage === totalPages">
+                        Next
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<!-- مودال عرض PDF -->
+<div class="modal fade" [class.show]="showPdfModal" [style.display]="showPdfModal ? 'block' : 'none'" tabindex="-1" style="background-color: rgba(0,0,0,0.8);" *ngIf="showPdfModal">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content" style="height: 90vh;">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">
+                    <i class="ri-file-pdf-fill me-2"></i>
+                    {{ 'PROPERTY.PAYOUT_REPORT' | translate }} - {{ propertyFinancials?.propertyName }}
+                </h5>
+                <button type="button" class="btn-close btn-close-white" (click)="closePdfModal()"></button>
+            </div>
+            <div class="modal-body p-0">
+                <iframe *ngIf="pdfUrl" [src]="pdfUrl" width="100%" height="100%" style="border: none; min-height: 70vh;"></iframe>
+                <div *ngIf="!pdfUrl" class="d-flex justify-content-center align-items-center" style="height: 70vh;">
+                    <div class="text-center">
+                        <div class="spinner-border text-danger mb-3" role="status" style="width: 3rem; height: 3rem;">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p>{{ 'PROPERTY.LOADING_PDF' | translate }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-success" (click)="downloadPDF(generatedFileName)">
+                    <i class="ri-download-line me-2"></i>
+                    {{ 'PROPERTY.DOWNLOAD' | translate }}
+                </button>
+                <button class="btn btn-primary" (click)="openPDFInNewTab(generatedFileName)">
+                    <i class="ri-external-link-line me-2"></i>
+                    {{ 'PROPERTY.OPEN_NEW_TAB' | translate }}
+                </button>
+                <button class="btn btn-secondary" (click)="closePdfModal()">
+                    <i class="ri-close-line me-2"></i>
+                    {{ 'PROPERTY.CLOSE' | translate }}
+                </button>
             </div>
         </div>
     </div>
