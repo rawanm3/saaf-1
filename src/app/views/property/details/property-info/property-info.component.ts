@@ -48,6 +48,17 @@ export class PropertyInfoComponent implements OnChanges {
   }
 
   getTranslatedType(type: string): string {
+     const t = type ?? '' 
+    switch (t) {
+      case 'available':
+        return 'PROPERTYADD.TYPE_AVAILABLE'
+      case 'completed':
+        return 'PROPERTYADD.TYPE_COMPLETED'
+      case 'exit':
+        return 'PROPERTYADD.TYPE_EXIT'
+      default:
+        return 'PROPERTYADD.TYPE_UNKNOWN'
+    }
   if (!type) return '';
 
   // تحويل النوع إلى مفتاح ترجمة

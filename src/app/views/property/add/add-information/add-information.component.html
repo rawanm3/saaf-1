@@ -43,25 +43,18 @@
             [class.is-valid]="isFieldValid('type')">
             <option value="">{{ 'PROPERTYADD.SELECT_TYPE' | translate }}</option>
 
-            <option value="Residential/Commercial Property">
-              {{ 'PROPERTYADD.TYPE_RESIDENTIAL_COMMERCIAL_PROPERTY' | translate }}
+            <option value="available">
+              {{ 'PROPERTYADD.TYPE_AVAILABLE' | translate }}
             </option>
 
-            <option value="Administrative Property (Offices)">
-              {{ 'PROPERTYADD.TYPE_ADMINISTRATIVE_PROPERTY' | translate }}
+            <option value="completed">
+              {{ 'PROPERTYADD.TYPE_COMPLETED' | translate }}
             </option>
 
-            <option value="Residential Complex">
-              {{ 'PROPERTYADD.TYPE_RESIDENTIAL_COMPLEX' | translate }}
+            <option value="exit">
+              {{ 'PROPERTYADD.TYPE_EXIT' | translate }}
             </option>
 
-            <option value="Residential/Commercial Complex">
-              {{ 'PROPERTYADD.TYPE_RESIDENTIAL_COMMERCIAL_COMPLEX' | translate }}
-            </option>
-
-            <option value="Commercial/Administrative Complex">
-              {{ 'PROPERTYADD.TYPE_COMMERCIAL_ADMINISTRATIVE_COMPLEX' | translate }}
-            </option>
           </select>
 
           <div class="invalid-feedback" *ngIf="isFieldInvalid('type')">

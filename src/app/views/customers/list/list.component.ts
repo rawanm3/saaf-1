@@ -196,47 +196,58 @@ export class ListComponent implements OnInit {
     )
   }
 
-  saveCustomerChanges() {
-    if (!this.isFormValid()) {
-      Swal.fire(
-        this.translate('CUSTOMERS.ALERTS.WARNING_TITLE'),
-        this.translate('CUSTOMERS.ALERTS.FILL_REQUIRED_FIELDS'),
-        'warning'
-      )
-      return
-    }
-
-    if (this.editCustomer && this.editCustomer.id) {
-      this.customerService
-        .updateCustomer(this.editCustomer.id, this.editCustomer)
-        .subscribe({
-          next: () => {
-            this.loadCustomers()
-            this.loadStats()
-            this.modalService.dismissAll()
-            this.selectedCustomer = null
-            this.editCustomer = null
-            this.isEditMode = false
-
-            Swal.fire({
-              title: this.translate('CUSTOMERS.ALERTS.SUCCESS_TITLE'),
-              text: this.translate('CUSTOMERS.ALERTS.UPDATE_SUCCESS'),
-              icon: 'success',
-              confirmButtonText: this.translate('CUSTOMERS.ALERTS.OK'),
-            })
-          },
-          error: (err) => {
-            console.error('Error updating customer:', err)
-            Swal.fire(
-              this.translate('CUSTOMERS.ALERTS.ERROR_TITLE'),
-              this.translate('CUSTOMERS.ALERTS.UPDATE_ERROR'),
-              'error'
-            )
-          },
-        })
-    }
+saveCustomerChanges() {
+  if (!this.isFormValid()) {
+    Swal.fire(
+      this.translate('CUSTOMERS.ALERTS.WARNING_TITLE'),
+      this.translate('CUSTOMERS.ALERTS.FILL_REQUIRED_FIELDS'),
+      'warning'
+    )
+    return
   }
 
+  if (this.editCustomer && this.editCustomer.id) {
+    const id = this.editCustomer.id
+
+    const onlyStatusChanged =
+      this.editCustomer.status !== this.selectedCustomer?.status &&
+      this.editCustomer.name === this.selectedCustomer?.name &&
+      this.editCustomer.email === this.selectedCustomer?.email &&
+      this.editCustomer.phone === this.selectedCustomer?.phone &&
+      this.editCustomer.country === this.selectedCustomer?.country &&
+      this.editCustomer.role === this.selectedCustomer?.role
+
+    const request$ = onlyStatusChanged
+      ? this.customerService.confirmUser(id, this.editCustomer.status!)
+      : this.customerService.updateCustomer(id, this.editCustomer)
+
+    request$.subscribe({
+      next: () => {
+        this.loadCustomers()
+        this.loadStats()
+        this.modalService.dismissAll()
+        this.selectedCustomer = null
+        this.editCustomer = null
+        this.isEditMode = false
+
+        Swal.fire({
+          title: this.translate('CUSTOMERS.ALERTS.SUCCESS_TITLE'),
+          text: this.translate('CUSTOMERS.ALERTS.UPDATE_SUCCESS'),
+          icon: 'success',
+          confirmButtonText: this.translate('CUSTOMERS.ALERTS.OK'),
+        })
+      },
+      error: (err) => {
+        console.error('Error updating customer:', err)
+        Swal.fire(
+          this.translate('CUSTOMERS.ALERTS.ERROR_TITLE'),
+          this.translate('CUSTOMERS.ALERTS.UPDATE_ERROR'),
+          'error'
+        )
+      },
+    })
+  }
+}
   deleteCustomer(id?: string) {
     if (!id) return
 

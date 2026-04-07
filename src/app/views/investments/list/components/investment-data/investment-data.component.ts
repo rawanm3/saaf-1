@@ -86,16 +86,12 @@ export class InvestmentDataComponent implements OnInit {
   getTranslatedType(type?: string): string {
     const t = type ?? '' 
     switch (t) {
-      case 'Residential/Commercial Property':
-        return 'PROPERTYADD.TYPE_RESIDENTIAL_COMMERCIAL_PROPERTY'
-      case 'Administrative Property (Offices)':
-        return 'PROPERTYADD.TYPE_ADMINISTRATIVE_PROPERTY'
-      case 'Residential Complex':
-        return 'PROPERTYADD.TYPE_RESIDENTIAL_COMPLEX'
-      case 'Residential/Commercial Complex':
-        return 'PROPERTYADD.TYPE_RESIDENTIAL_COMMERCIAL_COMPLEX'
-      case 'Commercial/Administrative Complex':
-        return 'PROPERTYADD.TYPE_COMMERCIAL_ADMINISTRATIVE_COMPLEX'
+      case 'available':
+        return 'PROPERTYADD.TYPE_AVAILABLE'
+      case 'completed':
+        return 'PROPERTYADD.TYPE_COMPLETED'
+      case 'exit':
+        return 'PROPERTYADD.TYPE_EXIT'
       default:
         return 'PROPERTYADD.TYPE_UNKNOWN'
     }

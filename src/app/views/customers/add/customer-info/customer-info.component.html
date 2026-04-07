@@ -234,8 +234,6 @@
       <select formControlName="role" class="form-select">
         <option value="user">{{ 'CUSTOMER.ROLE_USER' | translate }}</option>
         <option value="admin">{{ 'CUSTOMER.ROLE_ADMIN' | translate }}</option>
-        <option value="investor">{{ 'CUSTOMER.ROLE_INVESTOR' | translate }}</option>
-        <option value="buyer">{{ 'CUSTOMER.ROLE_BUYER' | translate }}</option>
       </select>
       <small
         *ngIf="customerForm.get('role')?.hasError('required') && (customerForm.get('role')?.touched || customerForm.get('role')?.dirty)"

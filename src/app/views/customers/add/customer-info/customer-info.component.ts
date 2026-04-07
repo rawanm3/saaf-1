@@ -64,7 +64,7 @@ export class CustomerInfoComponent implements OnInit {
         ],
       ],
       nafathSub: [''],
-      iban: ['', [Validators.required, Validators.pattern(/^[0-9]{15,34}$/)]],
+      iban: ['', [Validators.required, Validators.pattern(/^[0-9a-zA-Z]{15,34}$/)]],
       nationalIdImageUrl: ['', Validators.required],
       ibanImageUrl: ['', Validators.required],
       profileImage: [''],

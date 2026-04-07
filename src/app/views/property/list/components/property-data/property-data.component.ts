@@ -331,22 +331,15 @@ export class PropertyDataComponent implements OnInit {
     }
   }
 
-  getTranslatedType(type: string): string {
-    if (!type) return 'PROPERTYDETAILS.NOT_AVAILABLE'
-    const map: Record<string, string> = {
-      'Residential/Commercial Property':
-        'PROPERTYADD.TYPE_RESIDENTIAL_COMMERCIAL_PROPERTY',
-      'Administrative Property (Offices)':
-        'PROPERTYADD.TYPE_ADMINISTRATIVE_PROPERTY',
-      'Residential Complex': 'PROPERTYADD.TYPE_RESIDENTIAL_COMPLEX',
-      'Residential/Commercial Complex':
-        'PROPERTYADD.TYPE_RESIDENTIAL_COMMERCIAL_COMPLEX',
-      'Commercial/Administrative Complex':
-        'PROPERTYADD.TYPE_COMMERCIAL_ADMINISTRATIVE_COMPLEX',
-    }
-    return map[type] || 'PROPERTYDETAILS.NOT_AVAILABLE'
+getTranslatedType(type: string): string {
+  if (!type) return 'PROPERTYDETAILS.NOT_AVAILABLE'
+  const map: Record<string, string> = {
+    'available': 'PROPERTYADD.TYPE_AVAILABLE',
+    'completed': 'PROPERTYADD.TYPE_COMPLETED',
+    'exit': 'PROPERTYADD.TYPE_EXIT',
   }
-
+  return map[type] || 'PROPERTYDETAILS.NOT_AVAILABLE'
+}
   getStatusBadgeStyle(status?: string): Record<string, string> {
     switch (status) {
       case 'available':
